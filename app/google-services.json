@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "111094650753",
+    "firebase_url": "https://tripals.firebaseio.com",
+    "project_id": "tripals",
+    "storage_bucket": "tripals.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:111094650753:android:3aca14f76c1c643a863a80",
+        "android_client_info": {
+          "package_name": "com.hku.tripals"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "111094650753-t0vb8368u9829k003h4iac42u5bjb85j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hku.tripals",
+            "certificate_hash": "9fc2f15bee06fdc168d2e51ebbf045235dfc3eb4"
+          }
+        },
+        {
+          "client_id": "111094650753-2rhfbvfnuolpb5o32mfm9csk6timhrsb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSsZSaJHKFr20q-yzR0kGWbattX989Id4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "111094650753-2rhfbvfnuolpb5o32mfm9csk6timhrsb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
