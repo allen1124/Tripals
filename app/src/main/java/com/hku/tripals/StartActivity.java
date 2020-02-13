@@ -91,7 +91,7 @@ public class StartActivity extends AppCompatActivity {
                 emailSignInButton.setEnabled(false);
                 noLoginButton.setEnabled(false);
                 loginButton.setEnabled(false);
-                goToMapsActivity(0);
+                goToMainActivity(0);
             }
         });
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -117,14 +117,14 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    private void goToMapsActivity(long waitTime){
+    private void goToMainActivity(long waitTime){
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                startActivity(new Intent(StartActivity.this, MapsActivity.class));
+                startActivity(new Intent(StartActivity.this, MainActivity.class));
                 finish();
             }
         }, waitTime);
-        Log.d(TAG, "goToMapsActivity: wait and, start MapsActivity");
+        Log.d(TAG, "goToMainActivity: wait and, start MainActivity");
     }
 
     public void signInGoogle() {
@@ -182,7 +182,7 @@ public class StartActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.INVISIBLE);
                         if (profileDoc.exists()) {
                             Log.d(TAG, "profileDoc.exists: User profile created before");
-                            goToMapsActivity(0);
+                            goToMainActivity(0);
                         }else {
                             Log.d(TAG, "profileDoc.!exists: User profile not created");
                             startActivity(new Intent(StartActivity.this, ProfileActivity.class));

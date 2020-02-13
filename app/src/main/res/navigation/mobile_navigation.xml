@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_explore">
+
+    <fragment
+        android:id="@+id/navigation_explore"
+        android:name="com.hku.tripals.ui.explore.ExploreFragment"
+        android:label="@string/title_expore"
+        tools:layout="@layout/fragment_explore" />
+
+    <fragment
+        android:id="@+id/navigation_favourite"
+        android:name="com.hku.tripals.ui.favourite.FavouriteFragment"
+        android:label="@string/title_favourite"
+        tools:layout="@layout/fragment_favourite" />
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.hku.tripals.ui.notifications.NotificationsFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_message"
+        android:name="com.hku.tripals.ui.message.MessageFragment"
+        android:label="@string/title_message"
+        tools:layout="@layout/fragment_message" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.hku.tripals.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
+</navigation>

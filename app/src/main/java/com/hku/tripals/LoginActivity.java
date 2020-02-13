@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                         DocumentSnapshot profileDoc = task.getResult();
                         if (profileDoc.exists()) {
                             Log.d(TAG, "profileDoc.exists: User profile created before");
-                            startActivity(new Intent(LoginActivity.this, MapsActivity.class));
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         }else {
                             Log.d(TAG, "profileDoc.!exists: User profile not created");
                             startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
