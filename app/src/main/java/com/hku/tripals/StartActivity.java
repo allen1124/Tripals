@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -26,17 +28,23 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class StartActivity extends AppCompatActivity {
 
     private static final String TAG = "StartActivity";
     private static final int GOOGLE_SIGN_IN = 1111;
     private SignInButton signInButton;
+    private Button emailSignInButton;
     private Button noLoginButton;
+    private Button loginButton;
     private ProgressBar progressBar;
+    private RelativeLayout horizontalDivider;
     GoogleSignInClient mGoogleSignInClient;
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
+    FirebaseFirestore database = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +53,13 @@ public class StartActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         signInButton = findViewById(R.id.sign_in_button);
+        TextView signInButtonTextView = (TextView) signInButton.getChildAt(0);
+        signInButtonTextView.setText(R.string.sign_in_with_google);
+        emailSignInButton = findViewById(R.id.email_signin_button);
         noLoginButton = findViewById(R.id.no_login_button);
+        loginButton = findViewById(R.id.start_login_button);
         progressBar = findViewById(R.id.progressBar);
+        horizontalDivider = findViewById(R.id.horizontal_divider);
         progressBar.setVisibility(View.INVISIBLE);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -60,6 +73,13 @@ public class StartActivity extends AppCompatActivity {
                 signInGoogle();
             }
         });
+        emailSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(StartActivity.this, SignUpActivity.class));
+                StartActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
         noLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,9 +87,18 @@ public class StartActivity extends AppCompatActivity {
                 Toast.makeText(StartActivity.this,
                         "Proceeds without login.", Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.VISIBLE);
-                signInButton.setVisibility(View.INVISIBLE);
-                noLoginButton.setVisibility(View.INVISIBLE);
+                signInButton.setEnabled(false);
+                emailSignInButton.setEnabled(false);
+                noLoginButton.setEnabled(false);
+                loginButton.setEnabled(false);
                 goToMapsActivity(0);
+            }
+        });
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(StartActivity.this, LoginActivity.class));
+                StartActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
     }
@@ -79,9 +108,12 @@ public class StartActivity extends AppCompatActivity {
         super.onStart();
         if(currentUser != null){
             signInButton.setVisibility(View.GONE);
+            emailSignInButton.setVisibility(View.GONE);
             noLoginButton.setVisibility(View.GONE);
+            loginButton.setVisibility(View.GONE);
+            horizontalDivider.setVisibility(View.GONE);
             Log.d(TAG, "onStart: Login-ed already");
-            goToMapsActivity(1000);
+            proceed(currentUser);
         }
     }
 
@@ -126,18 +158,45 @@ public class StartActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            progressBar.setVisibility(View.INVISIBLE);
                             Log.d(TAG, "signInWithCredential: success");
                             currentUser = mAuth.getCurrentUser();
-                            goToMapsActivity(0);
+                            proceed(currentUser);
                         } else {
                             // If sign in fails, display a message to the user.
                             progressBar.setVisibility(View.INVISIBLE);
                             Log.w(TAG, "signInWithCredential: failure", task.getException());
                             Snackbar.make(findViewById(R.id.constraint_layout), "Authentication Failed, proceeds without login.", Snackbar.LENGTH_SHORT).show();
-                            goToMapsActivity(0);
                         }
                     }
                 });
+    }
+
+    private void proceed(FirebaseUser user){
+        if(user.isEmailVerified()){
+            //if User has not profile, proceed to Create Profile Page, else MainPage
+            database.collection("user-profile").document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot profileDoc = task.getResult();
+                        progressBar.setVisibility(View.INVISIBLE);
+                        if (profileDoc.exists()) {
+                            Log.d(TAG, "profileDoc.exists: User profile created before");
+                            goToMapsActivity(0);
+                        }else {
+                            Log.d(TAG, "profileDoc.!exists: User profile not created");
+                            startActivity(new Intent(StartActivity.this, ProfileActivity.class));
+                        }
+                        finish();
+                    } else {
+                        Log.d(TAG, "Failed with: ", task.getException());
+                    }
+                }
+            });
+        }else{
+            mAuth.signOut();
+            Toast.makeText(StartActivity.this, R.string.email_not_verified,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 }

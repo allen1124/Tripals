@@ -1,6 +1,31 @@
 <resources>
     <string name="app_name">Tripals</string>
-    <string name="welcome">Search for Your Tripals</string>
+    <!--    StartActivity-->
+    <string name="welcome">Instant Grouping for Tripals</string>
+    <string name="signup">Sign Up</string>
+    <string name="sign_in_with_google">Continue with Google</string>
+    <string name="email_sign_in">Sign up with Email</string>
     <string name="no_login">Proceed without login</string>
+    <string name="have_account">I have an Account</string>
+    <string name="or">OR</string>
+    <!--    SignUpActivity-->
+    <string name="sign_up">Sign Up</string>
+    <string name="display_name">Display name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="create_account">Create Account</string>
+    <string name="login">Login</string>
+    <string name="not_complete_message">You did not complete the entire form.</string>
+    <string name="confirm_password_message">Password are not matching</string>
+    <string name="required">Required</string>
+    <!--    LoginActivity-->
+    <string name="log_in">Log in</string>
+    <string name="forgot_password">Forgot your password?</string>
+    <string name="reset_password_email_sent">The password reset email is sent.</string>
+    <string name="email_not_verified">Your email is not verified, please check email.</string>
+    <!--    ProfileActivity-->
+    <string name="create_profile">Create Profile</string>
+    <!--    MapsActivity-->
     <string name="title_activity_maps">Map</string>
 </resources>
