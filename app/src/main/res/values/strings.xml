@@ -33,6 +33,14 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_message">Message</string>
     <string name="title_profile">Profile</string>
+    <!--    ExploreFragment-->
+    <string name="hot_destination">Hot Destinations</string>
+    <string name="hong_kong">Hong Kong</string>
+    <string name="tai_pei">Taipei</string>
+    <string name="tokyo">Tokyo</string>
+    <string name="singapore">Singapore</string>
+    <string name="macau">Macau</string>
     <!--    MapsActivity-->
     <string name="title_activity_maps">Map</string>
+    <string name="query_hint">Search...</string>
 </resources>
