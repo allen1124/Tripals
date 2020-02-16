@@ -66,7 +66,7 @@ public class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, 
             String nextPageToken = list.get(20).get("next_page_token");
             final StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
             sb.append("pagetoken=" + nextPageToken);
-            sb.append("&key="+context.getString(R.string.firebase_server_key));
+            sb.append("&key="+context.getString(R.string.place_key));
             Log.d(TAG, "request url: "+sb.toString());
             final PlacesTask placesTask = new PlacesTask(context, mMap, markerList);
             new Handler().postDelayed(new Runnable() {
