@@ -268,14 +268,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sb.append("location=" + location.latitude + "," + location.longitude);
         sb.append("&radius=4000");
         sb.append("&types=" + "tourist_attraction");
-        sb.append("&key="+getString(R.string.firebase_server_key));
+        sb.append("&key="+getString(R.string.place_key));
         return sb;
     }
 
     public StringBuilder nearbyUrlNextPageBuilder(String pageToken){
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("&pagetoken=" + pageToken);
-        sb.append("&key="+getString(R.string.firebase_server_key));
+        sb.append("&key="+getString(R.string.place_key));
         return sb;
     }
 
@@ -283,7 +283,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/photo?");
         sb.append("maxwidth="+1000);
         sb.append("&photoreference="+reference);
-        sb.append("&key="+getString(R.string.firebase_server_key));
+        sb.append("&key="+getString(R.string.place_key));
         return sb;
     }
 
