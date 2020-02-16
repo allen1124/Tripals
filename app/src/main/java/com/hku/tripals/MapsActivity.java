@@ -43,22 +43,26 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.hku.tripals.task.PlacesTask;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener {
 
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private static final float DEFAULT_ZOOM = 11.5f;
+    private static final float DEFAULT_ZOOM = 15f;
 
     private GoogleMap mMap;
     private String lat, lng;
+    private LatLng lastSearchLatLng;
     private Boolean locationPermissionGranted = false;
     private FusedLocationProviderClient fusedLocationClient;
     private AutocompleteSupportFragment autocompleteFragment;
     private ImageView gps;
+    private HashMap<String, Boolean> markerList = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +82,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onPlaceSelected(Place place) {
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-                mMap.clear();
                 moveCamera(place.getLatLng(), DEFAULT_ZOOM);
+                getNearbyAttractions(place.getLatLng());
             }
 
             @Override
@@ -109,18 +113,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.setOnCameraIdleListener(this);
         if(!lat.matches("") && !lng.matches("")){
             moveCamera(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)), DEFAULT_ZOOM);
+            getNearbyAttractions(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)));
         }else if(locationPermissionGranted && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
             getDeviceLocation();
             mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
     }
 
@@ -141,6 +142,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                         moveCamera(currentLatLng, DEFAULT_ZOOM);
                         Log.d(TAG, "onComplete: currentLatLng: "+Math.round(currentLatLng.latitude));
+                        getNearbyAttractions(currentLatLng);
                     }else{
                         Log.d(TAG, "onComplete: location is null");
                         Toast.makeText(MapsActivity.this, "Unable to get current location", Toast.LENGTH_SHORT).show();
@@ -241,4 +243,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
         }
     }
+
+    private void getNearbyAttractions(LatLng latLng){
+        if(lastSearchLatLng == null){
+            Log.d(TAG, "getNearbyAttractions: latLng: "+latLng.toString());
+            lastSearchLatLng = latLng;
+            String urlString = nearbyUrlBuilder(latLng).toString();
+            PlacesTask placesTask = new PlacesTask(this, mMap, markerList);
+            placesTask.execute(urlString);
+        }else {
+            if (Math.round(lastSearchLatLng.latitude*10) != Math.round(latLng.latitude*10) ||
+                    Math.round(lastSearchLatLng.longitude*10) != Math.round(latLng.longitude*10)) {
+                Log.d(TAG, "getNearbyAttractions: latLng: "+latLng.toString());
+                lastSearchLatLng = latLng;
+                String urlString = nearbyUrlBuilder(latLng).toString();
+                PlacesTask placesTask = new PlacesTask(this, mMap, markerList);
+                placesTask.execute(urlString);
+            }
+        }
+    }
+
+    public StringBuilder nearbyUrlBuilder(LatLng location){
+        StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        sb.append("location=" + location.latitude + "," + location.longitude);
+        sb.append("&radius=4000");
+        sb.append("&types=" + "tourist_attraction");
+        sb.append("&key="+getString(R.string.firebase_server_key));
+        return sb;
+    }
+
+    public StringBuilder nearbyUrlNextPageBuilder(String pageToken){
+        StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        sb.append("&pagetoken=" + pageToken);
+        sb.append("&key="+getString(R.string.firebase_server_key));
+        return sb;
+    }
+
+    public StringBuilder photoUrlBuilder(String reference){
+        StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/photo?");
+        sb.append("maxwidth="+1000);
+        sb.append("&photoreference="+reference);
+        sb.append("&key="+getString(R.string.firebase_server_key));
+        return sb;
+    }
+
+    @Override
+    public void onCameraIdle() {
+        Log.d(TAG, "onCameraIdle: Map exploring, getNearbyRestaurants");
+        LatLng cameraPosition = mMap.getCameraPosition().target;
+        getNearbyAttractions(cameraPosition);
+    }
+
 }

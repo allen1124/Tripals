@@ -20,4 +20,5 @@
     string in this file.
     -->
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyB4V9GUwudKziXScm-ApF20sjcQvPv6DJU</string>
+    <string name="firebase_server_key" templateMergeStrategy="preserve" translatable="false">AIzaSyAkR5wPjVaagaflJ0TP26ibLBuBCyOdbI4</string>
 </resources>

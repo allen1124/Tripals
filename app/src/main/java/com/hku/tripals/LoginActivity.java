@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!email.getText().toString().matches("") && !password.getText().toString().matches("")) {
+                    progressBar.setVisibility(View.VISIBLE);
                     logIn(email.getText().toString(), password.getText().toString());
                 }
                 if(email.getText().toString().matches(""))
@@ -112,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
                         DocumentSnapshot profileDoc = task.getResult();
+                        progressBar.setVisibility(View.GONE);
                         if (profileDoc.exists()) {
                             Log.d(TAG, "profileDoc.exists: User profile created before");
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -128,6 +130,7 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             Log.d(TAG, "proceed: User email is not verified.");
             mAuth.signOut();
+            progressBar.setVisibility(View.GONE);
             Toast.makeText(LoginActivity.this, R.string.email_not_verified,
                     Toast.LENGTH_LONG).show();
         }
