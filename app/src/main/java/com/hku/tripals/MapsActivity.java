@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -48,7 +49,7 @@ import com.hku.tripals.task.PlacesTask;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -62,11 +63,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient fusedLocationClient;
     private AutocompleteSupportFragment autocompleteFragment;
     private ImageView gps;
+    private Button nearbyButton;
     private HashMap<String, Boolean> markerList = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
         final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         setContentView(R.layout.activity_maps);
         Places.initialize(getApplicationContext(), getResources().getString(R.string.google_api_key));
@@ -74,7 +77,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = getIntent();
         lat = intent.getStringExtra("lat");
         lng = intent.getStringExtra("lng");
-
+        nearbyButton = findViewById(R.id.search_nearby_button);
+        nearbyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LatLng cameraPosition = mMap.getCameraPosition().target;
+                getNearbyAttractions(cameraPosition);
+            }
+        });
         autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
         autocompleteFragment.setHint(getResources().getString(R.string.query_hint));
@@ -115,7 +125,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        mMap.setOnCameraIdleListener(this);
         if(!lat.matches("") && !lng.matches("")){
             moveCamera(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)), DEFAULT_ZOOM);
             getNearbyAttractions(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)));
@@ -272,13 +281,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return sb;
     }
 
-    public StringBuilder nearbyUrlNextPageBuilder(String pageToken){
-        StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        sb.append("&pagetoken=" + pageToken);
-        sb.append("&key="+getString(R.string.place_key));
-        return sb;
-    }
-
     public StringBuilder photoUrlBuilder(String reference){
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/photo?");
         sb.append("maxwidth="+1000);
@@ -288,10 +290,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onCameraIdle() {
-        Log.d(TAG, "onCameraIdle: Map exploring, getNearbyRestaurants");
-        LatLng cameraPosition = mMap.getCameraPosition().target;
-        getNearbyAttractions(cameraPosition);
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }
-
 }

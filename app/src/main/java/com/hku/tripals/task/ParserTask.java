@@ -64,14 +64,12 @@ public class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, 
         Log.d(TAG, "list size: " + list.size());
         if(list.size() == 21){
             String nextPageToken = list.get(20).get("next_page_token");
-            final StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-            sb.append("pagetoken=" + nextPageToken);
-            sb.append("&key="+context.getString(R.string.place_key));
-            Log.d(TAG, "request url: "+sb.toString());
+            final String nextPageUrl = nearbyUrlNextPageBuilder(nextPageToken).toString();
+            Log.d(TAG, "request url: "+nextPageUrl);
             final PlacesTask placesTask = new PlacesTask(context, mMap, markerList);
             new Handler().postDelayed(new Runnable() {
                 public void run() {
-                    placesTask.execute(sb.toString());
+                    placesTask.execute(nextPageUrl);
                 }
             }, 2000);
         }
@@ -109,5 +107,12 @@ public class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, 
             Marker m = mMap.addMarker(markerOptions);
             m.setTag(restaurant);
         }
+    }
+
+    public StringBuilder nearbyUrlNextPageBuilder(String pageToken){
+        StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        sb.append("&pagetoken=" + pageToken);
+        sb.append("&key="+context.getString(R.string.place_key));
+        return sb;
     }
 }

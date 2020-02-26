@@ -1,10 +1,13 @@
 package com.hku.tripals.ui.explore;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.SearchView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -14,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hku.tripals.SearchResultsActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.adapter.DestinationAdapter;
 import com.hku.tripals.model.Destination;
@@ -25,6 +29,7 @@ public class ExploreFragment extends Fragment {
 
     private static final String TAG = "ExploreFragment";
     private ExploreViewModel exploreViewModel;
+    private SearchView searchbar;
     private List<Destination> destinationList = new ArrayList<>();
     private RecyclerView destinationRecyclerView;
     private LinearLayoutManager destinationLayoutManager;
@@ -47,6 +52,15 @@ public class ExploreFragment extends Fragment {
             }
         });
         destinationRecyclerView.setAdapter(destinationAdapter);
+        searchbar = root.findViewById(R.id.explore_searchView);
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        searchbar.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(getActivity(), SearchResultsActivity.class)));
+        searchbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchbar.setIconified(false);
+            }
+        });
         return root;
     }
 }

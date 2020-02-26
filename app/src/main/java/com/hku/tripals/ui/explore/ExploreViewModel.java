@@ -22,6 +22,7 @@ public class ExploreViewModel extends ViewModel {
         destinationsList.add(new Destination(3, R.drawable.tai_pei, R.string.tai_pei, "25.032969", "121.565414"));
         destinationsList.add(new Destination(4, R.drawable.tokyo, R.string.tokyo, "35.680923", "139.760562"));
         destinationsList.add(new Destination(5, R.drawable.singapore, R.string.singapore, "1.352083", "103.819839"));
+        destinationsList.add(new Destination(6, R.drawable.theme_colour, R.string.more, "", ""));
         destinations.setValue(destinationsList);
     }
 
