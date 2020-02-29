@@ -56,13 +56,13 @@ public class Place_JSON {
     }
 
     private HashMap<String, String> getPlace(JSONObject jPlace) {
-
         HashMap<String, String> place = new HashMap<String, String>();
         String placeName = "-NA-";
         String vicinity = "-NA-";
         String openNow = null;
         String latitude = "";
         String longitude = "";
+        String rating = "0";
         String photoReference = "";
         String placeId = "";
 
@@ -79,6 +79,9 @@ public class Place_JSON {
             if(!jPlace.isNull("photos")){
                 photoReference = jPlace.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
             }
+            if(!jPlace.isNull("rating")){
+                rating = jPlace.getString("rating");
+            }
             latitude = jPlace.getJSONObject("geometry").getJSONObject("location").getString("lat");
             longitude = jPlace.getJSONObject("geometry").getJSONObject("location").getString("lng");
             placeId = jPlace.getString("place_id");
@@ -86,6 +89,7 @@ public class Place_JSON {
             place.put("vicinity", vicinity);
             place.put("lat", latitude);
             place.put("lng", longitude);
+            place.put("rating", rating);
             place.put("place_id", placeId);
             place.put("open_now", openNow);
             place.put("photo_reference", photoReference);

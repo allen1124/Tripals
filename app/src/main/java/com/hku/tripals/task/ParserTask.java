@@ -76,25 +76,25 @@ public class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, 
         for (int i = 0; i < list.size() && i < 20; i++) {
             MarkerOptions markerOptions = new MarkerOptions();
             HashMap<String, String> hmPlace = list.get(i);
-            if(markerList.get(hmPlace.get("place_id")) != null && markerList.get(hmPlace.get("place_id")) == true){
+            if(markerList.get(hmPlace.get("place_id")) != null && markerList.get(hmPlace.get("place_id"))){
                 break;
             }else{
                 markerList.put(hmPlace.get("place_id"), true);
             }
-            Place restaurant = new Place();
-            restaurant.setLatitude(hmPlace.get("lat"));
+            Place place = new Place();
+            place.setLatitude(hmPlace.get("lat"));
             double lat = Double.parseDouble(hmPlace.get("lat"));
-            restaurant.setLongitude(hmPlace.get("lng"));
+            place.setLongitude(hmPlace.get("lng"));
             double lng = Double.parseDouble(hmPlace.get("lng"));
             String name = hmPlace.get("place_name");
-            restaurant.setName(name);
+            place.setName(name);
             Log.d("Map", "place: " + name);
             String vicinity = hmPlace.get("vicinity");
-            restaurant.setVicinity(vicinity);
+            place.setVicinity(vicinity);
             LatLng latLng = new LatLng(lat, lng);
-            restaurant.setPlaceId(hmPlace.get("place_id"));
-            restaurant.setOpenNow(hmPlace.get("open_now"));
-            restaurant.setPhotoReference(hmPlace.get("photo_reference"));
+            place.setPlaceId(hmPlace.get("place_id"));
+            place.setPhotoReference(hmPlace.get("photo_reference"));
+            place.setRating(Double.parseDouble(hmPlace.get("rating")));
             markerOptions.position(latLng);
             markerOptions.title(name);
             bookmarkPref = context.getSharedPreferences(BOOKMARK_PREF, Context.MODE_PRIVATE);
@@ -105,7 +105,7 @@ public class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, 
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
             }
             Marker m = mMap.addMarker(markerOptions);
-            m.setTag(restaurant);
+            m.setTag(place);
         }
     }
 

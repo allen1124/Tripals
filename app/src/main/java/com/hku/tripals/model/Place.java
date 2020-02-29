@@ -12,7 +12,6 @@ public class Place implements Serializable{
     String photoReference;
     String latitude;
     String longitude;
-    String openNow;
     int dislikeCount;
     int likeCount;
     Double rating;
@@ -67,14 +66,6 @@ public class Place implements Serializable{
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
-    }
-
-    public String getOpenNow() {
-        return openNow;
-    }
-
-    public void setOpenNow(String openNow) {
-        this.openNow = openNow;
     }
 
     public int getDislikeCount() {

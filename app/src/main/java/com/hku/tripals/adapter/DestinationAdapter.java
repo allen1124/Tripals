@@ -7,10 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.hku.tripals.LoginActivity;
-import com.hku.tripals.MainActivity;
 import com.hku.tripals.MapsActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.model.Destination;

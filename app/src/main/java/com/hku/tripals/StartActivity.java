@@ -41,6 +41,11 @@ public class StartActivity extends AppCompatActivity {
     private Button loginButton;
     private ProgressBar progressBar;
     private RelativeLayout horizontalDivider;
+    private TextView agreement1;
+    private TextView agreement2;
+    private TextView agreement3;
+    private TextView agreement4;
+
     GoogleSignInClient mGoogleSignInClient;
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
@@ -101,6 +106,28 @@ public class StartActivity extends AppCompatActivity {
                 StartActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+        agreement1 = findViewById(R.id.agreement_textView);
+        agreement2 = findViewById(R.id.terms_textView);
+        agreement3 = findViewById(R.id.and_textView);
+        agreement4 = findViewById(R.id.policy_textView);
+        agreement2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(StartActivity.this, TermsActivity.class);
+                intent.putExtra("title", "Term of Service");
+                startActivity(intent);
+                StartActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
+        agreement4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(StartActivity.this, TermsActivity.class);
+                intent.putExtra("title", "Privacy Policy");
+                startActivity(intent);
+                StartActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
     }
 
     @Override
@@ -112,6 +139,10 @@ public class StartActivity extends AppCompatActivity {
             noLoginButton.setVisibility(View.GONE);
             loginButton.setVisibility(View.GONE);
             horizontalDivider.setVisibility(View.GONE);
+            agreement1.setVisibility(View.GONE);
+            agreement2.setVisibility(View.GONE);
+            agreement3.setVisibility(View.GONE);
+            agreement4.setVisibility(View.GONE);
             Log.d(TAG, "onStart: Login-ed already");
             proceed(currentUser);
         }
