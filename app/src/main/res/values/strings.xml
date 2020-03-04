@@ -45,6 +45,24 @@
     <string name="email_not_verified">Your email is not verified, please check email.</string>
     <!--    ProfileActivity-->
     <string name="create_profile">Create Profile</string>
+    <string name="create_profile_profile_photo_title">Profile Photo</string>
+    <string name="create_profile_gender_title">Gender</string>
+    <string name="create_profile_birth_date_title">Birth Date</string>
+    <string name="create_profile_select_birth_date_title">Select Date</string>
+    <string name="create_profile_home_country_title">Home Country</string>
+    <string name="create_profile_language_title">Language</string>
+    <string name="create_profile_interest_title">Interest</string>
+    <string-array name="interest_options">
+        <item>Food</item>
+        <item>Drink</item>
+        <item>Entertainment</item>
+        <item>Sports</item>
+        <item>Culture</item>
+        <item>Shopping</item>
+        <item>Nature</item>
+    </string-array>
+    <string name="create_profile_about_you_title">About you</string>
+    <string name="create_profile_create_button">Create</string>
     <!--    MainActivity-->
     <string name="title_activity_main">MainActivity</string>
     <string name="title_expore">Expore</string>
