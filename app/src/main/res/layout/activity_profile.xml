@@ -7,11 +7,223 @@
     tools:context=".ProfileActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/create_profile_page_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/create_profile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/CreateP_ProfilePhoto_Title"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="@string/create_profile_profile_photo_title"
+        android:textColor="#009688"
+        android:textColorLink="#E91E63"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.111"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.087" />
+
+    <TextView
+        android:id="@+id/CreateP_Gender_Title"
+        android:layout_width="150dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="5dp"
+        android:text="@string/create_profile_gender_title"
+        android:textColor="#E91E63"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.105"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.172" />
+
+    <TextView
+        android:id="@+id/CreateP_SelectGender"
+        android:layout_width="200dp"
+        android:gravity="right"
+        android:layout_marginEnd="20dp"
+        android:layout_height="wrap_content"
+        android:hint="Select Gender"
+        android:onClick="selectGender"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/CreateP_Gender_Title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.172" />
+
+    <TextView
+        android:id="@+id/CreateP_BirthDate_Title"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/create_profile_birth_date_title"
+        android:textColor="#009688"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.111"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateP_Gender_Title" />
+
+    <TextView
+        android:id="@+id/CreateP_SelectBirthDate"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="28dp"
+        android:gravity="right"
+        android:hint="@string/create_profile_select_birth_date_title"
+        android:textSize="18dp"
+        app:layout_constraintStart_toEndOf="@+id/CreateP_BirthDate_Title"
+        app:layout_constraintTop_toBottomOf="@+id/CreateP_SelectGender" />
+
+    <TextView
+        android:id="@+id/CreateP_HomeCountry_Title"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/create_profile_home_country_title"
+        android:textColor="#E91E63"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.113"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateP_BirthDate_Title" />
+
+    <TextView
+        android:id="@+id/CreateP_SelectHomeCountry"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="30dp"
+        android:gravity="right"
+        android:hint="Select Country"
+        android:onClick="selectHomeCountry"
+        android:textSize="18dp"
+        app:layout_constraintStart_toEndOf="@+id/CreateP_HomeCountry_Title"
+        app:layout_constraintTop_toBottomOf="@+id/CreateP_SelectBirthDate" />
+
+    <TextView
+        android:id="@+id/CreateP_Language_Title"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/create_profile_language_title"
+        android:textColor="#009688"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.111"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateP_HomeCountry_Title" />
+
+    <TextView
+        android:id="@+id/CreateP_SelectLanguage"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="30dp"
+        android:gravity="right"
+        android:hint="Select Language"
+        android:onClick="selectLanguage"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/CreateP_Language_Title"
+        app:layout_constraintTop_toBottomOf="@+id/CreateP_SelectHomeCountry" />
+
+    <TextView
+        android:id="@+id/CreateP_Interest_Title"
+        android:layout_width="150dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/create_profile_interest_title"
+        android:textColor="#E91E63"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.105"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateP_Language_Title" />
+
+    <TextView
+        android:id="@+id/CreateP_SelectInterest"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="right"
+        android:hint="Select Interest"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.963"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateP_SelectLanguage" />
+
+    <Button
+        android:id="@+id/CreateProfileButton"
+        android:layout_width="402dp"
+        android:layout_height="57dp"
+        android:text="@string/create_profile_create_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:onClick="createProfile"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/CreateP_AboutYou_Title"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/create_profile_about_you_title"
+        android:textColor="#009688"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.11"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateP_Interest_Title" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="347dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="20dp"
+        android:background="#1600BCD4"
+        android:ems="10"
+        android:gravity="start|top"
+        android:includeFontPadding="false"
+        android:inputType="textMultiLine"
+        android:padding="5dp"
+        android:paddingLeft="5dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="5dp"
+        android:paddingRight="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateP_AboutYou_Title" />
+
+    <TextView
+        android:id="@+id/AbouYouWordCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:text="Testing"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.909"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText" />
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
