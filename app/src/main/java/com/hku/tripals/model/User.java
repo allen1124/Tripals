@@ -8,7 +8,7 @@ public class User {
     private String homeCountry;
     private String language;
     private String bio;
-    //private String interest;
+    //private List<String> interests; <- follow Event.class
 
 
     public User() {

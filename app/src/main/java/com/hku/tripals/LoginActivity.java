@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private EditText email;
     private EditText password;
+    private ImageButton back;
     private Button loginButton;
     private Button forgotPasswordButton;
     private ProgressBar progressBar;
@@ -39,15 +41,24 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.login_progressBar);
         progressBar.setVisibility(View.GONE);
+        back = findViewById(R.id.login_back_imageButton);
         email = findViewById(R.id.login_email_editText);
         password = findViewById(R.id.login_password_editText);
         forgotPasswordButton = findViewById(R.id.forgot_password_button);
         loginButton = findViewById(R.id.start_login_button);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+                overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+            }
+        });
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(!email.getText().toString().matches("") && !password.getText().toString().matches("")) {
                     progressBar.setVisibility(View.VISIBLE);
+
                     logIn(email.getText().toString(), password.getText().toString());
                 }
                 if(email.getText().toString().matches(""))
@@ -67,6 +78,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     private void resetPassword(String emailAddress){
         mAuth.sendPasswordResetEmail(emailAddress)
@@ -100,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 });
@@ -134,5 +148,11 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(LoginActivity.this, R.string.email_not_verified,
                     Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }
 }

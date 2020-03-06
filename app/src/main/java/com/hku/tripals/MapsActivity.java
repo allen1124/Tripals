@@ -76,6 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private String lat = "", lng = "";
+    private String type = "";
     private CardView placeCard;
     private ImageView placePhoto;
     private TextView placeName;
@@ -109,14 +110,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placeDetail = (Button) findViewById(R.id.button_details);
         placeRating = (RatingBar) findViewById(R.id.place_ratingBar);
         fabDirection = (FloatingActionButton) findViewById(R.id.fab_direction);
-        placeDetail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MapsActivity.this, TermsActivity.class);
-                startActivity(intent);
-                MapsActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-            }
-        });
         fabDirection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,8 +128,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         Intent intent = getIntent();
-        lat = intent.getStringExtra("lat");
-        lng = intent.getStringExtra("lng");
+
+        if(intent.getStringExtra("lat") != null){
+            lat = intent.getStringExtra("lat");
+        }
+        if(intent.getStringExtra("lng") != null) {
+            lng = intent.getStringExtra("lng");
+        }
+        if(intent.getStringExtra("type") != null){
+            type = intent.getStringExtra("type");
+        }
+        if(type.matches("location-picker")){
+            placeDetail.setText(R.string.select);
+        }
         nearbyButton = findViewById(R.id.search_nearby_button);
         nearbyButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,9 +188,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
         if(!lat.matches("") && !lng.matches("")){
             moveCamera(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)), DEFAULT_ZOOM);
             getNearbyAttractions(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)));
@@ -206,7 +211,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onComplete(@NonNull Task<Location> task) {
                     if(task.isSuccessful() && task.getResult() != null){
                         mMap.setMyLocationEnabled(true);
-                        mMap.getUiSettings().setMyLocationButtonEnabled(true);
                         Log.d(TAG, "onComplete: location get");
                         Location currentLocation = (Location) task.getResult();
                         Log.d(TAG, "onComplete: currentLocation "+currentLocation);
@@ -378,14 +382,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placeDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: go place detail :"+place.getPlaceId());
-                Intent myIntent = new Intent(MapsActivity.this, PlaceActivity.class);
-                myIntent.putExtra("place", (Serializable) place);
-                if(!place.getPhotoReference().matches("")){
-                    myIntent.putExtra("photo", place.getPlaceId());
+                if(type.matches("location-picker")) {
+                    Log.d(TAG, "onClick: select this place :" + place.getPlaceId());
+                    Intent myIntent = new Intent();
+                    myIntent.putExtra("place", (Serializable) place);
+                    if (!place.getPhotoReference().matches("")) {
+                        myIntent.putExtra("photo", place.getPlaceId());
+                    }
+                    setResult(RESULT_OK, myIntent);
+                    finish();
+                    MapsActivity.this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+                }else {
+                    Log.d(TAG, "onClick: go place detail :" + place.getPlaceId());
+                    Intent myIntent = new Intent(MapsActivity.this, PlaceActivity.class);
+                    myIntent.putExtra("place", (Serializable) place);
+                    if (!place.getPhotoReference().matches("")) {
+                        myIntent.putExtra("photo", place.getPlaceId());
+                    }
+                    startActivity(myIntent);
+                    MapsActivity.this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
                 }
-                startActivity(myIntent);
-                MapsActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
         return false;

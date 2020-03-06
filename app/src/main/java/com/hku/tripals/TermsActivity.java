@@ -37,4 +37,11 @@ public class TermsActivity extends AppCompatActivity {
         super.onBackPressed();
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+        return true;
+    }
 }

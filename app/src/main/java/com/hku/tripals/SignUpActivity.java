@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,7 +30,10 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText confirmPassword;
     private Button createAccountButton;
     private Button loginButton;
+    private ImageButton back;
     private ProgressBar progressBar;
+    private TextView agreement2;
+    private TextView agreement4;
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
 
@@ -37,6 +42,7 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         mAuth = FirebaseAuth.getInstance();
+        back = findViewById(R.id.sign_up_back_imageButton);
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
         displayName = findViewById(R.id.display_name_editText);
@@ -45,6 +51,33 @@ public class SignUpActivity extends AppCompatActivity {
         confirmPassword = findViewById(R.id.confirm_password_editText);
         createAccountButton = findViewById(R.id.create_account_button);
         loginButton = findViewById(R.id.start_login_button);
+        agreement2 = findViewById(R.id.terms_textView);
+        agreement4 = findViewById(R.id.policy_textView);
+        agreement2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SignUpActivity.this, TermsActivity.class);
+                intent.putExtra("title", "Term of Service");
+                startActivity(intent);
+                SignUpActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
+        agreement4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SignUpActivity.this, TermsActivity.class);
+                intent.putExtra("title", "Privacy Policy");
+                startActivity(intent);
+                SignUpActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+                overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+            }
+        });
         createAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,5 +166,11 @@ public class SignUpActivity extends AppCompatActivity {
         email.setText("");
         password.setText("");
         confirmPassword.setText("");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
     }
 }

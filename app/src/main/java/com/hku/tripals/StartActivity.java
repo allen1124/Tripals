@@ -9,11 +9,14 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -35,16 +38,14 @@ public class StartActivity extends AppCompatActivity {
 
     private static final String TAG = "StartActivity";
     private static final int GOOGLE_SIGN_IN = 1111;
+    private ImageView icon;
+    private ImageView travelImageView;
     private SignInButton signInButton;
     private Button emailSignInButton;
-    private Button noLoginButton;
+//    private Button noLoginButton;
     private Button loginButton;
     private ProgressBar progressBar;
     private RelativeLayout horizontalDivider;
-    private TextView agreement1;
-    private TextView agreement2;
-    private TextView agreement3;
-    private TextView agreement4;
 
     GoogleSignInClient mGoogleSignInClient;
     FirebaseAuth mAuth;
@@ -56,12 +57,22 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         mAuth = FirebaseAuth.getInstance();
+        icon = findViewById(R.id.icon);
+        Glide.with(this)
+                .load(getResources().getDrawable(R.drawable.web_hi_res_512))
+                .apply(RequestOptions.circleCropTransform())
+                .into(icon);
+        travelImageView = findViewById(R.id.travel_imageView);
+        Glide.with(this)
+                .load(getResources().getDrawable(R.drawable.travel))
+                .apply(RequestOptions.circleCropTransform())
+                .into(travelImageView);
         currentUser = mAuth.getCurrentUser();
         signInButton = findViewById(R.id.sign_in_button);
         TextView signInButtonTextView = (TextView) signInButton.getChildAt(0);
         signInButtonTextView.setText(R.string.sign_in_with_google);
         emailSignInButton = findViewById(R.id.email_signin_button);
-        noLoginButton = findViewById(R.id.no_login_button);
+//        noLoginButton = findViewById(R.id.no_login_button);
         loginButton = findViewById(R.id.start_login_button);
         progressBar = findViewById(R.id.progressBar);
         horizontalDivider = findViewById(R.id.horizontal_divider);
@@ -85,46 +96,24 @@ public class StartActivity extends AppCompatActivity {
                 StartActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
-        noLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: Proceed with no login");
-                Toast.makeText(StartActivity.this,
-                        "Proceeds without login.", Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.VISIBLE);
-                signInButton.setEnabled(false);
-                emailSignInButton.setEnabled(false);
-                noLoginButton.setEnabled(false);
-                loginButton.setEnabled(false);
-                goToMainActivity(0);
-            }
-        });
+//        noLoginButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d(TAG, "onClick: Proceed with no login");
+//                Toast.makeText(StartActivity.this,
+//                        "Proceeds without login.", Toast.LENGTH_SHORT).show();
+//                progressBar.setVisibility(View.VISIBLE);
+//                signInButton.setEnabled(false);
+//                emailSignInButton.setEnabled(false);
+//                noLoginButton.setEnabled(false);
+//                loginButton.setEnabled(false);
+//                goToMainActivity(0);
+//            }
+//        });
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(StartActivity.this, LoginActivity.class));
-                StartActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-            }
-        });
-        agreement1 = findViewById(R.id.agreement_textView);
-        agreement2 = findViewById(R.id.terms_textView);
-        agreement3 = findViewById(R.id.and_textView);
-        agreement4 = findViewById(R.id.policy_textView);
-        agreement2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(StartActivity.this, TermsActivity.class);
-                intent.putExtra("title", "Term of Service");
-                startActivity(intent);
-                StartActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-            }
-        });
-        agreement4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(StartActivity.this, TermsActivity.class);
-                intent.putExtra("title", "Privacy Policy");
-                startActivity(intent);
                 StartActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
@@ -136,13 +125,9 @@ public class StartActivity extends AppCompatActivity {
         if(currentUser != null){
             signInButton.setVisibility(View.GONE);
             emailSignInButton.setVisibility(View.GONE);
-            noLoginButton.setVisibility(View.GONE);
+//            noLoginButton.setVisibility(View.GONE);
             loginButton.setVisibility(View.GONE);
             horizontalDivider.setVisibility(View.GONE);
-            agreement1.setVisibility(View.GONE);
-            agreement2.setVisibility(View.GONE);
-            agreement3.setVisibility(View.GONE);
-            agreement4.setVisibility(View.GONE);
             Log.d(TAG, "onStart: Login-ed already");
             proceed(currentUser);
         }

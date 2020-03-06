@@ -6,7 +6,7 @@
     <string name="sign_in_with_google">Continue with Google</string>
     <string name="email_sign_in">Sign up with Email</string>
     <string name="no_login">Proceed without login</string>
-    <string name="have_account">I have an Account</string>
+    <string name="have_account">Already on Tripals? Log in</string>
     <string name="agreement1">By clicking Sign Up, you agree to our</string>
     <string name="agreement2">Term of Service</string>
     <string name="agreement3">and</string>
@@ -30,10 +30,10 @@
     <!--    SignUpActivity-->
     <string name="sign_up">Sign Up</string>
     <string name="display_name">Display name</string>
-    <string name="email">Email</string>
+    <string name="email">Email Address</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
-    <string name="create_account">Create Account</string>
+    <string name="create_account">Create new account</string>
     <string name="login">Login</string>
     <string name="not_complete_message">You did not complete the entire form.</string>
     <string name="confirm_password_message">Password are not matching</string>
@@ -47,9 +47,14 @@
     <string name="create_profile">Create Profile</string>
     <string name="create_profile_profile_photo_title">Profile Photo</string>
     <string name="create_profile_gender_title">Gender</string>
+    <string name="create_profile_select_gender_title">Select Gender</string>
     <string name="create_profile_birth_date_title">Birth Date</string>
     <string name="create_profile_select_birth_date_title">Select Date</string>
+    <string name="create_profile_select_country_title">Select Country</string>
+    <string name="create_profile_select_lang_title">Select Language</string>
+    <string name="create_profile_select_interests_title">Select Interest</string>
     <string name="create_profile_home_country_title">Home Country</string>
+    <string name="create_profile_bio_hint">Share about yourself</string>
     <string name="create_profile_language_title">Language</string>
     <string name="create_profile_interest_title">Interest</string>
     <string-array name="interest_options">
@@ -71,7 +76,11 @@
     <string name="title_message">Message</string>
     <string name="title_profile">Profile</string>
     <!--    ExploreFragment-->
+    <string name="explore">Explore</string>
+    <string name="create_event_button">Create Event</string>
+    <string name="nearby_button">Nearby Me</string>
     <string name="hot_destination">Hot Destinations</string>
+    <string name="popular_events">Popular Events</string>
     <string name="hong_kong">Hong Kong</string>
     <string name="tai_pei">Taipei</string>
     <string name="tokyo">Tokyo</string>
@@ -84,6 +93,7 @@
     <string name="title_activity_search_results">SearchResultsActivity</string>
     <string name="search_this_area">Search this area</string>
     <string name="details">Details</string>
+    <string name="select">Select</string>
     <string name="rating">Rating</string>
     <!--    SearchResultsActivity-->
     <string name="search_hint">Search...</string>
@@ -178,4 +188,19 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="action_settings">Settings</string>
+    <!--    CreateEventActivity-->
+    <string name="event_name">Event Name</string>
+    <string name="event_name_hint">What do you want to call your event?</string>
+    <string name="event_description">Description</string>
+    <string name="event_description_hint">What will you do? What do you expect?</string>
+    <string name="date_time">Date &amp; Time</string>
+    <string name="date_time_hint">yy-MM-dd HH:mm</string>
+    <string name="location">Location</string>
+    <string name="interests">Interests</string>
+    <string name="interests_hint">Select relevant to your event</string>
+    <string name="create_event">Create</string>
+    <string name="select_photo">Select Photo</string>
+    <string name="create_event_welcome">Start a new Tripals event</string>
+    <string name="not_complete_event_message">You did not complete the event form.</string>
+    <string name="create_event_complete_message">Event Created</string>
 </resources>

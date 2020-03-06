@@ -64,6 +64,8 @@ public class PlaceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(PlaceActivity.this, CreateEventActivity.class);
+                intent.putExtra("place_id", place.getPlaceId());
+                intent.putExtra("place_name", place.getName());
                 startActivity(intent);
             }
         });

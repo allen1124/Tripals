@@ -52,7 +52,7 @@
         android:layout_marginTop="16dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:background="@drawable/round_button"
+        android:background="@drawable/round_white_button"
         android:text="@string/search_this_area"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,7 +64,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="10dp"
-        app:cardCornerRadius="2dp"
+        app:cardCornerRadius="10dp"
         android:layout_margin="16dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/map">

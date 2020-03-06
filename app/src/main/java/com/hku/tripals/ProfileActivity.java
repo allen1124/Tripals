@@ -1,36 +1,55 @@
 package com.hku.tripals;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.mukesh.countrypicker.Country;
 import com.mukesh.countrypicker.CountryPicker;
 import com.mukesh.countrypicker.OnCountryPickerListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 
 public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener, OnCountryPickerListener {
@@ -46,6 +65,11 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
     private CountryPicker countryPicker;
     private TextView DisplayBio;
     private Button CreateBtn;
+    private ImageView avatar;
+    private Button avatarButton;
+    private Uri avatarUri;
+    private String avatarImageUrl = "";
+    private ProgressBar progressBar;
 
     private TextView DisplayInterest;
     private String[] listItems; //all interest options
@@ -53,6 +77,7 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
     private ArrayList<Integer> mUserItems = new ArrayList<>(); //show checked items
 
     private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
     private FirebaseFirestore db;
 
 
@@ -72,12 +97,30 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
         checkedItems = new boolean[listItems.length];
         DisplayBio = (TextView) findViewById(R.id.CreateP_InputBio);
         CreateBtn = (Button) findViewById(R.id.CreateProfileButton);
-
+        avatar = (ImageView) findViewById(R.id.avatar_imageView);
+        avatarButton = (Button) findViewById(R.id.avatar_button);
+        progressBar = (ProgressBar) findViewById(R.id.create_porfile_progressBar);
         mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
+        if(currentUser.getPhotoUrl() != null){
+            Glide.with(this)
+                    .load(currentUser.getPhotoUrl())
+                    .circleCrop()
+                    .into(avatar);
+            avatarButton.setAlpha(0f);
+        }
 
-
+        avatarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: select avatar clicked");
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, 0);
+            }
+        });
 
         DisplayBirthDate.setOnClickListener(new View.OnClickListener() { //***Explanation Remarks***
             @Override
@@ -94,6 +137,18 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
                         year, month, day);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.show();
+            }
+        });
+
+        CreateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressBar.setVisibility(View.VISIBLE);
+                if(avatarUri != null) {
+                    uploadImageToFirebase();
+                }else{
+                    createProfile();
+                }
             }
         });
 
@@ -237,9 +292,61 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
         DisplayHomeCountry.setText(selectedHomeCountry);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0 && resultCode == Activity.RESULT_OK && data != null){
+            Log.d(TAG, "Photo selected");
+            avatarUri = data.getData();
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), avatarUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            avatar.setImageBitmap(bitmap);
+            avatarButton.setAlpha(0f);
+        }
+    }
+
+    private void uploadImageToFirebase(){
+        if(avatarUri == null)
+            return;
+        String filename = UUID.randomUUID().toString();
+        final StorageReference ref = FirebaseStorage.getInstance().getReference("/avatar-images/"+filename);
+        ref.putFile(avatarUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "avatar photo uploaded");
+                ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        avatarImageUrl = uri.toString();
+                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                .setPhotoUri(Uri.parse(avatarImageUrl))
+                                .build();
+                        currentUser.updateProfile(profileUpdates)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            createProfile();
+                                            Log.d(TAG, "User profile updated.");
+                                        }
+                                    }
+                                });
+                        Log.d(TAG, "avatar url: "+avatarImageUrl);
+                    }
+                });
+            }
+        });
+    }
+
     //Create button
 
-    public void createProfile(View view) {
+    public void createProfile() {
+        progressBar.setVisibility(View.VISIBLE);
+
         // Do something in response to button click
         String uid = mAuth.getCurrentUser().getUid();
         Toast.makeText(this, "Created profile", Toast.LENGTH_SHORT).show();
