@@ -1,5 +1,8 @@
 package com.hku.tripals.model;
 
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.ServerTimestamp;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,26 +12,29 @@ public class Event {
 
     private String id;
     private String host;
+    private String hostAvatarUrl;
     private List<String> participants;
     private String title;
     private String description;
     private Date datetime;
     private String location;
-    private String locationPhotoUrl;
+    private String photoUrl;
     private List<String> interests;
+    private @ServerTimestamp FieldValue timestamp = FieldValue.serverTimestamp();
 
     public Event() {
     }
 
-    public Event(String id, String host, List<String> participants, String title, String description, Date datetime, String location, String locationPhotoUrl, List<String> interests) {
+    public Event(String id, String host, String hostAvatarUrl, List<String> participants, String title, String description, Date datetime, String location, String photoUrl, List<String> interests) {
         this.id = id;
         this.host = host;
+        this.hostAvatarUrl = hostAvatarUrl;
         this.participants = participants;
         this.title = title;
         this.description = description;
         this.datetime = datetime;
         this.location = location;
-        this.locationPhotoUrl = locationPhotoUrl;
+        this.photoUrl = photoUrl;
         this.interests = interests;
     }
 
@@ -46,6 +52,14 @@ public class Event {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public String getHostAvatarUrl() {
+        return hostAvatarUrl;
+    }
+
+    public void setHostAvatarUrl(String hostAvatarUrl) {
+        this.hostAvatarUrl = hostAvatarUrl;
     }
 
     public List<String> getParticipants() {
@@ -88,12 +102,12 @@ public class Event {
         this.location = location;
     }
 
-    public String getLocationPhotoUrl() {
-        return locationPhotoUrl;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public void setLocationPhotoUrl(String locationPhotoUrl) {
-        this.locationPhotoUrl = locationPhotoUrl;
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     public List<String> getInterests() {
@@ -108,13 +122,15 @@ public class Event {
         HashMap<String, Object> result = new HashMap<>();
         result.put("id", id);
         result.put("host", host);
+        result.put("hostAvatarUrl", hostAvatarUrl);
         result.put("participants", participants);
         result.put("title", title);
         result.put("description", description);
         result.put("datetime", datetime);
         result.put("location", location);
-        result.put("locationPhotoUrl", locationPhotoUrl);
+        result.put("photoUrl", photoUrl);
         result.put("interests", interests);
+        result.put("timestamp", timestamp);
         return result;
     }
 }

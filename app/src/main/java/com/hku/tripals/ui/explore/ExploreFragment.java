@@ -25,7 +25,9 @@ import com.hku.tripals.PlaceActivity;
 import com.hku.tripals.SearchResultsActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.adapter.DestinationAdapter;
+import com.hku.tripals.adapter.EventAdapter;
 import com.hku.tripals.model.Destination;
+import com.hku.tripals.model.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +37,17 @@ public class ExploreFragment extends Fragment {
     private static final String TAG = "ExploreFragment";
     private ExploreViewModel exploreViewModel;
     private SearchView searchbar;
+    private CardView createEventCard;
+    private CardView nearByCard;
+
     private List<Destination> destinationList = new ArrayList<>();
     private RecyclerView destinationRecyclerView;
     private LinearLayoutManager destinationLayoutManager;
     private DestinationAdapter destinationAdapter;
-    private CardView createEventCard;
-    private CardView nearByCard;
+
+    private RecyclerView eventRecyclerView;
+    private LinearLayoutManager eventLayoutManager;
+    private EventAdapter eventAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -77,6 +84,21 @@ public class ExploreFragment extends Fragment {
             }
         });
         destinationRecyclerView.setAdapter(destinationAdapter);
+
+        eventRecyclerView = root.findViewById(R.id.popular_events_RecyclerView);
+        eventLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        eventRecyclerView.setLayoutManager(eventLayoutManager);
+        eventAdapter = new EventAdapter(getActivity());
+        exploreViewModel.getEvents().observe(getViewLifecycleOwner(), new Observer<List<Event>>() {
+            @Override
+            public void onChanged(List<Event> events) {
+                eventAdapter.setEventList(events);
+                eventAdapter.notifyDataSetChanged();
+            }
+        });
+        exploreViewModel.loadEvent(10);
+        eventRecyclerView.setAdapter(eventAdapter);
+
         searchbar = root.findViewById(R.id.explore_searchView);
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         searchbar.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(getActivity(), SearchResultsActivity.class)));

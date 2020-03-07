@@ -55,6 +55,7 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hku.tripals.task.PlacesTask;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -359,7 +360,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(!place.getPhotoReference().matches("")){
             Bitmap bmp = null;
             try {
-                FileInputStream is = openFileInput(place.getPlaceId()+".png");
+                File cachedPhoto = new File(getCacheDir(), place.getPlaceId()+".png");
+                FileInputStream is = new FileInputStream(cachedPhoto);
                 bmp = BitmapFactory.decodeStream(is);
                 placePhoto.setVisibility(View.VISIBLE);
                 placePhoto.setImageBitmap(bmp);
@@ -441,7 +443,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 bitmap = downloadPhoto(url[0]);
                 try {
                     String filename = place.getPlaceId()+".png";
-                    FileOutputStream stream = openFileOutput(filename, Context.MODE_PRIVATE);
+                    File cachePhoto = new File(getCacheDir(), filename);
+                    FileOutputStream stream = new FileOutputStream(cachePhoto);
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                     stream.flush();
                     stream.close();

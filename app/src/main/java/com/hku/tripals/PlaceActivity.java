@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.Serializable;
 
@@ -46,7 +47,8 @@ public class PlaceActivity extends AppCompatActivity {
         if(intent.getStringExtra("photo") != null){
             Bitmap bmp = null;
             try {
-                FileInputStream is = openFileInput(intent.getStringExtra("photo")+".png");
+                File cachedPhoto = new File(getCacheDir(), intent.getStringExtra("photo")+".png");
+                FileInputStream is = new FileInputStream(cachedPhoto);
                 bmp = BitmapFactory.decodeStream(is);
                 appbar.setBackground(new BitmapDrawable(this.getResources(), addGradient(bmp)));
                 is.close();
