@@ -21,11 +21,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -68,6 +70,8 @@ public class CreateEventActivity extends AppCompatActivity {
     private EditText eventName;
     private EditText eventDescription;
     private EditText eventDateTime;
+    private RadioButton eventPublic;
+    private RadioButton eventPrivate;
     private EditText eventLocation;
     private EditText eventInterests;
     private String[] listItems; //all interest options
@@ -97,6 +101,10 @@ public class CreateEventActivity extends AppCompatActivity {
         eventDescription = findViewById(R.id.event_desciption_editText);
         eventDateTime = findViewById(R.id.event_date_time_editText);
         eventLocation = findViewById(R.id.event_location_editText);
+        eventPublic = findViewById(R.id.event_privacy_radioButton1);
+        eventPublic.setChecked(true);
+        eventPrivate = findViewById(R.id.event_privacy_radioButton2);
+        eventPrivate.setChecked(false);
         eventInterests = findViewById(R.id.event_interests_select_editText);
         listItems = getResources().getStringArray(R.array.interest_options);
         checkedItems = new boolean[listItems.length];
@@ -152,6 +160,24 @@ public class CreateEventActivity extends AppCompatActivity {
                 startActivityForResult(picker, LOCATION_PICKER_CODE);
             }
         });
+        eventPublic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!eventPublic.isChecked()){
+                    eventPublic.setChecked(true);
+                    eventPrivate.setChecked(false);
+                }
+            }
+        });
+        eventPrivate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!eventPrivate.isChecked()){
+                    eventPrivate.setChecked(true);
+                    eventPublic.setChecked(false);
+                }
+            }
+        });
         createEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -174,9 +200,18 @@ public class CreateEventActivity extends AppCompatActivity {
                     event.setInterests(selectedInterest);
                     event.setDescription(eventDescription.getText().toString());
                     event.setHostAvatarUrl(currentUser.getPhotoUrl().toString());
+                    event.setHostName(currentUser.getDisplayName());
+                    if(eventPublic.isChecked()){
+                        event.setPrivacy("PUBLIC");
+                    }else{
+                        event.setPrivacy("PRIVATE");
+                    }
+                    eventPhoto.setEnabled(false);
                     eventName.setEnabled(false);
                     eventDescription.setEnabled(false);
                     eventDateTime.setEnabled(false);
+                    eventPublic.setEnabled(false);
+                    eventPrivate.setEnabled(false);
                     eventLocation.setEnabled(false);
                     eventInterests.setEnabled(false);
                     addEvent();
@@ -277,6 +312,7 @@ public class CreateEventActivity extends AppCompatActivity {
             Place selectedPlace = (Place) data.getSerializableExtra("place");
             eventLocation.setText(selectedPlace.getName());
             event.setLocation(selectedPlace.getPlaceId());
+            event.setLocationName(selectedPlace.getName());
             event.setPhotoUrl(selectedPlace.getPlaceId());
             Bitmap bmp = null;
             try {

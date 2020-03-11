@@ -1,7 +1,6 @@
 package com.hku.tripals.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +8,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.hku.tripals.MapsActivity;
+import com.google.android.material.textfield.TextInputEditText;
 import com.hku.tripals.R;
-import com.hku.tripals.model.Destination;
 import com.hku.tripals.model.Event;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -33,15 +32,21 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         public CardView eventCard;
         public ImageView eventImage;
         public ImageView hostImage;
+        public TextView hostName;
         public TextView eventTitle;
         public TextView eventDescription;
+        public TextView locationName;
+        public TextView datetime;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             eventCard = itemView.findViewById(R.id.event_recycler_cardView);
             eventImage = itemView.findViewById(R.id.event_recycler_imageView);
-            hostImage = itemView.findViewById(R.id.event_host_recycler_imageView);
+            hostImage = itemView.findViewById(R.id.event_host_avatar_recycler_imageView);
+            hostName = itemView.findViewById(R.id.event_host_name_recycler_textView);
             eventTitle = itemView.findViewById(R.id.event_title_recycler_textView);
-            eventDescription = itemView.findViewById(R.id.event_description_recycler__textView);
+            eventDescription = itemView.findViewById(R.id.event_description_recycler_textView);
+            locationName = itemView.findViewById(R.id.event_location_recycler_textView);
+            datetime = itemView.findViewById(R.id.event_datetime_recycler_textView);
         }
     }
 
@@ -60,11 +65,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                 .load(event.getHostAvatarUrl())
                 .circleCrop()
                 .into(holder.hostImage);
+        holder.hostName.setText(event.getHostName());
         Glide.with(context)
                 .load(event.getPhotoUrl())
                 .into(holder.eventImage);
+        holder.locationName.setText(event.getLocationName());
         holder.eventTitle.setText(event.getTitle());
         holder.eventDescription.setText(event.getDescription());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        holder.datetime.setText(simpleDateFormat.format(event.getDatetime()));
     }
 
     @Override

@@ -25,8 +25,8 @@
                 android:layout_height="40dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:elevation="1dp"
                 android:background="@android:color/transparent"
+                android:elevation="1dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_back" />
@@ -35,9 +35,9 @@
                 android:id="@+id/event_header_imageView"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
+                android:background="@color/colorPrimary"
                 android:scaleType="centerCrop"
                 android:tint="#40FFFFFF"
-                android:background="@color/colorPrimary"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:layout_editor_absoluteX="0dp" />
 
@@ -79,7 +79,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/event_name_editText" />
 
             <TextView
-                android:id="@+id/event_description_recycler__textView"
+                android:id="@+id/event_description_recycler_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -99,8 +99,8 @@
                 android:ems="10"
                 android:hint="@string/event_description_hint"
                 android:inputType="textLongMessage|textMultiLine|textPersonName"
-                app:layout_constraintStart_toStartOf="@+id/event_description_recycler__textView"
-                app:layout_constraintTop_toBottomOf="@+id/event_description_recycler__textView" />
+                app:layout_constraintStart_toStartOf="@+id/event_description_recycler_textView"
+                app:layout_constraintTop_toBottomOf="@+id/event_description_recycler_textView" />
 
             <View
                 android:id="@+id/divider1"
@@ -121,19 +121,19 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/date_time"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:layout_constraintStart_toStartOf="@+id/event_description_recycler__textView"
+                app:layout_constraintStart_toStartOf="@+id/event_description_recycler_textView"
                 app:layout_constraintTop_toBottomOf="@+id/divider1" />
 
             <EditText
                 android:id="@+id/event_date_time_editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:drawableEnd="@drawable/ic_enter"
                 android:ems="10"
+                android:focusable="false"
                 android:inputType="date"
                 app:layout_constraintStart_toStartOf="@+id/event_date_time_textView"
                 app:layout_constraintTop_toBottomOf="@+id/event_date_time_textView" />
@@ -151,25 +151,79 @@
                 app:layout_constraintTop_toBottomOf="@+id/event_date_time_editText" />
 
             <TextView
+                android:id="@+id/event_privacy_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/privacy"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:layout_constraintStart_toStartOf="@+id/event_description_recycler_textView"
+                app:layout_constraintTop_toBottomOf="@+id/divider2" />
+
+            <RadioGroup
+                android:id="@+id/event_privacy_radioGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@id/event_privacy_textView"
+                app:layout_constraintTop_toBottomOf="@id/event_privacy_textView">
+                <RadioButton
+                    android:id="@+id/event_privacy_radioButton1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_public"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@android:color/secondary_text_light"
+                    app:layout_constraintEnd_toStartOf="@+id/event_privacy_radioButton2"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/event_privacy_textView" />
+
+                <RadioButton
+                    android:id="@+id/event_privacy_radioButton2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="32dp"
+                    android:text="@string/_private"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@android:color/secondary_text_light"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/event_privacy_radioButton1" />
+            </RadioGroup>
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/event_privacy_radioGroup" />
+
+            <TextView
                 android:id="@+id/event_location_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/location"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:layout_constraintStart_toStartOf="@+id/event_description_recycler__textView"
-                app:layout_constraintTop_toBottomOf="@+id/divider2" />
+                app:layout_constraintStart_toStartOf="@+id/event_description_recycler_textView"
+                app:layout_constraintTop_toBottomOf="@+id/divider4" />
 
             <EditText
                 android:id="@+id/event_location_editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:drawableEnd="@drawable/ic_enter"
                 android:ems="10"
+                android:focusable="false"
                 app:layout_constraintStart_toStartOf="@+id/event_location_textView"
                 app:layout_constraintTop_toBottomOf="@+id/event_location_textView" />
 
@@ -192,17 +246,17 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/interests"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:layout_constraintStart_toStartOf="@+id/event_description_recycler__textView"
+                app:layout_constraintStart_toStartOf="@+id/event_description_recycler_textView"
                 app:layout_constraintTop_toBottomOf="@+id/divider3" />
 
             <EditText
                 android:id="@+id/event_interests_select_editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:drawableEnd="@drawable/ic_enter"
+                android:focusable="false"
                 android:hint="@string/interests_hint"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="@+id/event_interests_select_textView"
@@ -225,10 +279,10 @@
                 style="?android:attr/progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:layout_editor_absoluteX="185dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

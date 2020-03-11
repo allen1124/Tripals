@@ -12,12 +12,15 @@ public class Event {
 
     private String id;
     private String host;
+    private String hostName;
     private String hostAvatarUrl;
     private List<String> participants;
     private String title;
     private String description;
+    private String privacy;
     private Date datetime;
     private String location;
+    private String locationName;
     private String photoUrl;
     private List<String> interests;
     private @ServerTimestamp FieldValue timestamp = FieldValue.serverTimestamp();
@@ -54,6 +57,14 @@ public class Event {
         this.host = host;
     }
 
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
     public String getHostAvatarUrl() {
         return hostAvatarUrl;
     }
@@ -86,6 +97,14 @@ public class Event {
         this.description = description;
     }
 
+    public String getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(String privacy) {
+        this.privacy = privacy;
+    }
+
     public Date getDatetime() {
         return datetime;
     }
@@ -100,6 +119,14 @@ public class Event {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 
     public String getPhotoUrl() {
@@ -123,11 +150,14 @@ public class Event {
         result.put("id", id);
         result.put("host", host);
         result.put("hostAvatarUrl", hostAvatarUrl);
+        result.put("hostName", hostName);
         result.put("participants", participants);
         result.put("title", title);
         result.put("description", description);
+        result.put("privacy", privacy);
         result.put("datetime", datetime);
         result.put("location", location);
+        result.put("locationName", locationName);
         result.put("photoUrl", photoUrl);
         result.put("interests", interests);
         result.put("timestamp", timestamp);

@@ -194,6 +194,9 @@
     <string name="event_description">Description</string>
     <string name="event_description_hint">What will you do? What do you expect?</string>
     <string name="date_time">Date &amp; Time</string>
+    <string name="privacy">Privacy</string>
+    <string name="_public">Public</string>
+    <string name="_private">Private</string>
     <string name="date_time_hint">yy-MM-dd HH:mm</string>
     <string name="location">Location</string>
     <string name="interests">Interests</string>
