@@ -167,11 +167,13 @@
                 android:orientation="horizontal"
                 app:layout_constraintStart_toStartOf="@id/event_privacy_textView"
                 app:layout_constraintTop_toBottomOf="@id/event_privacy_textView">
+
                 <RadioButton
                     android:id="@+id/event_privacy_radioButton1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/_public"
+                    android:checked="true"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textColor="@android:color/secondary_text_light"
                     app:layout_constraintEnd_toStartOf="@+id/event_privacy_radioButton2"
@@ -262,6 +264,63 @@
                 app:layout_constraintStart_toStartOf="@+id/event_interests_select_textView"
                 app:layout_constraintTop_toBottomOf="@+id/event_interests_select_textView" />
 
+            <View
+                android:id="@+id/divider5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/event_interests_select_editText" />
+
+            <TextView
+                android:id="@+id/event_openness_select_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/openness"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:layout_constraintStart_toStartOf="@+id/event_description_recycler_textView"
+                app:layout_constraintTop_toBottomOf="@+id/divider5" />
+
+            <RadioGroup
+                android:id="@+id/event_openness_radioGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@id/event_openness_select_textView"
+                app:layout_constraintTop_toBottomOf="@id/event_openness_select_textView">
+
+                <RadioButton
+                    android:id="@+id/event_openness_radioButton1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/open"
+                    android:checked="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@android:color/secondary_text_light"
+                    app:layout_constraintEnd_toStartOf="@+id/event_openness_radioButton2"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/event_privacy_textView" />
+
+                <RadioButton
+                    android:id="@+id/event_openness_radioButton2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="32dp"
+                    android:text="@string/closed"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textColor="@android:color/secondary_text_light"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/event_openness_radioButton1" />
+            </RadioGroup>
+
             <TextView
                 android:id="@+id/create_event_welcome_textView"
                 android:layout_width="wrap_content"
@@ -284,6 +343,19 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:layout_editor_absoluteX="185dp" />
+
+            <EditText
+                android:id="@+id/event_quota_editText"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="32dp"
+                android:ems="10"
+                android:hint="@string/event_quota"
+                android:inputType="number"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/event_openness_radioGroup"
+                app:layout_constraintTop_toBottomOf="@+id/event_openness_select_textView" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

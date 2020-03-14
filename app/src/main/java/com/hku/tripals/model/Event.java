@@ -18,27 +18,35 @@ public class Event {
     private String title;
     private String description;
     private String privacy;
+    private String openness;
+    private int quota;
     private Date datetime;
     private String location;
     private String locationName;
     private String photoUrl;
     private List<String> interests;
-    private @ServerTimestamp FieldValue timestamp = FieldValue.serverTimestamp();
+    private Date timestamp;
 
     public Event() {
     }
 
-    public Event(String id, String host, String hostAvatarUrl, List<String> participants, String title, String description, Date datetime, String location, String photoUrl, List<String> interests) {
+    public Event(String id, String host, String hostName, String hostAvatarUrl, List<String> participants, String title, String description, String privacy, String openness, int quota, Date datetime, String location, String locationName, String photoUrl, List<String> interests, Date timestamp) {
         this.id = id;
         this.host = host;
+        this.hostName = hostName;
         this.hostAvatarUrl = hostAvatarUrl;
         this.participants = participants;
         this.title = title;
         this.description = description;
+        this.privacy = privacy;
+        this.openness = openness;
+        this.quota = quota;
         this.datetime = datetime;
         this.location = location;
+        this.locationName = locationName;
         this.photoUrl = photoUrl;
         this.interests = interests;
+        this.timestamp = timestamp;
     }
 
     public String getId() {
@@ -105,6 +113,22 @@ public class Event {
         this.privacy = privacy;
     }
 
+    public String getOpenness() {
+        return openness;
+    }
+
+    public void setOpenness(String openness) {
+        this.openness = openness;
+    }
+
+    public int getQuota() {
+        return quota;
+    }
+
+    public void setQuota(int quota) {
+        this.quota = quota;
+    }
+
     public Date getDatetime() {
         return datetime;
     }
@@ -145,6 +169,10 @@ public class Event {
         this.interests = interests;
     }
 
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("id", id);
@@ -155,12 +183,14 @@ public class Event {
         result.put("title", title);
         result.put("description", description);
         result.put("privacy", privacy);
+        result.put("openness", openness);
+        result.put("quota", quota);
         result.put("datetime", datetime);
         result.put("location", location);
         result.put("locationName", locationName);
         result.put("photoUrl", photoUrl);
         result.put("interests", interests);
-        result.put("timestamp", timestamp);
+        result.put("timestamp", FieldValue.serverTimestamp());
         return result;
     }
 }

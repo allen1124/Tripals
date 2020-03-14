@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -12,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -21,25 +19,19 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.TextView;
+import android.widget.RadioGroup;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.common.collect.Maps;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -70,8 +62,9 @@ public class CreateEventActivity extends AppCompatActivity {
     private EditText eventName;
     private EditText eventDescription;
     private EditText eventDateTime;
-    private RadioButton eventPublic;
-    private RadioButton eventPrivate;
+    private RadioGroup eventPrivacy;
+    private EditText eventQuota;
+    private RadioGroup eventOpenness;
     private EditText eventLocation;
     private EditText eventInterests;
     private String[] listItems; //all interest options
@@ -101,15 +94,14 @@ public class CreateEventActivity extends AppCompatActivity {
         eventDescription = findViewById(R.id.event_desciption_editText);
         eventDateTime = findViewById(R.id.event_date_time_editText);
         eventLocation = findViewById(R.id.event_location_editText);
-        eventPublic = findViewById(R.id.event_privacy_radioButton1);
-        eventPublic.setChecked(true);
-        eventPrivate = findViewById(R.id.event_privacy_radioButton2);
-        eventPrivate.setChecked(false);
+        eventPrivacy = findViewById(R.id.event_privacy_radioGroup);
         eventInterests = findViewById(R.id.event_interests_select_editText);
         listItems = getResources().getStringArray(R.array.interest_options);
         checkedItems = new boolean[listItems.length];
         createEvent = findViewById(R.id.create_event_button);
         progressBar = findViewById(R.id.create_event_progressBar);
+        eventQuota = findViewById(R.id.event_quota_editText);
+        eventOpenness = findViewById(R.id.event_openness_radioGroup);
         progressBar.setVisibility(View.GONE);
         eventLocation.setInputType(InputType.TYPE_NULL);
         eventDateTime.setInputType(InputType.TYPE_NULL);
@@ -160,21 +152,14 @@ public class CreateEventActivity extends AppCompatActivity {
                 startActivityForResult(picker, LOCATION_PICKER_CODE);
             }
         });
-        eventPublic.setOnClickListener(new View.OnClickListener() {
+        eventOpenness.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                if(!eventPublic.isChecked()){
-                    eventPublic.setChecked(true);
-                    eventPrivate.setChecked(false);
-                }
-            }
-        });
-        eventPrivate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!eventPrivate.isChecked()){
-                    eventPrivate.setChecked(true);
-                    eventPublic.setChecked(false);
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if(i == R.id.event_openness_radioButton1){
+                    eventQuota.setEnabled(true);
+                }else if(i == R.id.event_openness_radioButton2){
+                    eventQuota.setText("");
+                    eventQuota.setEnabled(false);
                 }
             }
         });
@@ -201,17 +186,28 @@ public class CreateEventActivity extends AppCompatActivity {
                     event.setDescription(eventDescription.getText().toString());
                     event.setHostAvatarUrl(currentUser.getPhotoUrl().toString());
                     event.setHostName(currentUser.getDisplayName());
-                    if(eventPublic.isChecked()){
+                    if(eventPrivacy.getCheckedRadioButtonId() == R.id.event_privacy_radioButton1){
                         event.setPrivacy("PUBLIC");
                     }else{
                         event.setPrivacy("PRIVATE");
+                    }
+                    if(eventOpenness.getCheckedRadioButtonId() == R.id.event_openness_radioButton1){
+                        event.setOpenness("OPEN");
+                        if(!eventQuota.getText().toString().matches("")){
+                            event.setQuota(Integer.parseInt(eventQuota.getText().toString()));
+                        }else{
+                            event.setQuota(-1);
+                        }
+                    }else{
+                        event.setOpenness("CLOSED");
                     }
                     eventPhoto.setEnabled(false);
                     eventName.setEnabled(false);
                     eventDescription.setEnabled(false);
                     eventDateTime.setEnabled(false);
-                    eventPublic.setEnabled(false);
-                    eventPrivate.setEnabled(false);
+                    eventPrivacy.setEnabled(false);
+                    eventOpenness.setEnabled(false);
+                    eventQuota.setEnabled(false);
                     eventLocation.setEnabled(false);
                     eventInterests.setEnabled(false);
                     addEvent();
@@ -433,9 +429,18 @@ public class CreateEventActivity extends AppCompatActivity {
         eventDateTime.getText().clear();
         eventLocation.setEnabled(true);
         eventLocation.getText().clear();
+        eventPrivacy.setEnabled(true);
+        eventPrivacy.clearCheck();
+        eventPrivacy.check(R.id.event_privacy_radioButton1);
+        eventOpenness.setEnabled(true);
+        eventOpenness.clearCheck();
+        eventOpenness.check(R.id.event_openness_radioButton1);
+        eventQuota.setEnabled(true);
+        eventQuota.getText().clear();
         eventInterests.setEnabled(true);
         eventInterests.getText().clear();
         eventItems = new ArrayList<>();
+        checkedItems = new boolean[listItems.length];
         eventPhoto.setImageResource(R.color.colorPrimary);
     }
 }

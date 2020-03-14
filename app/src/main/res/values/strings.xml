@@ -58,13 +58,13 @@
     <string name="create_profile_language_title">Language</string>
     <string name="create_profile_interest_title">Interest</string>
     <string-array name="interest_options">
-        <item>Food</item>
-        <item>Drink</item>
+        <item>Food&amp;Drink</item>
         <item>Entertainment</item>
         <item>Sports</item>
         <item>Culture</item>
-        <item>Shopping</item>
+        <item>Photography</item>
         <item>Nature</item>
+        <item>Leisure</item>
     </string-array>
     <string name="create_profile_about_you_title">About you</string>
     <string name="create_profile_create_button">Create</string>
@@ -188,6 +188,7 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="action_settings">Settings</string>
+    <string name="all_selected">All Selected</string>
     <!--    CreateEventActivity-->
     <string name="event_name">Event Name</string>
     <string name="event_name_hint">What do you want to call your event?</string>
@@ -197,6 +198,10 @@
     <string name="privacy">Privacy</string>
     <string name="_public">Public</string>
     <string name="_private">Private</string>
+    <string name="openness">Open/Closed for Joining</string>
+    <string name="open">Open</string>
+    <string name="closed">Closed</string>
+    <string name="event_quota">Quota?</string>
     <string name="date_time_hint">yy-MM-dd HH:mm</string>
     <string name="location">Location</string>
     <string name="interests">Interests</string>
@@ -206,4 +211,6 @@
     <string name="create_event_welcome">Start a new Tripals event</string>
     <string name="not_complete_event_message">You did not complete the event form.</string>
     <string name="create_event_complete_message">Event Created</string>
+    <!--    Event RecyclerView-->
+    <string name="left">place(s) left</string>
 </resources>

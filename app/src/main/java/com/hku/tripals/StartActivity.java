@@ -59,7 +59,7 @@ public class StartActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         icon = findViewById(R.id.icon);
         Glide.with(this)
-                .load(getResources().getDrawable(R.drawable.web_hi_res_512))
+                .load(getResources().getDrawable(R.mipmap.ic_launcher_round))
                 .apply(RequestOptions.circleCropTransform())
                 .into(icon);
         travelImageView = findViewById(R.id.travel_imageView);

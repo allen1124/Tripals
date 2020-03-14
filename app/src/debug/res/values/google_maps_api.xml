@@ -21,4 +21,6 @@
     -->
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">ASK_ALLEN_FOR_API_KEY</string>
     <string name="place_key" templateMergeStrategy="preserve" translatable="false">ASK_ALLEN_FOR_API_KEY</string>
+    <string name="search_app_id" tempplateMergeStrategy="perserve" translatable="false">ASK_ALLEN_FOR_API_KEY</string>
+    <string name="search_key" templateMergeStrategy="preserve" translatable="false">ASK_ALLEN_FOR_API_KEY</string>
 </resources>
