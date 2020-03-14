@@ -3,12 +3,13 @@ package com.hku.tripals.model;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.ServerTimestamp;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Event {
+public class Event implements Serializable {
 
     private String id;
     private String host;

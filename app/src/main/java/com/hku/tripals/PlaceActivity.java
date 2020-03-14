@@ -17,10 +17,21 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.hku.tripals.adapter.EventAdapter;
+import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Place;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.MenuItem;
@@ -29,6 +40,8 @@ import android.view.View;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlaceActivity extends AppCompatActivity {
 
@@ -36,11 +49,22 @@ public class PlaceActivity extends AppCompatActivity {
     private Place place;
     private AppBarLayout appbar;
     private FloatingActionButton fabButton;
+    private RecyclerView event;
+    private LinearLayoutManager eventLayoutManager;
+    private EventAdapter eventAdapter;
+    private List<Event> eventList = new ArrayList<>();
+
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place);
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
         Intent intent = getIntent();
         appbar = (AppBarLayout) findViewById(R.id.app_bar);
         place = (Place) intent.getSerializableExtra("place");
@@ -57,6 +81,11 @@ public class PlaceActivity extends AppCompatActivity {
             }
         }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        event = findViewById(R.id.place_event_recyclerView);
+        eventLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        event.setLayoutManager(eventLayoutManager);
+        eventAdapter = new EventAdapter(this);
+        event.setAdapter(eventAdapter);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -71,6 +100,33 @@ public class PlaceActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        loadEvent(10);
+    }
+
+    private void loadEvent(int number){
+        Log.d(TAG, "loadEvent: called");
+        db.collection("events")
+                .whereEqualTo("privacy", "PUBLIC")
+                .whereEqualTo("location", place.getPlaceId())
+                .limit(number)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        Log.w(TAG, "Getting documents.");
+                        if (e != null) {
+                            Log.w(TAG, "Error getting documents.", e);
+                            return;
+                        }
+                        eventList.clear();
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            eventList.add(document.toObject(Event.class));
+                            Log.d(TAG, document.getId() + " added");
+                        }
+                        eventAdapter.setEventList(eventList);
+                        eventAdapter.notifyDataSetChanged();
+                    }
+                });
     }
 
     @Override

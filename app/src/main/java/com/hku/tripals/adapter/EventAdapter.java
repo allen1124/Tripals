@@ -1,6 +1,8 @@
 package com.hku.tripals.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,11 +11,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.hku.tripals.EventActivity;
+import com.hku.tripals.MapsActivity;
+import com.hku.tripals.PlaceActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.model.Event;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -26,10 +32,10 @@ import androidx.recyclerview.widget.RecyclerView;
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
 
     private static final String TAG = "EventAdapter";
-    private Context context;
+    private Activity context;
     private List<Event> eventList;
 
-    public EventAdapter(Context context){
+    public EventAdapter(Activity context){
         this.context = context;
     }
 
@@ -96,6 +102,17 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.datetime.setText(simpleDateFormat.format(event.getDatetime()));
         PrettyTime prettyTime = new PrettyTime(Locale.getDefault());
         holder.timestamp.setText(prettyTime.format(event.getTimestamp()));
+
+        holder.eventCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: go event detail :" + event.getId());
+                Intent myIntent = new Intent(context, EventActivity.class);
+                myIntent.putExtra("event", (Serializable) event);
+                context.startActivity(myIntent);
+                context.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
     }
 
     @Override

@@ -15,15 +15,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CreateEventActivity"></activity>
+        <activity
+            android:name=".EventActivity"
+            android:label="@string/title_activity_event"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".CreateEventActivity" />
         <activity
             android:name=".PlaceActivity"
             android:label="@string/title_activity_place"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MapsActivity"/>
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MapsActivity" />
+            android:parentActivityName=".MapsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".MapsActivity" />
+
         <activity
             android:name=".TermsActivity"
             android:parentActivityName=".MainActivity">
@@ -73,7 +79,7 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop" />
         <activity android:name=".StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

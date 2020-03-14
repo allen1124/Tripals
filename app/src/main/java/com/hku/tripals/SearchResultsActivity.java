@@ -121,7 +121,7 @@ public class SearchResultsActivity extends AppCompatActivity implements FilterLi
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
-            searchEvent(new Query(query));
+            searchEvent(new Query(query).setFilters("privacy:PUBLIC"));
         }
     }
 
@@ -212,7 +212,7 @@ public class SearchResultsActivity extends AppCompatActivity implements FilterLi
     @Override
     public void onFilterSelected(Tag tag) {
         Log.d(TAG, "onFiltersSelected: "+query+" filter:"+tag.getText());
-        Query q = new Query(query).setFilters("interests:" + tag.getText());
+        Query q = new Query(query).setFilters("interests:" + tag.getText()+" AND privacy:PUBLIC");
         searchEvent(q);
     }
 
@@ -226,6 +226,7 @@ public class SearchResultsActivity extends AppCompatActivity implements FilterLi
                 filter += "interests:" + arrayList.get(i).getText();
             }
         }
+        filter += " AND privacy:PUBLIC";
         Log.d(TAG, "onFiltersSelected: "+query+" filter:"+filter);
         Query q = new Query(query).setFilters(filter);
         searchEvent(q);
@@ -233,7 +234,7 @@ public class SearchResultsActivity extends AppCompatActivity implements FilterLi
 
     @Override
     public void onNothingSelected() {
-        searchEvent(new Query(query));
+        searchEvent(new Query(query).setFilters("privacy:PUBLIC"));
     }
 
     class Adapter extends FilterAdapter<Tag> {
@@ -249,7 +250,7 @@ public class SearchResultsActivity extends AppCompatActivity implements FilterLi
 
             filterItem.setStrokeColor(getResources().getColor(R.color.colorPrimaryDark));
             filterItem.setTextColor(getResources().getColor(R.color.places_text_black_alpha_87));
-            filterItem.setCornerRadius(14);
+            filterItem.setCornerRadius(100);
             filterItem.setCheckedTextColor(ContextCompat.getColor(SearchResultsActivity.this, android.R.color.white));
             filterItem.setColor(ContextCompat.getColor(SearchResultsActivity.this, android.R.color.white));
             filterItem.setCheckedColor(getResources().getColor(R.color.colorPrimaryDark));
