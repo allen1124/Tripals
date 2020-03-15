@@ -8,6 +8,8 @@ public class User {
     private String homeCountry;
     private String language;
     private String bio;
+
+    private String displayName;
     //private List<String> interests; <- follow Event.class
 
 
@@ -102,5 +104,13 @@ public class User {
 
     public void setAvatarImageUrl(String avatarImageUrl) {
         this.avatarImageUrl = avatarImageUrl;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

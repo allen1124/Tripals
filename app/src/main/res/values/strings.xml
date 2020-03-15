@@ -87,6 +87,8 @@
     <string name="singapore">Singapore</string>
     <string name="macau">Macau</string>
     <string name="more">More Places</string>
+    <!--    ProfileFragment-->
+    <string name="profile">Profile</string>
     <!--    MapsActivity-->
     <string name="title_activity_maps">Map</string>
     <string name="query_hint">Search...</string>
