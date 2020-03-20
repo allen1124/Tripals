@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.AppBarLayout;
@@ -16,15 +17,28 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.hku.tripals.adapter.CommentsAdapter;
 import com.hku.tripals.adapter.EventAdapter;
+import com.hku.tripals.model.Comment;
 import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Place;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -35,8 +49,11 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,7 +61,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EventActivity extends AppCompatActivity {
 
@@ -59,6 +79,15 @@ public class EventActivity extends AppCompatActivity {
     private Button eventButton;
     private ImageView appbarBg;
     private AppBarLayout appbar;
+
+    private ArrayList<Comment> comments = new ArrayList<>();
+    private ImageView commentUserAvatar;
+    private TextView commentUsername;
+    private EditText commentText;
+    private Button commentPost;
+    private RecyclerView commentView;
+    private LinearLayoutManager layoutManager;
+    private CommentsAdapter commentsAdapter;
 
     private FirebaseFirestore db;
     private DatabaseReference mDatabase;
@@ -83,6 +112,16 @@ public class EventActivity extends AppCompatActivity {
         eventQuotaTitle = findViewById(R.id.event_quota_title_textView);
         eventQuota = findViewById(R.id.event_quota_textView);
         eventButton = findViewById(R.id.event_join_edit_button);
+        commentUserAvatar = findViewById(R.id.c_avatar_imageView);
+        commentUsername = findViewById(R.id.c_username_textView);
+        commentText = findViewById(R.id.user_comment_editText);
+        commentPost = findViewById(R.id.user_comment_post_button);
+        commentView = findViewById(R.id.event_comment_recycler_view);
+        commentView.setNestedScrollingEnabled(false);
+        layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, true);
+        commentView.setLayoutManager(layoutManager);
+        commentsAdapter = new CommentsAdapter(this);
+        commentView.setAdapter(commentsAdapter);
         if(event.getLocation() != null){
             Bitmap bmp = null;
             try {
@@ -113,11 +152,13 @@ public class EventActivity extends AppCompatActivity {
         }else{
             eventButton.setText(getString(R.string.join_event));
             if(event.getParticipants() != null){
-                if(event.getParticipants().contains(currentUser.getUid())){
+                if(event.getParticipants().contains(currentUser.getUid()) || event.getOpenness().matches("CLOSED")){
                     eventButton.setEnabled(false);
                 }
             }
         }
+        Glide.with(this).load(currentUser.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(commentUserAvatar);
+        commentUsername.setText(currentUser.getDisplayName());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -160,6 +201,24 @@ public class EventActivity extends AppCompatActivity {
                 }
             }
         });
+        commentPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String commentString = commentText.getText().toString();
+                if(commentString.matches("")){
+                    Toast.makeText(EventActivity.this, R.string.comment_alert, Toast.LENGTH_SHORT).show();
+                    return;
+                }else{
+                    commentText.setEnabled(false);
+                    commentPost.setEnabled(false);
+                    postComment(commentString);
+                    commentText.getText().clear();
+                    commentText.setEnabled(true);
+                    commentPost.setEnabled(true);
+                }
+            }
+        });
+        getCommentData(event.getId());
     }
 
     @Override
@@ -213,11 +272,55 @@ public class EventActivity extends AppCompatActivity {
                             Log.d(TAG, "DocumentSnapshot successfully updated!");
                         }
                     });
-            eventQuota.setText(String.valueOf(quota-participant.size()));
         }
+        if(quota != -1) {
+            eventQuota.setText(String.valueOf(quota - participant.size()));
+        }
+        participant.add(event.getHost());
         mDatabase.child("chats/"+event.getId()).child("eventId").setValue(event.getId());
         mDatabase.child("chats/"+event.getId()).child("host").setValue(event.getHost());
+        mDatabase.child("chats/"+event.getId()).child("eventTitle").setValue(event.getTitle());
         mDatabase.child("chats/"+event.getId()).child("participants").setValue(participant);
         eventButton.setEnabled(false);
+    }
+
+    private void postComment(String commentString){
+        Log.d(TAG, "postComment: called");
+        String eventKey = event.getId();
+        DocumentReference newCommentRef = db.collection("events").document(eventKey).collection("comments").document();
+        Comment comment = new Comment(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getPhotoUrl().toString(), commentString);
+        newCommentRef.set(comment.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "onSuccess: comment added");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "Error adding document", e);
+            }
+        });
+    }
+
+    private void getCommentData(String eventId){
+        Log.d(TAG, "getCommentData: called");
+        db.collection("events").document(eventId).collection("comments")
+                .orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                Log.w(TAG, "Getting documents.");
+                if (e != null) {
+                    Log.w(TAG, "Error getting documents.", e);
+                    return;
+                }
+                comments.clear();
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    comments.add(document.toObject(Comment.class));
+                    Log.d(TAG, document.getId() + " added");
+                }
+                commentsAdapter.setCommentList(comments);
+                commentsAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }

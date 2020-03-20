@@ -67,6 +67,27 @@
             app:layout_constraintTop_toTopOf="@+id/event_location_title_textView" />
 
         <TextView
+            android:id="@+id/event_quota_title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:drawableLeft="@drawable/ic_participant"
+            android:text="@string/quota"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintStart_toStartOf="@+id/event_location_title_textView"
+            app:layout_constraintTop_toBottomOf="@+id/event_location_title_textView" />
+
+        <TextView
+            android:id="@+id/event_quota_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintStart_toStartOf="@+id/event_location_textView"
+            app:layout_constraintTop_toBottomOf="@+id/event_location_textView" />
+
+        <TextView
             android:id="@+id/event_description_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -187,27 +208,6 @@
             app:layout_constraintTop_toBottomOf="@+id/user_comment_cardView">
 
         </androidx.recyclerview.widget.RecyclerView>
-
-        <TextView
-            android:id="@+id/event_quota_title_textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:drawableLeft="@drawable/ic_participant"
-            android:text="@string/quota"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintStart_toStartOf="@+id/event_location_title_textView"
-            app:layout_constraintTop_toBottomOf="@+id/event_location_title_textView" />
-
-        <TextView
-            android:id="@+id/event_quota_textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="TextView"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintStart_toStartOf="@+id/event_location_textView"
-            app:layout_constraintTop_toBottomOf="@+id/event_location_textView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,9 +30,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     private ArrayList<Comment> commentList;
     Context context;
 
-    public CommentsAdapter(ArrayList<Comment> commentList, Context context) {
+    public CommentsAdapter(Context context) {
         this.context = context;
-        this.commentList = commentList;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -65,13 +65,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         }
         holder.username.setText(comment.getUsername());
         holder.comment.setText(comment.getComment());
-        Date commentDate = null;
-        try {
-            commentDate = dateFormat.parse(comment.getTimestamp());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        holder.pettyTime.setText(new PrettyTime().format(commentDate));
+        PrettyTime prettyTime = new PrettyTime(Locale.getDefault());
+        holder.pettyTime.setText(prettyTime.format(comment.getTimestamp()));
     }
 
     @Override
@@ -79,5 +74,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         if(commentList == null)
             return 0;
         return commentList.size();
+    }
+
+    public void setCommentList(ArrayList<Comment> commentList) {
+        this.commentList = commentList;
     }
 }

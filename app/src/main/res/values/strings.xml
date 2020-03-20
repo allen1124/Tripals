@@ -222,4 +222,5 @@
     <string name="quota">Quota</string>
     <string name="join_event">Join Event</string>
     <string name="edit_event">Edit Event</string>
+    <string name="comment_alert">You did not enter comment</string>
 </resources>

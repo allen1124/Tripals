@@ -1,37 +1,28 @@
 package com.hku.tripals.model;
 
 import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.FieldValue;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Comment {
 
-    String cid;
     String userId;
     String username;
     String userPhoto;
     String comment;
-    String timestamp;
+    Date timestamp;
 
     public Comment() {
     }
 
-    public Comment(String cid, String userId, String username, String userPhoto, String comment, String timestamp) {
-        this.cid = cid;
+    public Comment(String userId, String username, String userPhoto, String comment) {
         this.userId = userId;
         this.username = username;
         this.userPhoto = userPhoto;
         this.comment = comment;
-        this.timestamp = timestamp;
-    }
-
-    public String getCid() {
-        return cid;
-    }
-
-    public void setCid(String cid) {
-        this.cid = cid;
     }
 
     public String getUserId() {
@@ -66,23 +57,22 @@ public class Comment {
         this.comment = comment;
     }
 
-    public String getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("cid", cid);
         result.put("userId", userId);
         result.put("username", username);
         result.put("userPhoto", userPhoto);
         result.put("comment", comment);
-        result.put("timestamp", timestamp);
+        result.put("timestamp", FieldValue.serverTimestamp());
         return result;
     }
 }

@@ -32,6 +32,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -77,6 +79,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private Event event;
 
     private FirebaseFirestore db;
+    private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
@@ -85,6 +88,7 @@ public class CreateEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
         db = FirebaseFirestore.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         event = new Event();
@@ -411,6 +415,13 @@ public class CreateEventActivity extends AppCompatActivity {
             });
 
         }
+        List<String> participant = new ArrayList<>();
+        participant.add(currentUser.getUid());
+        mDatabase.child("chats/"+event.getId()).child("eventId").setValue(event.getId());
+        mDatabase.child("chats/"+event.getId()).child("eventPhotoUrl").setValue(event.getPhotoUrl());
+        mDatabase.child("chats/"+event.getId()).child("host").setValue(event.getHost());
+        mDatabase.child("chats/"+event.getId()).child("eventTitle").setValue(event.getTitle());
+        mDatabase.child("chats/"+event.getId()).child("participants").setValue(participant);
     }
 
     @Override
