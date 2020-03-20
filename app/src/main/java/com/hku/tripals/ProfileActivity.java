@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,8 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -143,7 +142,6 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
         CreateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressBar.setVisibility(View.VISIBLE);
                 if(avatarUri != null) {
                     uploadImageToFirebase();
                 }else{
@@ -342,16 +340,42 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
         });
     }
 
-    //Create button
+    public boolean checkemptystring() {
+        if (TextUtils.isEmpty(DisplayGender.getText().toString())){
+            return false;
+        } else if (TextUtils.isEmpty(DisplayBirthDate.getText().toString())){
+            return false;
+        } else if (TextUtils.isEmpty(DisplayHomeCountry.getText().toString())){
+            return false;
+        } else if (TextUtils.isEmpty(DisplayLanguage.getText().toString())){
+            return false;
+        } else if (TextUtils.isEmpty(DisplayBio.getText().toString())){
+            return false;
+        } else if (TextUtils.isEmpty(DisplayInterest.getText().toString())){
+            return false;
+        } else if (avatar == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     public void createProfile() {
-        progressBar.setVisibility(View.VISIBLE);
+        if (checkemptystring()) {
+            runcreateProfile();
+        } else {
+            Toast.makeText(this, "Please fill in all the fields", Toast.LENGTH_SHORT).show();
+        }
+    }
 
+    //Create button
+    public void runcreateProfile() {
+        progressBar.setVisibility(View.VISIBLE);
         // Do something in response to button click
         String uid = mAuth.getCurrentUser().getUid();
         Toast.makeText(this, "Created profile", Toast.LENGTH_SHORT).show();
-        Log.d("CREATEPROFILE", "Create button clicked.");
-        Log.d("uid", "uid: "+uid);
+        Log.d(TAG, "Create button clicked.");
+        Log.d(TAG, "uid: " + uid);
         //DocumentReference documentReference = fstore.collection("users").document(userID);
 
         Map<String, Object> user = new HashMap<>();
