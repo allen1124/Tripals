@@ -216,4 +216,10 @@
     <!--    Event RecyclerView-->
     <string name="left">place(s) left</string>
     <string name="title_activity_event">EventActivity</string>
+    <!--    EventActivity-->
+    <string name="comment_post">Post</string>
+    <string name="comment">Comment</string>
+    <string name="quota">Quota</string>
+    <string name="join_event">Join Event</string>
+    <string name="edit_event">Edit Event</string>
 </resources>
