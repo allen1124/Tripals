@@ -3,9 +3,11 @@ package com.hku.tripals;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -43,6 +45,8 @@ import com.mukesh.countrypicker.Country;
 import com.mukesh.countrypicker.CountryPicker;
 import com.mukesh.countrypicker.OnCountryPickerListener;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,6 +71,7 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
     private ImageView avatar;
     private Button avatarButton;
     private Uri avatarUri;
+    private Bitmap avaterBitmap;
     private String avatarImageUrl = "";
     private ProgressBar progressBar;
 
@@ -296,13 +301,12 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
         if(requestCode == 0 && resultCode == Activity.RESULT_OK && data != null){
             Log.d(TAG, "Photo selected");
             avatarUri = data.getData();
-            Bitmap bitmap = null;
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), avatarUri);
+                avaterBitmap = decodeUri(this, avatarUri, 80);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            avatar.setImageBitmap(bitmap);
+            avatar.setImageBitmap(avaterBitmap);
             avatarButton.setAlpha(0f);
         }
     }
@@ -311,8 +315,10 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
         if(avatarUri == null)
             return;
         String filename = UUID.randomUUID().toString();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        avaterBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         final StorageReference ref = FirebaseStorage.getInstance().getReference("/avatar-images/"+filename);
-        ref.putFile(avatarUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        ref.putBytes(baos.toByteArray()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Log.d(TAG, "avatar photo uploaded");
@@ -409,5 +415,23 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
                     }
                 });
 
+    }
+
+    public static Bitmap decodeUri(Context c, Uri uri, final int requiredSize) throws FileNotFoundException {
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o);
+        int width_tmp = o.outWidth, height_tmp = o.outHeight;
+        int scale = 1;
+        while(true) {
+            if(width_tmp / 2 < requiredSize || height_tmp / 2 < requiredSize)
+                break;
+            width_tmp /= 2;
+            height_tmp /= 2;
+            scale *= 2;
+        }
+        BitmapFactory.Options o2 = new BitmapFactory.Options();
+        o2.inSampleSize = scale;
+        return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2);
     }
 }

@@ -94,6 +94,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="4dp"
+            android:drawableLeft="@drawable/ic_location"
             android:text="TextView"
             app:layout_constraintEnd_toStartOf="@+id/event_host_avatar_recycler_imageView"
             app:layout_constraintStart_toStartOf="@+id/event_title_recycler_textView"
@@ -115,6 +116,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:drawableLeft="@drawable/ic_participant"
             android:text="TextView"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -125,6 +127,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:drawableLeft="@drawable/ic_time"
             android:text="TextView"
             app:layout_constraintStart_toStartOf="@+id/event_location_recycler_textView"
             app:layout_constraintTop_toBottomOf="@+id/event_location_recycler_textView" />

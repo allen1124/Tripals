@@ -393,7 +393,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     setResult(RESULT_OK, myIntent);
                     finish();
-                    MapsActivity.this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+                    MapsActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
                 }else {
                     Log.d(TAG, "onClick: go place detail :" + place.getPlaceId());
                     Intent myIntent = new Intent(MapsActivity.this, PlaceActivity.class);
@@ -402,7 +402,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         myIntent.putExtra("photo", place.getPlaceId());
                     }
                     startActivity(myIntent);
-                    MapsActivity.this.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+                    MapsActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
                 }
             }
         });
@@ -411,7 +411,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public StringBuilder photoUrlBuilder(String reference){
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/photo?");
-        sb.append("maxwidth="+1000);
+        sb.append("maxwidth="+400);
         sb.append("&photoreference="+reference);
         sb.append("&key="+getString(R.string.place_key));
         return sb;
