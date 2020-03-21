@@ -119,7 +119,7 @@ public class SignUpActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             currentUser = mAuth.getCurrentUser();
-                            updateUserDisplayName(currentUser, displayName.toString());
+                            updateUserDisplayName(currentUser, displayName.getText().toString());
                             currentUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
