@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/Chats_cardview"
+    android:layout_width="match_parent"
+    android:layout_height="110dp"
+    android:layout_marginStart="0dp"
+    android:layout_marginTop="1dp"
+    android:layout_marginBottom="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--        <ImageView-->
+        <!--            android:id="@+id/event_imageView"-->
+        <!--            android:layout_width="100dp"-->
+        <!--            android:layout_height="100dp"-->
+        <!--            android:layout_marginStart="8dp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent"-->
+        <!--            tools:srcCompat="@tools:sample/avatars" />-->
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circleEventImageView"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
+            android:layout_marginStart="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/event_name_textview"
+            android:layout_width="238dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="16dp"
+            android:includeFontPadding="true"
+            android:text="Event_Name"
+            android:textColor="@color/quantum_black_100"
+            android:textSize="20dp"
+            app:layout_constraintBottom_toBottomOf="@+id/circleEventImageView"
+            app:layout_constraintStart_toEndOf="@+id/circleEventImageView"
+            app:layout_constraintTop_toTopOf="@+id/circleEventImageView"
+            app:layout_constraintVertical_bias="0.292" />
+
+        <TextView
+            android:id="@+id/chatpreview_textview"
+            android:layout_width="225dp"
+            android:layout_height="wrap_content"
+            android:hint="Chat Previews................................"
+            app:layout_constraintEnd_toEndOf="@+id/event_name_textview"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/event_name_textview"
+            app:layout_constraintTop_toBottomOf="@+id/event_name_textview" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

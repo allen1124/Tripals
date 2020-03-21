@@ -10,7 +10,7 @@ public class MessageViewModel extends ViewModel {
 
     public MessageViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is Message fragment");
+        mText.setValue("You must be logged in to view event chats");
     }
 
     public LiveData<String> getText() {
