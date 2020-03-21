@@ -28,6 +28,7 @@ public class NotificationsFragment extends Fragment {
     private NotificationsViewModel notificationsViewModel;
 
     private RecyclerView requestRecyclerView;
+    private TextView noRequest;
     private LinearLayoutManager requestLayoutManager;
     private RequestAdapter requestAdapter;
 
@@ -38,6 +39,7 @@ public class NotificationsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_notifications, container, false);
 
         requestRecyclerView = root.findViewById(R.id.request_RecyclerView);
+        noRequest = root.findViewById(R.id.no_request_textView);
         requestLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         requestRecyclerView.setLayoutManager(requestLayoutManager);
         requestAdapter = new RequestAdapter(getActivity());
@@ -46,6 +48,10 @@ public class NotificationsFragment extends Fragment {
             public void onChanged(List<Request> requests) {
                 requestAdapter.setRequestList(requests);
                 requestAdapter.notifyDataSetChanged();
+                if(requestAdapter.getItemCount() > 0)
+                    noRequest.setVisibility(View.GONE);
+                else
+                    noRequest.setVisibility(View.VISIBLE);
             }
         });
         notificationsViewModel.loadRequest();

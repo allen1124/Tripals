@@ -2,6 +2,7 @@ package com.hku.tripals;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -48,6 +49,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.util.Log;
 import android.view.MenuItem;
@@ -58,6 +60,9 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -73,6 +78,7 @@ import java.util.Map;
 public class EventActivity extends AppCompatActivity {
 
     private static final String TAG = "EventActivity";
+    private static final String BOOKMARK_PREF = "BOOKMARK_PREF";
     private Event event;
 
     private TextView eventLocation;
@@ -83,6 +89,11 @@ public class EventActivity extends AppCompatActivity {
     private Button eventButton;
     private ImageView appbarBg;
     private AppBarLayout appbar;
+    private CircleImageView bookmarkButton;
+    private boolean bookmarked = false;
+    SharedPreferences bookmarkPref;
+    private List<String> bookmarkList = new ArrayList<>();
+    private String bookmarkJson;
 
     private ArrayList<Comment> comments = new ArrayList<>();
     private ImageView commentUserAvatar;
@@ -121,6 +132,47 @@ public class EventActivity extends AppCompatActivity {
         commentText = findViewById(R.id.user_comment_editText);
         commentPost = findViewById(R.id.user_comment_post_button);
         commentView = findViewById(R.id.event_comment_recycler_view);
+        bookmarkButton = findViewById(R.id.bookmark_imageView);
+        bookmarkPref = getSharedPreferences(BOOKMARK_PREF, MODE_PRIVATE);
+        bookmarkJson = bookmarkPref.getString("bookmark", "[]");
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(bookmarkJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                bookmarkList.add(jsonArray.getString(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        bookmarked = bookmarkList.contains(event.getId());
+        if(bookmarked){
+            bookmarkButton.setImageResource(R.mipmap.ic_bookmark_on);
+        }else{
+            bookmarkButton.setImageResource(R.mipmap.ic_bookmark_off);
+        }
+        bookmarkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = bookmarkPref.edit();
+                if(bookmarked){
+                    bookmarkButton.setImageResource(R.mipmap.ic_bookmark_off);
+                    bookmarked = false;
+                    bookmarkList.remove(event.getId());
+                }else{
+                    bookmarkButton.setImageResource(R.mipmap.ic_bookmark_on);
+                    bookmarked = true;
+                    bookmarkList.add(event.getId());
+                }
+                JSONArray json = new JSONArray(bookmarkList);
+                editor.putString("bookmark", json.toString());
+                Log.d(TAG, "bookmark in json: "+json.toString());
+                editor.commit();
+            }
+        });
         commentView.setNestedScrollingEnabled(false);
         layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, true);
         commentView.setLayoutManager(layoutManager);
@@ -177,6 +229,7 @@ public class EventActivity extends AppCompatActivity {
                     });
         }
         Glide.with(this).load(currentUser.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(commentUserAvatar);
+        Log.d(TAG, "onCreate: user displayname "+currentUser.getDisplayName());
         commentUsername.setText(currentUser.getDisplayName());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
