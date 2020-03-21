@@ -10,8 +10,10 @@ import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -25,6 +27,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -36,6 +39,7 @@ import com.hku.tripals.adapter.EventAdapter;
 import com.hku.tripals.model.Comment;
 import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Place;
+import com.hku.tripals.model.Request;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -156,6 +160,21 @@ public class EventActivity extends AppCompatActivity {
                     eventButton.setEnabled(false);
                 }
             }
+            db.collection("requests").document(currentUser.getUid()+'-'+event.getId()).get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    Log.d(TAG, "Request exists!");
+                                    eventButton.setEnabled(false);
+                                }
+                            } else {
+                                Log.d(TAG, "Failed with: ", task.getException());
+                            }
+                        }
+                    });
         }
         Glide.with(this).load(currentUser.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(commentUserAvatar);
         commentUsername.setText(currentUser.getDisplayName());
@@ -243,44 +262,25 @@ public class EventActivity extends AppCompatActivity {
 
     private void joinEvent(){
         Log.d(TAG, "joinEvent: called");
-        DocumentReference eventRef = db.collection("events").document(event.getId());
-        List<String> participant = event.getParticipants();
-        int quota = event.getQuota();
-        if(participant == null)
-            participant = new ArrayList<>();
-        participant.add(currentUser.getUid());
-        eventRef.update("participants", participant)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully updated!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error updating document", e);
-                    }
-                });
-        if(quota != -1 && quota-participant.size() == 0){
-            eventRef.update(
-                    "openness", "CLOSED"
-                    )
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "DocumentSnapshot successfully updated!");
-                        }
-                    });
-        }
-        if(quota != -1) {
-            eventQuota.setText(String.valueOf(quota - participant.size()));
-        }
-        participant.add(event.getHost());
-        mDatabase.child("chats/"+event.getId()).child("eventId").setValue(event.getId());
-        mDatabase.child("chats/"+event.getId()).child("host").setValue(event.getHost());
-        mDatabase.child("chats/"+event.getId()).child("eventTitle").setValue(event.getTitle());
-        mDatabase.child("chats/"+event.getId()).child("participants").setValue(participant);
+
+        DocumentReference requestRef = db.collection("requests").document(currentUser.getUid()+'-'+event.getId());
+        int participant;
+        if(event.getParticipants() == null)
+            participant = 0;
+        else
+            participant = event.getParticipants().size();
+        Request request = new Request(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getPhotoUrl().toString(), event.getId(), event.getTitle(), event.getPhotoUrl(), event.getHost(), event.getQuota(), participant);
+        requestRef.set(request.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Request added");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "Error adding request", e);
+            }
+        });
         eventButton.setEnabled(false);
     }
 

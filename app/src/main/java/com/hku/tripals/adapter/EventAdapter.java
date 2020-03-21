@@ -1,7 +1,6 @@
 package com.hku.tripals.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,15 +11,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.hku.tripals.EventActivity;
-import com.hku.tripals.MapsActivity;
-import com.hku.tripals.PlaceActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.model.Event;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;

@@ -25,20 +25,6 @@
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/destination_textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@android:color/white"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/destination_imageView"
-            app:layout_constraintEnd_toEndOf="@+id/destination_imageView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/destination_imageView" />
-
-        <TextView
             android:id="@+id/event_title_recycler_textView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
