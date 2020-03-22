@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hku.tripals.CreateEventActivity;
 import com.hku.tripals.MapsActivity;
-import com.hku.tripals.PlaceActivity;
 import com.hku.tripals.SearchResultsActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.adapter.DestinationAdapter;
@@ -85,7 +84,7 @@ public class ExploreFragment extends Fragment {
         });
         destinationRecyclerView.setAdapter(destinationAdapter);
 
-        eventRecyclerView = root.findViewById(R.id.popular_events_RecyclerView);
+        eventRecyclerView = root.findViewById(R.id.recent_events_RecyclerView);
         eventLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         eventRecyclerView.setLayoutManager(eventLayoutManager);
         eventAdapter = new EventAdapter(getActivity());
@@ -96,7 +95,7 @@ public class ExploreFragment extends Fragment {
                 eventAdapter.notifyDataSetChanged();
             }
         });
-        exploreViewModel.loadEvent(10);
+        exploreViewModel.loadEvent(5);
         eventRecyclerView.setAdapter(eventAdapter);
 
         searchbar = root.findViewById(R.id.explore_searchView);

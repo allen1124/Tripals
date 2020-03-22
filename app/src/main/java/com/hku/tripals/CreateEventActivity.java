@@ -121,6 +121,7 @@ public class CreateEventActivity extends AppCompatActivity {
         if(!TextUtils.isEmpty(intent.getStringExtra("place_id"))){
             event.setLocation(intent.getStringExtra("place_id"));
             eventLocation.setText(intent.getStringExtra("place_name"));
+            event.setLocationName(intent.getStringExtra("place_name"));
             Bitmap bmp = null;
             try {
                 File cachedPhoto = new File(getCacheDir(), intent.getStringExtra("place_id")+".png");
@@ -341,13 +342,14 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void addEvent(){
+        Log.d(TAG, "addEvent: called");
         final DocumentReference newEventRef = db.collection("events").document();
         String newEventId = newEventRef.getId();
         event.setId(newEventId);
         if(eventPhotoUri == null){
             Bitmap bmp = null;
             try {
-                File cachePhoto = new File(getCacheDir(), event.getPhotoUrl()+".png");
+                File cachePhoto = new File(getCacheDir(), event.getLocation()+".png");
                 FileInputStream is = new FileInputStream(cachePhoto);
                 bmp = BitmapFactory.decodeStream(is);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -369,6 +371,7 @@ public class CreateEventActivity extends AppCompatActivity {
                                         Log.d(TAG, "DocumentSnapshot added with ID: " + event.getId());
                                         Toast.makeText(CreateEventActivity.this,
                                                 R.string.create_event_complete_message, Toast.LENGTH_SHORT).show();
+                                        addChatRoom(event);
                                         clearForm();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
@@ -383,7 +386,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 });
                 is.close();
             } catch (Exception e) {
-                Log.d(TAG, "No cached photo");
+                Log.d(TAG, "Add event error: "+e.getMessage());
             }
         }else{
             final StorageReference ref = FirebaseStorage.getInstance().getReference("/event-images/"+event.getId());
@@ -402,6 +405,7 @@ public class CreateEventActivity extends AppCompatActivity {
                                     Log.d(TAG, "DocumentSnapshot added with ID: " + event.getId());
                                     Toast.makeText(CreateEventActivity.this,
                                             R.string.create_event_complete_message, Toast.LENGTH_SHORT).show();
+                                    addChatRoom(event);
                                     clearForm();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
@@ -416,6 +420,9 @@ public class CreateEventActivity extends AppCompatActivity {
             });
 
         }
+    }
+
+    private void addChatRoom(Event event){
         List<String> participant = new ArrayList<>();
         participant.add(currentUser.getUid());
         HashMap<String, Object> chats = new HashMap<>();
@@ -426,7 +433,6 @@ public class CreateEventActivity extends AppCompatActivity {
         chats.put("participants", participant);
         db.collection("chats").document(event.getId()).set(chats);
     }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();

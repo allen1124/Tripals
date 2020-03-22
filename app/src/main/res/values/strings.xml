@@ -66,6 +66,7 @@
     <string name="nearby_button">Nearby Me</string>
     <string name="hot_destination">Hot Destinations</string>
     <string name="popular_events">Popular Events</string>
+    <string name="recent_events">Recent Events</string>
     <string name="hong_kong">Hong Kong</string>
     <string name="tai_pei">Taipei</string>
     <string name="tokyo">Tokyo</string>

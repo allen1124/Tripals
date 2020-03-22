@@ -144,25 +144,25 @@
             </androidx.recyclerview.widget.RecyclerView>
 
             <TextView
-                android:id="@+id/popular_events_textView"
+                android:id="@+id/recent_events_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textStyle="bold"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="@string/popular_events"
+                android:text="@string/recent_events"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/hot_destination_RecyclerView" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/popular_events_RecyclerView"
+                android:id="@+id/recent_events_RecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/popular_events_textView" />
+                app:layout_constraintTop_toBottomOf="@+id/recent_events_textView" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
