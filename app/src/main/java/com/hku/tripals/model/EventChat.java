@@ -7,6 +7,7 @@ public class EventChat {
     private String eventPhotoUrl;
     private String eventTitle;
     private String host;
+    private String lastestMsg;
     private List<String> participants;
 
     public EventChat(){
@@ -58,5 +59,13 @@ public class EventChat {
 
     public void setParticipants(List<String> participants) {
         this.participants = participants;
+    }
+
+    public String getLastestMsg() {
+        return lastestMsg;
+    }
+
+    public void setLastestMsg(String lastestMsg) {
+        this.lastestMsg = lastestMsg;
     }
 }

@@ -72,6 +72,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
                 mContext.startActivity(chatIntent);
             }
         });
+        holder.previewChat.setText(chat.getLastestMsg());
     }
 
     @Override
