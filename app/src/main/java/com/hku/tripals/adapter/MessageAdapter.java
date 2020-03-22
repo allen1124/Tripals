@@ -1,9 +1,11 @@
 package com.hku.tripals.adapter;
 
 import android.content.Context;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,15 +43,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     }
 
     public class MessageViewHolder extends RecyclerView.ViewHolder{
-        public TextView msg_show, sender_name, msg_date_time;
+        public TextView msg_show, sender_name, msg_date_time, msg_date_time_2;
+        public ImageView msg_show_img;
         public CircleImageView profile_image;
 
         public MessageViewHolder(@NonNull View itemView) {
             super(itemView);
             profile_image = (CircleImageView) itemView.findViewById(R.id.profile_image);
+            msg_show_img = (ImageView) itemView.findViewById(R.id.msg_show_img);
             msg_show = (TextView) itemView.findViewById(R.id.msg_show);
             sender_name = (TextView) itemView.findViewById(R.id.sender_name);
             msg_date_time = (TextView) itemView.findViewById(R.id.msg_date_time);
+            msg_date_time_2 = (TextView) itemView.findViewById(R.id.msg_date_time_2);
         }
     }
 
@@ -72,34 +77,55 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         Message msg = userMsgList.get(position);
 
         String fromUserID = msg.getSenderID();
-        //String fromMessageType = msg.getType();
+        String fromMessageType = msg.getmsgType();
 
-        userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(fromUserID);
+//        userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(fromUserID);
+//        userRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.hasChild("image")){
+//                    String receiveImage = dataSnapshot.child("image").getValue().toString();
+//                    Picasso.get().load(receiveImage).placeholder(R.drawable.ic_profile_black_24dp).into(holder.profile_image);
+//                }
+//                holder.profile_image.setImageResource(R.drawable.ic_profile_black_24dp);
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {}
+//        });
 
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild("image")){
-                    String receiveImage = dataSnapshot.child("image").getValue().toString();
-                    Picasso.get().load(receiveImage).placeholder(R.drawable.ic_profile_black_24dp).into(holder.profile_image);
-                }
-                holder.profile_image.setImageResource(R.drawable.ic_profile_black_24dp);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+//        String receiveImage = dataSnapshot.child("image").getValue().toString();
+//        Picasso.get().load(receiveImage).placeholder(R.drawable.ic_profile_black_24dp).into(holder.profile_image);
+        holder.profile_image.setImageResource(R.drawable.ic_profile_black_24dp);
 
         String msg_time = msg.getMsgDate() + " " + msg.getMsgTime();
-        if (fromUserID.equals(senderID)){
-            holder.msg_show.setText(msg.getMsgText());
-            holder.msg_date_time.setText(msg_time);
-        } else {
-            holder.msg_show.setText(msg.getMsgText());
-            holder.sender_name.setText(msg.getSenderID());
-            holder.msg_date_time.setText(msg_time);
+
+        if(fromMessageType.equals("text")){
+            holder.msg_show_img.setVisibility(View.GONE);
+            holder.msg_date_time_2.setVisibility(View.GONE);
+            if (fromUserID.equals(senderID)){
+                holder.msg_show.setText(msg.getMsgText());
+                holder.msg_date_time.setText(msg_time);
+            } else {
+                holder.msg_show.setText(msg.getMsgText());
+                holder.sender_name.setText(msg.getSenderID());
+                holder.msg_date_time.setText(msg_time);
+            }
+        } else if (fromMessageType.equals("image")){
+            holder.msg_show.setVisibility(View.GONE);
+            holder.msg_date_time.setVisibility(View.GONE);
+            if (fromUserID.equals(senderID)){
+                Picasso.get().load(msg.getMsgText()).into(holder.msg_show_img);
+                holder.msg_show_img.setVisibility(View.VISIBLE);
+                holder.msg_show.setText(msg.getMsgText());
+                holder.msg_date_time_2.setText(msg_time);
+            } else {
+                Picasso.get().load(msg.getMsgText()).into(holder.msg_show_img);
+                holder.msg_show_img.setVisibility(View.VISIBLE);
+                holder.sender_name.setText(msg.getSenderID());
+                holder.msg_date_time_2.setText(msg_time);
+            }
         }
+
     }
 
     @Override

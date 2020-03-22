@@ -7,11 +7,11 @@ public class Message {
     private String msgTime;
     private String msgDate;
     //private String eventID;
-    //private String type;
+    private String msgType;
 
     public Message(){}
 
-    public Message(String senderID, String msgText, String time, String date) {
+    public Message(String senderID, String msgText, String time, String date, String msgType) {
         this.senderID = senderID;
         //this.senderName = senderName;
         //this.senderURL = senderURL;
@@ -19,7 +19,7 @@ public class Message {
         this.msgTime = time;
         this.msgDate = date;
         //this.eventID = eventID;
-        //this.type = type;
+        this.msgType = msgType;
     }
 
     public String getSenderID() {
@@ -77,11 +77,11 @@ public class Message {
 //        this.eventID = eventID;
 //    }
 //
-//    public String getType() {
-//        return type;
-//    }
-//
-//    public void setType(String type) {
-//        this.type = type;
-//    }
+    public String getmsgType() {
+        return msgType;
+    }
+
+    public void setType(String msgType) {
+        this.msgType = msgType;
+    }
 }

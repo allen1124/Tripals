@@ -37,11 +37,33 @@
                 android:background="@drawable/background_right"
                 android:backgroundTint="@color/colorPrimaryDark"/>
 
+            <ImageView
+                android:id="@+id/msg_show_img"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:padding="2dp"
+                android:scaleType="centerCrop">
+            </ImageView>
+
             <TextView
                 android:id="@+id/msg_date_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/msg_show"
+                android:layout_marginBottom="4dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:text="This shows date and time"
+                android:textSize="12sp"
+                android:textColor="@color/quantum_grey400"/>
+
+            <TextView
+                android:id="@+id/msg_date_time_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/msg_show_img"
                 android:layout_marginBottom="4dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
