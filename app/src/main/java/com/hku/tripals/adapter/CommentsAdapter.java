@@ -38,6 +38,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         public ImageView avatar;
         public TextView username;
         public TextView comment;
+        public ImageView commentPhoto;
         public TextView pettyTime;
 
         public ViewHolder(@NonNull final View itemView) {
@@ -45,6 +46,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             avatar = (ImageView) itemView.findViewById(R.id.c_avatar_imageView);
             username = (TextView) itemView.findViewById(R.id.c_username_textView);
             comment = (TextView) itemView.findViewById(R.id.c_user_comment_textView);
+            commentPhoto = (ImageView) itemView.findViewById(R.id.c_comment_imageView);
             pettyTime = (TextView) itemView.findViewById(R.id.c_petty_time_textView);
         }
     }
@@ -62,6 +64,12 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         final Comment comment = commentList.get(position);
         if(comment.getUserPhoto() != null) {
             Glide.with(context).load(Uri.parse(comment.getUserPhoto())).apply(RequestOptions.circleCropTransform()).into(holder.avatar);
+        }
+        if(comment.getCommentPhoto() == null || comment.getCommentPhoto().matches("")){
+            holder.commentPhoto.setVisibility(View.GONE);
+        }else{
+            holder.commentPhoto.setVisibility(View.VISIBLE);
+            Glide.with(context).load(comment.getCommentPhoto()).into(holder.commentPhoto);
         }
         holder.username.setText(comment.getUsername());
         holder.comment.setText(comment.getComment());

@@ -13,6 +13,7 @@ public class Comment {
     String username;
     String userPhoto;
     String comment;
+    String commentPhoto;
     Date timestamp;
 
     public Comment() {
@@ -57,6 +58,14 @@ public class Comment {
         this.comment = comment;
     }
 
+    public String getCommentPhoto() {
+        return commentPhoto;
+    }
+
+    public void setCommentPhoto(String commentPhoto) {
+        this.commentPhoto = commentPhoto;
+    }
+
     public Date getTimestamp() {
         return timestamp;
     }
@@ -72,6 +81,7 @@ public class Comment {
         result.put("username", username);
         result.put("userPhoto", userPhoto);
         result.put("comment", comment);
+        result.put("commentPhoto", commentPhoto);
         result.put("timestamp", FieldValue.serverTimestamp());
         return result;
     }
