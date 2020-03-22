@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.hku.tripals.R;
 import com.hku.tripals.model.Message;
 import com.squareup.picasso.Picasso;
@@ -93,9 +94,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 //            public void onCancelled(@NonNull DatabaseError databaseError) {}
 //        });
 
-//        String receiveImage = dataSnapshot.child("image").getValue().toString();
-//        Picasso.get().load(receiveImage).placeholder(R.drawable.ic_profile_black_24dp).into(holder.profile_image);
-        holder.profile_image.setImageResource(R.drawable.ic_profile_black_24dp);
+        //String receiveImage = dataSnapshot.child("image").getValue().toString();
+        String receiveImage = msg.getSenderURL();
+        Picasso.get().load(receiveImage).placeholder(R.drawable.ic_profile_black_24dp).into(holder.profile_image);
+        //holder.profile_image.setImageResource(R.drawable.ic_profile_black_24dp);
 
         String msg_time = msg.getMsgDate() + " " + msg.getMsgTime();
 
@@ -107,7 +109,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 holder.msg_date_time.setText(msg_time);
             } else {
                 holder.msg_show.setText(msg.getMsgText());
-                holder.sender_name.setText(msg.getSenderID());
+                holder.sender_name.setText(msg.getSenderName());
                 holder.msg_date_time.setText(msg_time);
             }
         } else if (fromMessageType.equals("image")){
@@ -121,7 +123,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             } else {
                 Picasso.get().load(msg.getMsgText()).into(holder.msg_show_img);
                 holder.msg_show_img.setVisibility(View.VISIBLE);
-                holder.sender_name.setText(msg.getSenderID());
+                holder.sender_name.setText(msg.getSenderName());
                 holder.msg_date_time_2.setText(msg_time);
             }
         }

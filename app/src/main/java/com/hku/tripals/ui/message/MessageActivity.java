@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -32,6 +33,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.core.Tag;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
@@ -52,12 +59,12 @@ public class MessageActivity extends AppCompatActivity {
     private Toolbar chat_toolbar;
     private Button send_Button;
     private ImageButton sendimg_Button;
-    private FloatingActionButton scrollDown;
+    private FloatingActionButton scrollUp, scrollDown;
     private EditText userInput;
     private RecyclerView msg;
     private NestedScrollView mView2;
     private String current_event_name, current_event_id, current_event_image;
-    private String currentUserID, currentUserName;
+    private String currentUserID, currentUserName, currentUserURL;
     private String currentDate, currentTime;
     private String checker ="", theUrl = "";
     private Uri fileUri;
@@ -69,13 +76,14 @@ public class MessageActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference UsersRef, EventRef, EventMsgKeyRef;
+    private FirebaseFirestore db;
+    private DocumentReference docRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        //get current user
         mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
 
@@ -84,6 +92,15 @@ public class MessageActivity extends AppCompatActivity {
 
         //UsersRef = FirebaseDatabase.getInstance().getReference().child("users_profile");
         EventRef = FirebaseDatabase.getInstance().getReference().child("events_msg").child(current_event_id);
+        db = FirebaseFirestore.getInstance();
+        docRef = db.collection("user-profile").document(currentUserID);
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                currentUserName = documentSnapshot.getString("displayName");
+                currentUserURL = documentSnapshot.getString("avatarImageUrl");
+            }
+        });
 
         chat_toolbar = (Toolbar) findViewById(R.id.Chatlog_toolbar);
         setSupportActionBar(chat_toolbar);
@@ -93,6 +110,7 @@ public class MessageActivity extends AppCompatActivity {
 
         send_Button = (Button) findViewById(R.id.send_button);
         sendimg_Button = (ImageButton) findViewById(R.id.sendFiles_button);
+        scrollUp = findViewById(R.id.floatingActionButton_scrollUp);
         scrollDown = (FloatingActionButton) findViewById(R.id.floatingActionButton_scrollDown);
         userInput = (EditText) findViewById(R.id.sendmsg_editText);
         msg = (RecyclerView) findViewById(R.id.chatlog_recycler);
@@ -103,13 +121,29 @@ public class MessageActivity extends AppCompatActivity {
        msg.setLayoutManager(linearLayoutManager);
        msg.setAdapter(messageAdapter);
 
-        EventRef.child(current_event_id).addValueEventListener(new ValueEventListener() {
+        EventRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if (dataSnapshot.exists()){
-                    current_event_name = dataSnapshot.child("event_name").getValue().toString();
+                    Message message = dataSnapshot.getValue(Message.class);
+                    msgList.add(message);
+                    messageAdapter.notifyDataSetChanged();
+                    mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
                 }
             }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (dataSnapshot.exists()){
+                    Message message = dataSnapshot.getValue(Message.class);
+                    msgList.add(message);
+                    messageAdapter.notifyDataSetChanged();
+                    mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
+                }
+            }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
@@ -118,6 +152,13 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
+            }
+        });
+
+        scrollUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mView2.fullScroll(NestedScrollView.FOCUS_UP);
             }
         });
 
@@ -143,6 +184,8 @@ public class MessageActivity extends AppCompatActivity {
 
                     HashMap<String, Object> messageInfoMap = new HashMap<>();
                         messageInfoMap.put("senderID", currentUserID);
+                        messageInfoMap.put("senderName", currentUserName);
+                        messageInfoMap.put("senderURL", currentUserURL);
                         messageInfoMap.put("msgText", message);
                         messageInfoMap.put("msgDate", currentDate);
                         messageInfoMap.put("msgTime", currentTime);
@@ -150,13 +193,13 @@ public class MessageActivity extends AppCompatActivity {
                     EventMsgKeyRef.updateChildren(messageInfoMap);
                 }
                 userInput.setText("");
+                mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
             }
         });
 
         sendimg_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 CharSequence options[] = new CharSequence[]
                         {
                                 "Image",
@@ -179,6 +222,7 @@ public class MessageActivity extends AppCompatActivity {
                     }
                 });
                 builder.show();
+                mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
             }
         });
     }
@@ -225,6 +269,8 @@ public class MessageActivity extends AppCompatActivity {
 
                             HashMap<String, Object> messageInfoMap = new HashMap<>();
                             messageInfoMap.put("senderID", currentUserID);
+                            messageInfoMap.put("senderName", currentUserName);
+                            messageInfoMap.put("senderURL", currentUserURL);
                             messageInfoMap.put("msgText", theUrl);
                             messageInfoMap.put("msgDate", currentDate);
                             messageInfoMap.put("msgTime", currentTime);
@@ -237,37 +283,6 @@ public class MessageActivity extends AppCompatActivity {
                 Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        EventRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (dataSnapshot.exists()){
-                    Message message = dataSnapshot.getValue(Message.class);
-                    msgList.add(message);
-                    messageAdapter.notifyDataSetChanged();
-                    mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
-                }
-            }
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                if (dataSnapshot.exists()){
-//                    Message message = dataSnapshot.getValue(Message.class);
-//                    msgList.add(message);
-//                    messageAdapter.notifyDataSetChanged();
-//                    mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
-//                }
-            }
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
     }
 
     @Override
