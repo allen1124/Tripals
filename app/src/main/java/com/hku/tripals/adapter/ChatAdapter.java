@@ -10,16 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.hku.tripals.R;
 import com.hku.tripals.model.EventChat;
 import com.hku.tripals.ui.message.MessageActivity;
-import com.squareup.picasso.Picasso;
 
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +27,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     private List<EventChat> chatList;
     private FirebaseAuth mAuth;
     String currentUserID;
-    private DatabaseReference eventChats;
 
     public ChatAdapter(Context mContext, List<EventChat> chatList){
         this.mContext = mContext;
@@ -64,53 +58,19 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @Override
     public void onBindViewHolder(@NonNull final ChatViewHolder holder, int position) {
         final EventChat chat = chatList.get(position);
-        String eventid = chat.getEventId();
-        eventChats = FirebaseDatabase.getInstance().getReference().child("chats").child(eventid);
-
-        eventChats.addValueEventListener(new ValueEventListener() {
+        holder.eventName.setText(chat.getEventTitle());
+        Glide.with(mContext)
+                .load(chat.getEventPhotoUrl())
+                .into(holder.icon_image);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    if (dataSnapshot.hasChild("participants")){
-                        Iterator iterator = dataSnapshot.child("participants").getChildren().iterator();
-                        while(iterator.hasNext()){
-                            String parti_ID = (String) ((DataSnapshot)iterator.next()).getValue();
-                            if (currentUserID.equals(parti_ID)){
-                                holder.itemView.setVisibility(View.VISIBLE);
-                                holder.previewChat.setText(parti_ID);
-                                if (dataSnapshot.hasChild("eventPhotoUrl")){
-                                    String profileimage = dataSnapshot.child("eventPhotoUrl").getValue().toString();
-                                    if (profileimage.isEmpty()){
-                                        profileimage = "R.color.colorPrimary";
-                                    }
-                                    Picasso.get().load(profileimage).placeholder(R.color.colorPrimary).into(holder.icon_image);
-                                }
-                                //final String eventTitle = dataSnapshot.child("eventTitle").getValue().toString();
-                                final String event_image = holder.icon_image.toString();
-                                //final String eventIDs = dataSnapshot.child("eventId").getValue().toString();
-                                //holder.eventName.setText(eventTitle);
-                                holder.eventName.setText(chat.getEventTitle());
-                                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Intent chatIntent = new Intent(mContext, MessageActivity.class);
-                                        chatIntent.putExtra("eventID", chat.getEventId());
-                                        chatIntent.putExtra("eventName", chat.getEventTitle());
-                                        chatIntent.putExtra("eventImage", event_image);
-                                        mContext.startActivity(chatIntent);
-                                    }
-                                });
-                                break;
-                            } else {
-                                holder.itemView.setVisibility(View.GONE);
-                            }
-                        }
-                    }
-                }
+            public void onClick(View view) {
+                Intent chatIntent = new Intent(mContext, MessageActivity.class);
+                chatIntent.putExtra("eventID", chat.getEventId());
+                chatIntent.putExtra("eventName", chat.getEventTitle());
+//                chatIntent.putExtra("eventImage", event_image);
+                mContext.startActivity(chatIntent);
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
     }
 
@@ -123,6 +83,5 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
     public void setEventChats(List<EventChat> chat){
         this.chatList = chat;
-        notifyDataSetChanged();
     }
 }

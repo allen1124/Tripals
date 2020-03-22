@@ -127,4 +127,7 @@
     <!--    FavouriteFragment-->
     <string name="favourite">My Favourite</string>
     <string name="no_favourite">You do not have any bookmarked event.</string>
+    <!--    MessageFragment-->
+    <string name="message">Message</string>
+    <string name="no_message">You do not have any messages.</string>
 </resources>

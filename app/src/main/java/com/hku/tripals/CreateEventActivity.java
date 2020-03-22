@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 public class CreateEventActivity extends AppCompatActivity {
@@ -417,11 +418,13 @@ public class CreateEventActivity extends AppCompatActivity {
         }
         List<String> participant = new ArrayList<>();
         participant.add(currentUser.getUid());
-        mDatabase.child("chats/"+event.getId()).child("eventId").setValue(event.getId());
-        mDatabase.child("chats/"+event.getId()).child("eventPhotoUrl").setValue(event.getPhotoUrl());
-        mDatabase.child("chats/"+event.getId()).child("host").setValue(event.getHost());
-        mDatabase.child("chats/"+event.getId()).child("eventTitle").setValue(event.getTitle());
-        mDatabase.child("chats/"+event.getId()).child("participants").setValue(participant);
+        HashMap<String, Object> chats = new HashMap<>();
+        chats.put("eventId", event.getId());
+        chats.put("host", event.getHost());
+        chats.put("eventPhotoUrl", event.getPhotoUrl());
+        chats.put("eventTitle", event.getTitle());
+        chats.put("participants", participant);
+        db.collection("chats").document(event.getId()).set(chats);
     }
 
     @Override

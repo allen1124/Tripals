@@ -29,6 +29,7 @@ import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Request;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -169,17 +170,19 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
                 }
             }
         });
-        mDatabase.child("chats/"+request.getEventId()).child("eventId").setValue(request.getEventId());
-        mDatabase.child("chats/"+request.getEventId()).child("host").setValue(request.getHostUid());
-        mDatabase.child("chats/"+request.getEventId()).child("eventPhotoUrl").setValue(request.getEventPhotoUrl());
-        mDatabase.child("chats/"+request.getEventId()).child("eventTitle").setValue(request.getEventTitle());
         eventRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Event event = documentSnapshot.toObject(Event.class);
                 List<String> participant = event.getParticipants();
                 participant.add(event.getHost());
-                mDatabase.child("chats/"+request.getEventId()).child("participants").setValue(participant);
+                HashMap<String, Object> chats = new HashMap<>();
+                chats.put("eventId", request.getEventId());
+                chats.put("host", request.getHostUid());
+                chats.put("eventPhotoUrl", request.getEventPhotoUrl());
+                chats.put("eventTitle", request.getEventTitle());
+                chats.put("participants", participant);
+                db.collection("chats").document(request.getEventId()).set(chats);
             }
         });
         db.collection("requests").document(request.getRequestorUid()+"-"+request.getEventId()).delete();

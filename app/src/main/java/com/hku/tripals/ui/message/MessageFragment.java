@@ -1,6 +1,7 @@
 package com.hku.tripals.ui.message;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,20 +24,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.hku.tripals.R;
 import com.hku.tripals.adapter.ChatAdapter;
 import com.hku.tripals.model.EventChat;
+import com.hku.tripals.model.Request;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MessageFragment extends Fragment {
 
+    private static final String TAG = "MessageFragment";
     private MessageViewModel messageViewModel;
 
-    private View ChatsView;
     private RecyclerView ChatsList;
 
     private List<EventChat> chatList = new ArrayList<>();
     private ChatAdapter chatAdapter;
     private LinearLayoutManager linearLayoutManager;
+    private TextView noMessage;
 
     private DatabaseReference eventChats;
     private FirebaseAuth mAuth;
@@ -55,53 +58,37 @@ public class MessageFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        View ChatsView = inflater.inflate(R.layout.fragment_message, container, false);
+        messageViewModel =
+                ViewModelProviders.of(this).get(MessageViewModel.class);
+        noMessage = ChatsView.findViewById(R.id.no_message_textView);
         if(currentUserID == null){
-            messageViewModel =
-                    ViewModelProviders.of(this).get(MessageViewModel.class);
-            View ChatsView = inflater.inflate(R.layout.fragment_message, container, false);
-            final TextView textView = ChatsView.findViewById(R.id.text_message);
-            messageViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-                @Override
-                public void onChanged(@Nullable String s) {
-                    textView.setText(s);
-                }
-            });
+            Log.d(TAG, "onCreateView: No user id");
         } else {
             eventChats = FirebaseDatabase.getInstance().getReference().child("chats");
-
-            ChatsView = inflater.inflate(R.layout.fragment_message, container, false);
-            ChatsList = (RecyclerView) ChatsView.findViewById(R.id.chats_List);
-            linearLayoutManager = new LinearLayoutManager(getActivity());
+            ChatsList = (RecyclerView) ChatsView.findViewById(R.id.chats_list);
+            linearLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
             ChatsList.setLayoutManager(linearLayoutManager);
             chatAdapter = new ChatAdapter(getActivity(), chatList);
-
-            eventChats.addChildEventListener(new ChildEventListener() {
+            messageViewModel.getEventChat().observe(getViewLifecycleOwner(), new Observer<List<EventChat>>() {
                 @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    if (dataSnapshot.exists()){
-                        EventChat eventChat = dataSnapshot.getValue(EventChat.class);
-                        chatList.add(eventChat);
-                        chatAdapter.notifyDataSetChanged();
-                    }
+                public void onChanged(List<EventChat> eventChats) {
+                    chatAdapter.setEventChats(eventChats);
+                    chatAdapter.notifyDataSetChanged();
+                    if(chatAdapter.getItemCount() > 0)
+                        noMessage.setVisibility(View.GONE);
+                    else
+                        noMessage.setVisibility(View.VISIBLE);
                 }
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
-
+            messageViewModel.loadEventChat();
             ChatsList.setAdapter(chatAdapter);
-
-//            ChatsView = inflater.inflate(R.layout.fragment_message, container, false);
-//            ChatsList = (RecyclerView) ChatsView.findViewById(R.id.chats_List);
-//            ChatsList.setLayoutManager(new LinearLayoutManager(getContext()));
         }
         return ChatsView;
     }
+
+
+
 //        @Override
 //    public void onStart() {
 //        super.onStart();
