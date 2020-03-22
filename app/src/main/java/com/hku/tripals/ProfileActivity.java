@@ -41,6 +41,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.hku.tripals.model.User;
 import com.mukesh.countrypicker.Country;
 import com.mukesh.countrypicker.CountryPicker;
 import com.mukesh.countrypicker.OnCountryPickerListener;
@@ -51,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -78,6 +80,7 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
     private TextView DisplayInterest;
     private String[] listItems; //all interest options
     private boolean[] checkedItems; //check boxes
+    private List<String> selectedInterest;
     private ArrayList<Integer> mUserItems = new ArrayList<>(); //show checked items
 
     private FirebaseAuth mAuth;
@@ -190,8 +193,10 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String item = "";
+                        selectedInterest = new ArrayList<>();
                         for (int i=0; i<mUserItems.size(); i++){
                             item = item + listItems[mUserItems.get(i)];
+                            selectedInterest.add(listItems[mUserItems.get(i)]);
                             if(i != mUserItems.size() -1) {
                                 item = item + ", ";
                             }
@@ -384,23 +389,25 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
         Log.d(TAG, "uid: " + uid);
         //DocumentReference documentReference = fstore.collection("users").document(userID);
 
-        Map<String, Object> user = new HashMap<>();
-        user.put("gender", DisplayGender.getText().toString());
-        user.put("birthday", DisplayBirthDate.getText().toString());
-        user.put("homeCountry", DisplayHomeCountry.getText().toString());
-        user.put("language", DisplayLanguage.getText().toString());
-        user.put("bio", DisplayBio.getText().toString());
-
-        Map<String, Object> interestData = new HashMap<>();
-        interestData.put("interestString", DisplayInterest.getText().toString());
-        interestData.put("interestCheckedList", mUserItems);
-
-        user.put("interest", interestData);
+        User user = new User();
+        user.setUid(uid);
+        user.setDisplayName(mAuth.getCurrentUser().getDisplayName());
+        if(avatarImageUrl.matches("")){
+            user.setAvatarImageUrl(mAuth.getCurrentUser().getPhotoUrl().toString());
+        }else{
+            user.setAvatarImageUrl(avatarImageUrl);
+        }
+        user.setGender(DisplayGender.getText().toString());
+        user.setBirthday(DisplayBirthDate.getText().toString());
+        user.setHomeCountry(DisplayHomeCountry.getText().toString());
+        user.setLanguage(DisplayLanguage.getText().toString());
+        user.setBio(DisplayBio.getText().toString());
+        user.setInterests(selectedInterest);
 
         Log.d(TAG, user.toString());
 
         db.collection("user-profile").document(uid)
-                .set(user)
+                .set(user.toMap())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

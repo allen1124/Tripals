@@ -1,16 +1,21 @@
 package com.hku.tripals.model;
 
+import com.google.firebase.firestore.FieldValue;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class User {
     private String uid;
+    private String displayName;
     private String avatarImageUrl;
     private String gender;
     private String birthday;
     private String homeCountry;
     private String language;
     private String bio;
-
-    private String displayName;
-    //private List<String> interests; <- follow Event.class
+    private List<String> interests;
 
 
     public User() {
@@ -36,8 +41,6 @@ public class User {
         this.avatarImageUrl = avatarImageUrl;
     }
 
-    //uid
-
     public String getUid() {
         return uid;
     }
@@ -46,57 +49,13 @@ public class User {
         this.uid = uid;
     }
 
-    //gender
-
-    public String getgender() {
-        return gender;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setgender(String uid) {
-        this.gender = gender;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
-
-    //birthday
-
-    public String getbirthday() {
-        return birthday;
-    }
-
-    public void setbirthday(String uid) {
-        this.birthday= birthday;
-    }
-
-    //homeCountry
-
-    public String gethomeCountry() {
-        return homeCountry;
-    }
-
-    public void sethomeCountry(String uid) {
-        this.homeCountry = homeCountry;
-    }
-
-    //language
-
-    public String getlanguage() {
-        return language;
-    }
-
-    public void setlanguage(String uid) {
-        this.language = language;
-    }
-
-    //bio
-
-    public String getbio() {
-        return bio;
-    }
-
-    public void setbio(String uid) {
-        this.language = bio;
-    }
-
-    //AvatarImageUr
 
     public String getAvatarImageUrl() {
         return avatarImageUrl;
@@ -106,11 +65,65 @@ public class User {
         this.avatarImageUrl = avatarImageUrl;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getGender() {
+        return gender;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getHomeCountry() {
+        return homeCountry;
+    }
+
+    public void setHomeCountry(String homeCountry) {
+        this.homeCountry = homeCountry;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public List<String> getInterests() {
+        return interests;
+    }
+
+    public void setInterests(List<String> interests) {
+        this.interests = interests;
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("uid", uid);
+        result.put("displayName", displayName);
+        result.put("avatarImageUrl", avatarImageUrl);
+        result.put("gender", gender);
+        result.put("birthday", birthday);
+        result.put("homeCountry", homeCountry);
+        result.put("language", language);
+        result.put("bio", bio);
+        result.put("interests", interests);
+        return result;
     }
 }
