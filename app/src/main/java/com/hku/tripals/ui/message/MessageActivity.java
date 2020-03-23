@@ -155,6 +155,7 @@ public class MessageActivity extends AppCompatActivity {
 
         messageAdapter = new MessageAdapter(MessageActivity.this,msgList);
         linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
         msg.setLayoutManager(linearLayoutManager);
         msg.setAdapter(messageAdapter);
 
