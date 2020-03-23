@@ -59,10 +59,8 @@ public class MessageActivity extends AppCompatActivity {
     private Toolbar chat_toolbar;
     private Button send_Button;
     private ImageButton sendimg_Button;
-    private FloatingActionButton scrollUp, scrollDown;
     private EditText userInput;
     private RecyclerView msg;
-    private NestedScrollView mView2;
     private String current_event_name, current_event_id, current_event_image;
     private String currentUserID, currentUserName, currentUserURL;
     private String currentDate, currentTime;
@@ -110,11 +108,8 @@ public class MessageActivity extends AppCompatActivity {
 
         send_Button = (Button) findViewById(R.id.send_button);
         sendimg_Button = (ImageButton) findViewById(R.id.sendFiles_button);
-        scrollUp = findViewById(R.id.floatingActionButton_scrollUp);
-        scrollDown = (FloatingActionButton) findViewById(R.id.floatingActionButton_scrollDown);
         userInput = (EditText) findViewById(R.id.sendmsg_editText);
         msg = (RecyclerView) findViewById(R.id.chatlog_recycler);
-        mView2 = (NestedScrollView) findViewById(R.id.scrollView4);
 
        messageAdapter = new MessageAdapter(MessageActivity.this,msgList);
        linearLayoutManager = new LinearLayoutManager(this);
@@ -128,7 +123,7 @@ public class MessageActivity extends AppCompatActivity {
                     Message message = dataSnapshot.getValue(Message.class);
                     msgList.add(message);
                     messageAdapter.notifyDataSetChanged();
-                    mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
+                    msg.smoothScrollToPosition(messageAdapter.getItemCount());
                 }
             }
             @Override
@@ -137,7 +132,7 @@ public class MessageActivity extends AppCompatActivity {
                     Message message = dataSnapshot.getValue(Message.class);
                     msgList.add(message);
                     messageAdapter.notifyDataSetChanged();
-                    mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
+                    msg.smoothScrollToPosition(messageAdapter.getItemCount());
                 }
             }
             @Override
@@ -146,20 +141,6 @@ public class MessageActivity extends AppCompatActivity {
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
-
-        scrollDown.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
-            }
-        });
-
-        scrollUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mView2.fullScroll(NestedScrollView.FOCUS_UP);
-            }
         });
 
         send_Button.setOnClickListener(new View.OnClickListener() {
@@ -193,7 +174,6 @@ public class MessageActivity extends AppCompatActivity {
                     EventMsgKeyRef.updateChildren(messageInfoMap);
                 }
                 userInput.setText("");
-                mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
             }
         });
 
@@ -222,7 +202,6 @@ public class MessageActivity extends AppCompatActivity {
                     }
                 });
                 builder.show();
-                mView2.fullScroll(NestedScrollView.FOCUS_DOWN);
             }
         });
     }
