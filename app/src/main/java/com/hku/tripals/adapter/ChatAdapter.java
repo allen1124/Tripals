@@ -68,7 +68,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
                 Intent chatIntent = new Intent(mContext, MessageActivity.class);
                 chatIntent.putExtra("eventID", chat.getEventId());
                 chatIntent.putExtra("eventName", chat.getEventTitle());
-//                chatIntent.putExtra("eventImage", event_image);
+                chatIntent.putExtra("eventImage", chat.getEventPhotoUrl());
+                chatIntent.putExtra("type", chat.getType());
+                if(chat.getType().matches("EVENT")){
+                    chatIntent.putExtra("participants", String.valueOf(chat.getParticipants()));
+                }
                 mContext.startActivity(chatIntent);
             }
         });

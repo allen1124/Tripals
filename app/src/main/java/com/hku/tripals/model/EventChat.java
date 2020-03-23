@@ -8,6 +8,7 @@ public class EventChat {
     private String eventTitle;
     private String host;
     private String lastestMsg;
+    private String type;
     private List<String> participants;
 
     public EventChat(){
@@ -67,5 +68,13 @@ public class EventChat {
 
     public void setLastestMsg(String lastestMsg) {
         this.lastestMsg = lastestMsg;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -1,16 +1,22 @@
 package com.hku.tripals.ui.message;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,10 +24,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -50,21 +59,25 @@ import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
 public class MessageActivity extends AppCompatActivity {
 
+    private static final String TAG = "MessageActivity";
     private Toolbar chat_toolbar;
     private Button send_Button;
     private ImageButton sendimg_Button;
     private EditText userInput;
     private RecyclerView msg;
-    private String current_event_name, current_event_id, current_event_image;
+    private String current_event_name, current_event_id, current_event_image, type, participants;
     private String currentUserID, currentUserName, currentUserURL;
     private String currentDate, currentTime;
     private String checker ="", theUrl = "";
+    private CircleImageView chatIcon;
+    private TextView chatTitle;
     private Uri fileUri;
     private StorageTask uploadTask;
 
@@ -87,6 +100,8 @@ public class MessageActivity extends AppCompatActivity {
 
         current_event_id = getIntent().getExtras().get("eventID").toString();
         current_event_name = getIntent().getExtras().get("eventName").toString();
+        current_event_image = getIntent().getStringExtra("eventImage");
+        type = getIntent().getStringExtra("type");
 
         //UsersRef = FirebaseDatabase.getInstance().getReference().child("users_profile");
         EventRef = FirebaseDatabase.getInstance().getReference().child("events_msg").child(current_event_id);
@@ -104,17 +119,44 @@ public class MessageActivity extends AppCompatActivity {
         setSupportActionBar(chat_toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle((current_event_name));
-
+        getSupportActionBar().setTitle("");
+        chatIcon = findViewById(R.id.chat_icon);
+        Glide.with(this)
+                .load(current_event_image)
+                .into(chatIcon);
+        chatTitle = findViewById(R.id.chat_title);
+        chatTitle.setText(current_event_name);
+        chatIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(type.matches("EVENT")){
+                    participants = getIntent().getStringExtra("participants");
+                    showParticipants(participants);
+                }else{
+                    Log.d(TAG, "it is a 1-1 chat, go to user profile");
+                }
+            }
+        });
+        chatTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(type.matches("EVENT")){
+                    participants = getIntent().getStringExtra("participants");
+                    showParticipants(participants);
+                }else{
+                    Log.d(TAG, "it is a 1-1 chat, go to user profile");
+                }
+            }
+        });
         send_Button = (Button) findViewById(R.id.send_button);
         sendimg_Button = (ImageButton) findViewById(R.id.sendFiles_button);
         userInput = (EditText) findViewById(R.id.sendmsg_editText);
         msg = (RecyclerView) findViewById(R.id.chatlog_recycler);
 
-       messageAdapter = new MessageAdapter(MessageActivity.this,msgList);
-       linearLayoutManager = new LinearLayoutManager(this);
-       msg.setLayoutManager(linearLayoutManager);
-       msg.setAdapter(messageAdapter);
+        messageAdapter = new MessageAdapter(MessageActivity.this,msgList);
+        linearLayoutManager = new LinearLayoutManager(this);
+        msg.setLayoutManager(linearLayoutManager);
+        msg.setAdapter(messageAdapter);
 
         EventRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -282,5 +324,45 @@ public class MessageActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showParticipants(String participants){
+        participants = participants.replaceAll("^\\[|]$", "");
+        final List<String> userList = new ArrayList<String>(Arrays.asList(participants.split(", ")));
+        Log.d(TAG, "showParticipants: "+userList.toString());
+        AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
+        builder.setTitle(getString(R.string.participants));
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>
+                (this, R.layout.recyclerview_chats, userList){
+            @Override
+            public View getView(int position, View view, ViewGroup parent){
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = inflater.inflate(R.layout.recyclerview_chats, null);
+                CardView cardView = view.findViewById(R.id.Chats_cardview);
+                cardView.setRadius(0f);
+                TextView lastMsg = view.findViewById(R.id.chatpreview_textview);
+                final TextView username = view.findViewById(R.id.event_name_textview);
+                final CircleImageView avatarIcon = view.findViewById(R.id.circleEventImageView);
+                lastMsg.setVisibility(View.GONE);
+                DocumentReference userInfo = db.collection("user-profile").document(userList.get(position));
+                userInfo.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        username.setText(documentSnapshot.getString("displayName"));
+                        Glide.with(getContext()).load(documentSnapshot.getString("avatarImageUrl")).into(avatarIcon);
+                    }
+                });
+                return view;
+            }
+        };
+
+        builder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int position) {
+                Log.d(TAG, "onClick: "+userList.get(position));
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
