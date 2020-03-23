@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:padding="6dp"
     android:layout_width="300dp"
+    android:elevation="10dp"
     android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView

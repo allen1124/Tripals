@@ -130,7 +130,9 @@
     <!--    FavouriteFragment-->
     <string name="favourite">My Favourite</string>
     <string name="no_favourite">You do not have any bookmarked event.</string>
-    <!--    MessageFragment-->
+    <!--    MessageFragment & Activity-->
     <string name="message">Message</string>
     <string name="no_message">You do not have any messages.</string>
+    <string name="send">Send</string>
+    <string name="start_typing">Start typing...</string>
 </resources>

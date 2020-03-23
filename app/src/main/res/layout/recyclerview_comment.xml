@@ -38,18 +38,8 @@
             android:id="@+id/c_username_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="@+id/c_avatar_imageView"
-            app:layout_constraintStart_toStartOf="@+id/c_avatar_imageView"
-            app:layout_constraintTop_toBottomOf="@+id/c_avatar_imageView" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@string/comment"
+            android:text="TextView"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/c_avatar_imageView"
             app:layout_constraintTop_toTopOf="@+id/c_avatar_imageView" />
@@ -64,8 +54,8 @@
             android:ems="10"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView2"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            app:layout_constraintStart_toStartOf="@+id/c_username_textView"
+            app:layout_constraintTop_toBottomOf="@+id/c_username_textView" />
 
         <TextView
             android:id="@+id/c_petty_time_textView"

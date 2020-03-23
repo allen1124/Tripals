@@ -72,7 +72,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
                 mContext.startActivity(chatIntent);
             }
         });
-        if(chat.getLastestMsg().startsWith("https://firebase")){
+        if(chat.getLastestMsg() != null && chat.getLastestMsg().startsWith("https://firebase")){
             holder.previewChat.setText("Image");
         } else {
             holder.previewChat.setText(chat.getLastestMsg());

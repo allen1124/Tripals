@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F2F2F2"
+    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,8 +38,9 @@
         <Button
             android:id="@+id/send_button"
             android:layout_width="70dp"
-            android:layout_height="44dp"
-            android:text="Send"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_corner_pri"
+            android:text="@string/send"
             app:layout_constraintBottom_toBottomOf="@+id/sendmsg_editText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/sendmsg_editText"
@@ -46,13 +49,14 @@
         <EditText
             android:id="@+id/sendmsg_editText"
             android:layout_width="match_parent"
-            android:layout_height="66dp"
-            android:layout_marginBottom="8dp"
+            android:layout_height="56dp"
             android:layout_marginStart="6dp"
             android:layout_marginEnd="70dp"
-            android:background="@color/quantum_white_100"
+            android:layout_marginBottom="8dp"
+            android:paddingLeft="12dp"
+            android:background="@drawable/round"
             android:ems="10"
-            android:hint="Start typing..."
+            android:hint="@string/start_typing"
             android:inputType="textPersonName"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -81,7 +85,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"></androidx.recyclerview.widget.RecyclerView>
+                    app:layout_constraintTop_toTopOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -101,12 +105,13 @@
             android:layout_width="45dp"
             android:layout_height="43dp"
             android:layout_marginEnd="4dp"
+            android:background="@drawable/round_corner_pri"
+            android:backgroundTint="@color/quantum_grey100"
             android:clickable="true"
             app:layout_constraintBottom_toBottomOf="@+id/sendmsg_editText"
             app:layout_constraintEnd_toStartOf="@+id/send_button"
             app:layout_constraintTop_toTopOf="@+id/sendmsg_editText"
-            app:srcCompat="@drawable/ic_imgadd_24dp"
-            android:backgroundTint="@color/quantum_grey100"/>
+            app:srcCompat="@drawable/ic_imgadd_24dp" />
 
         <!--        <ScrollView-->
 <!--            android:id="@+id/scrollView3"-->
