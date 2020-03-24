@@ -24,6 +24,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.hku.tripals.R;
 import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Request;
@@ -187,7 +188,7 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
                 chats.put("eventPhotoUrl", request.getEventPhotoUrl());
                 chats.put("eventTitle", request.getEventTitle());
                 chats.put("participants", participant);
-                db.collection("chats").document(request.getEventId()).set(chats);
+                db.collection("chats").document(request.getEventId()).set(chats, SetOptions.merge());
             }
         });
 

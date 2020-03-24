@@ -1,6 +1,7 @@
 package com.hku.tripals.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.hku.tripals.FullScreenImageActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.model.Comment;
 
@@ -70,6 +72,15 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         }else{
             holder.commentPhoto.setVisibility(View.VISIBLE);
             Glide.with(context).load(comment.getCommentPhoto()).into(holder.commentPhoto);
+            final Uri imageUri = Uri.parse(comment.getCommentPhoto());
+            holder.commentPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent imageIntent = new Intent(context, FullScreenImageActivity.class);
+                    imageIntent.putExtra("imageUri", imageUri);
+                    context.startActivity(imageIntent);
+                }
+            });
         }
         holder.username.setText(comment.getUsername());
         holder.comment.setText(comment.getComment());
