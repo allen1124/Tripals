@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.hku.tripals.FullScreenImageActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.model.Message;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
@@ -95,8 +96,23 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         String fromMessageType = msg.getmsgType();
 
         if (msg_send.equals("1") && msg_receive.equals("1")){
-            String receiveImage = msg.getSenderURL();
-            Picasso.get().load(receiveImage).placeholder(R.drawable.ic_profile_black_24dp).into(holder.profile_image);
+            final String receiveImage = msg.getSenderURL();
+            Picasso
+                    .get()
+                    .load(receiveImage)
+                    .fetch(new Callback(){
+                        @Override
+                        public void onSuccess() {
+                            Picasso
+                                    .get()
+                                    .load(receiveImage)
+                                    .placeholder(R.drawable.ic_profile_black_24dp)
+                                    .into(holder.profile_image);
+                        }
+                        @Override
+                        public void onError(Exception e) { }
+                    });
+            //Picasso.get().load(receiveImage).placeholder(R.drawable.ic_profile_black_24dp).into(holder.profile_image);
         }
 
         String msg_time = msg.getMsgDate() + " " + msg.getMsgTime();
