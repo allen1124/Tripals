@@ -319,7 +319,7 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
     private void uploadImageToFirebase(){
         if(avatarUri == null)
             return;
-        String filename = UUID.randomUUID().toString();
+        String filename = currentUser.getUid();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         avaterBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         final StorageReference ref = FirebaseStorage.getInstance().getReference("/avatar-images/"+filename);
