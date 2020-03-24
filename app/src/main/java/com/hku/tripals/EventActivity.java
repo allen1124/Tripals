@@ -1,5 +1,6 @@
 package com.hku.tripals;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,9 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.hku.tripals.adapter.CommentsAdapter;
 import com.hku.tripals.adapter.EventAdapter;
 import com.hku.tripals.model.Comment;
@@ -51,6 +55,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,8 +69,11 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -79,6 +87,7 @@ public class EventActivity extends AppCompatActivity {
 
     private static final String TAG = "EventActivity";
     private static final String BOOKMARK_PREF = "BOOKMARK_PREF";
+    private static int IMAGE_PICKER_CODE = 2222;
     private Event event;
 
     private TextView eventLocation;
@@ -99,10 +108,14 @@ public class EventActivity extends AppCompatActivity {
     private ImageView commentUserAvatar;
     private TextView commentUsername;
     private EditText commentText;
+    private ImageView commentPhoto;
+    private Bitmap commentPhotoBitmap;
+    private Button commentUploadImage;
     private Button commentPost;
     private RecyclerView commentView;
     private LinearLayoutManager layoutManager;
     private CommentsAdapter commentsAdapter;
+    private Uri commentPhotoUri;
 
     private FirebaseFirestore db;
     private DatabaseReference mDatabase;
@@ -133,6 +146,8 @@ public class EventActivity extends AppCompatActivity {
         commentPost = findViewById(R.id.user_comment_post_button);
         commentView = findViewById(R.id.event_comment_recycler_view);
         bookmarkButton = findViewById(R.id.bookmark_imageView);
+        commentPhoto = findViewById(R.id.c_comment_imageView);
+        commentUploadImage = findViewById(R.id.c_add_image_button);
         bookmarkPref = getSharedPreferences(BOOKMARK_PREF, MODE_PRIVATE);
         bookmarkJson = bookmarkPref.getString("bookmark", "[]");
         JSONArray jsonArray = null;
@@ -273,6 +288,23 @@ public class EventActivity extends AppCompatActivity {
                 }
             }
         });
+        if(commentPhotoUri == null){
+            commentPhoto.setVisibility(View.GONE);
+        }
+        commentUploadImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(commentPhotoUri == null){
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    intent.setType("image/*");
+                    startActivityForResult(intent, IMAGE_PICKER_CODE);
+                }else{
+                    commentPhotoUri = null;
+                    commentPhoto.setVisibility(View.GONE);
+                    commentUploadImage.setText(R.string.add_image);
+                }
+            }
+        });
         commentPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -285,6 +317,9 @@ public class EventActivity extends AppCompatActivity {
                     commentPost.setEnabled(false);
                     postComment(commentString);
                     commentText.getText().clear();
+                    commentPhoto.setVisibility(View.GONE);
+                    commentPhotoUri = null;
+                    commentUploadImage.setText(R.string.add_image);
                     commentText.setEnabled(true);
                     commentPost.setEnabled(true);
                 }
@@ -340,19 +375,50 @@ public class EventActivity extends AppCompatActivity {
     private void postComment(String commentString){
         Log.d(TAG, "postComment: called");
         String eventKey = event.getId();
-        DocumentReference newCommentRef = db.collection("events").document(eventKey).collection("comments").document();
-        Comment comment = new Comment(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getPhotoUrl().toString(), commentString);
-        newCommentRef.set(comment.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "onSuccess: comment added");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "Error adding document", e);
-            }
-        });
+        final DocumentReference newCommentRef = db.collection("events").document(eventKey).collection("comments").document();
+        String newCommentId = newCommentRef.getId();
+        final Comment comment = new Comment(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getPhotoUrl().toString(), commentString);
+        if(commentPhotoUri == null){
+            newCommentRef.set(comment.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "onSuccess: comment added");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(TAG, "Error adding document", e);
+                }
+            });
+        }else{
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            commentPhotoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            final StorageReference ref = FirebaseStorage.getInstance().getReference("/comment-images/"+newCommentId);
+            ref.putBytes(baos.toByteArray()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(TAG, "avatar photo uploaded");
+                    ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            comment.setCommentPhoto(uri.toString());
+                            Log.d(TAG, "comment photo url: "+uri.toString());
+                            newCommentRef.set(comment.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "onSuccess: comment added");
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w(TAG, "Error adding document", e);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
     }
 
     private void getCommentData(String eventId){
@@ -375,5 +441,41 @@ public class EventActivity extends AppCompatActivity {
                 commentsAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: Result code" + resultCode);
+        if(requestCode == IMAGE_PICKER_CODE && resultCode == RESULT_OK && data != null){
+            Log.d(TAG, "Photo selected");
+            commentPhotoUri = data.getData();
+            try {
+                commentPhotoBitmap = decodeUri(this, commentPhotoUri, 1080);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            commentPhoto.setImageBitmap(commentPhotoBitmap);
+            commentPhoto.setVisibility(View.VISIBLE);
+            commentUploadImage.setText(R.string.remove_image);
+        }
+    }
+
+    public static Bitmap decodeUri(Context c, Uri uri, final int requiredSize) throws FileNotFoundException {
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o);
+        int width_tmp = o.outWidth, height_tmp = o.outHeight;
+        int scale = 1;
+        while(true) {
+            if(width_tmp / 2 < requiredSize || height_tmp / 2 < requiredSize)
+                break;
+            width_tmp /= 2;
+            height_tmp /= 2;
+            scale *= 2;
+        }
+        BitmapFactory.Options o2 = new BitmapFactory.Options();
+        o2.inSampleSize = scale;
+        return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2);
     }
 }

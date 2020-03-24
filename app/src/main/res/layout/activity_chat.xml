@@ -1,117 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F2F2F2"
+    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/Chatlog_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/Chatlog_toolbar"
-            android:layout_width="match_parent"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/chat_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+
+        <TextView
+            android:id="@+id/chat_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginStart="25dp"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatlog_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom"
+        android:layout_below="@id/Chatlog_toolbar"
+        />
+
+    <RelativeLayout
+        android:id="@+id/bottom"
+        android:layout_width="match_parent"
+        android:padding="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/send_button"
             android:layout_width="70dp"
-            android:layout_height="44dp"
-            android:text="Send"
-            app:layout_constraintBottom_toBottomOf="@+id/sendmsg_editText"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/sendmsg_editText"
-            app:layout_constraintTop_toTopOf="@+id/sendmsg_editText" />
-
-        <EditText
-            android:id="@+id/sendmsg_editText"
-            android:layout_width="335dp"
-            android:layout_height="66dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="8dp"
-            android:background="@color/quantum_white_100"
-            android:ems="10"
-            android:hint="Start typing..."
-            android:inputType="textPersonName"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollView4"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="56dp"
-            android:layout_marginBottom="72dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/chatlog_recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"></androidx.recyclerview.widget.RecyclerView>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.core.widget.NestedScrollView>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton_scrollDown"
-            android:layout_width="0dp"
-            android:layout_height="74dp"
-            android:clickable="true"
-            android:focusable="true"
-            app:backgroundTint="@color/colorPrimary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/Chatlog_toolbar"
-            app:srcCompat="@drawable/ic_arrow" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_corner_pri"
+            android:text="@string/send"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true" />
 
         <ImageButton
             android:id="@+id/sendFiles_button"
             android:layout_width="45dp"
             android:layout_height="43dp"
             android:layout_marginEnd="4dp"
-            android:clickable="true"
-            app:layout_constraintBottom_toBottomOf="@+id/sendmsg_editText"
-            app:layout_constraintEnd_toStartOf="@+id/send_button"
-            app:layout_constraintTop_toTopOf="@+id/sendmsg_editText"
-            app:srcCompat="@drawable/ic_imgadd_24dp"
-            android:backgroundTint="@color/quantum_grey100"/>
+            android:background="@drawable/round_corner_pri"
+            android:backgroundTint="@color/quantum_grey100"
+            android:layout_toStartOf="@id/send_button"
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/ic_imgadd_24dp" />
 
-        <!--        <ScrollView-->
-<!--            android:id="@+id/scrollView3"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_marginTop="58dp"-->
-<!--            android:layout_marginBottom="72dp"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent">-->
+        <EditText
+            android:id="@+id/sendmsg_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="8dp"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:background="@drawable/round"
+            android:hint="@string/start_typing"
+            android:ems="10"
+            android:inputType="textMultiLine"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/sendFiles_button"/>
 
-<!--            <TextView-->
-<!--                android:id="@+id/displayMsg"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent" />-->
-<!--        </ScrollView>-->
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>

@@ -431,6 +431,7 @@ public class CreateEventActivity extends AppCompatActivity {
         chats.put("eventPhotoUrl", event.getPhotoUrl());
         chats.put("eventTitle", event.getTitle());
         chats.put("participants", participant);
+        chats.put("type", "EVENT");
         db.collection("chats").document(event.getId()).set(chats);
     }
     @Override

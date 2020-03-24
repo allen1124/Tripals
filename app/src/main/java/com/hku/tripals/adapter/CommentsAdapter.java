@@ -1,6 +1,7 @@
 package com.hku.tripals.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.hku.tripals.FullScreenImageActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.model.Comment;
 
@@ -38,6 +40,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         public ImageView avatar;
         public TextView username;
         public TextView comment;
+        public ImageView commentPhoto;
         public TextView pettyTime;
 
         public ViewHolder(@NonNull final View itemView) {
@@ -45,6 +48,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             avatar = (ImageView) itemView.findViewById(R.id.c_avatar_imageView);
             username = (TextView) itemView.findViewById(R.id.c_username_textView);
             comment = (TextView) itemView.findViewById(R.id.c_user_comment_textView);
+            commentPhoto = (ImageView) itemView.findViewById(R.id.c_comment_imageView);
             pettyTime = (TextView) itemView.findViewById(R.id.c_petty_time_textView);
         }
     }
@@ -62,6 +66,21 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         final Comment comment = commentList.get(position);
         if(comment.getUserPhoto() != null) {
             Glide.with(context).load(Uri.parse(comment.getUserPhoto())).apply(RequestOptions.circleCropTransform()).into(holder.avatar);
+        }
+        if(comment.getCommentPhoto() == null || comment.getCommentPhoto().matches("")){
+            holder.commentPhoto.setVisibility(View.GONE);
+        }else{
+            holder.commentPhoto.setVisibility(View.VISIBLE);
+            Glide.with(context).load(comment.getCommentPhoto()).into(holder.commentPhoto);
+            final Uri imageUri = Uri.parse(comment.getCommentPhoto());
+            holder.commentPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent imageIntent = new Intent(context, FullScreenImageActivity.class);
+                    imageIntent.putExtra("imageUri", imageUri);
+                    context.startActivity(imageIntent);
+                }
+            });
         }
         holder.username.setText(comment.getUsername());
         holder.comment.setText(comment.getComment());

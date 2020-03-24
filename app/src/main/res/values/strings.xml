@@ -120,6 +120,8 @@
     <string name="join_event">Join Event</string>
     <string name="edit_event">Edit Event</string>
     <string name="comment_alert">You did not enter comment</string>
+    <string name="add_image">Add Image</string>
+    <string name="remove_image">Remove Image</string>
     <!--    NotificationFragment-->
     <string name="accept">Accept</string>
     <string name="reject">Reject</string>
@@ -128,7 +130,10 @@
     <!--    FavouriteFragment-->
     <string name="favourite">My Favourite</string>
     <string name="no_favourite">You do not have any bookmarked event.</string>
-    <!--    MessageFragment-->
+    <!--    MessageFragment & Activity-->
     <string name="message">Message</string>
     <string name="no_message">You do not have any messages.</string>
+    <string name="send">Send</string>
+    <string name="start_typing">Start typing...</string>
+    <string name="participants">Participants</string>
 </resources>

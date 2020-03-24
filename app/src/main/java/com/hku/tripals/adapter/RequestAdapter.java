@@ -24,11 +24,14 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.hku.tripals.R;
 import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Request;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,6 +47,9 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+    private DatabaseReference eventMsgRef, EventMsgKeyRef;
+    private String currentDate, currentTime;
 
     public RequestAdapter(Activity context){
         this.context = context;
@@ -182,9 +188,37 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
                 chats.put("eventPhotoUrl", request.getEventPhotoUrl());
                 chats.put("eventTitle", request.getEventTitle());
                 chats.put("participants", participant);
-                db.collection("chats").document(request.getEventId()).set(chats);
+                db.collection("chats").document(request.getEventId()).set(chats, SetOptions.merge());
             }
         });
+
+        //store join message in event_msg
+        eventMsgRef = FirebaseDatabase.getInstance().getReference().child("events_msg").child(request.getEventId());
+        String messageKey = eventMsgRef.push().getKey();
+        String message = request.getRequestorName() + " has joined the event!";
+
+        Calendar callDate = Calendar.getInstance();
+        SimpleDateFormat currentDateFormat = new SimpleDateFormat("dd MMM yyyy");
+        currentDate = currentDateFormat.format(callDate.getTime());
+
+        Calendar callTime = Calendar.getInstance();
+        SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
+        currentTime = currentTimeFormat.format(callTime.getTime());
+
+        HashMap<String, Object> groupMessageKey = new HashMap<>();
+        eventMsgRef.updateChildren(groupMessageKey);
+        EventMsgKeyRef = eventMsgRef.child(messageKey);
+
+        HashMap<String, Object> messageInfoMap = new HashMap<>();
+        messageInfoMap.put("senderID", request.getRequestorUid());
+        messageInfoMap.put("senderName", request.getRequestorName());
+        messageInfoMap.put("senderURL", request.getRequestorAvatar());
+        messageInfoMap.put("msgText", message);
+        messageInfoMap.put("msgDate", currentDate);
+        messageInfoMap.put("msgTime", currentTime);
+        messageInfoMap.put("msgType", "join");
+        EventMsgKeyRef.updateChildren(messageInfoMap);
+
         db.collection("requests").document(request.getRequestorUid()+"-"+request.getEventId()).delete();
     }
 }

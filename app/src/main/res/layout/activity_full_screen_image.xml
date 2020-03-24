@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    tools:context=".FullScreenImageActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/FullScreenImage_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    </androidx.appcompat.widget.Toolbar>
+
+<!--    <ImageView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:id="@+id/FullScreenImage"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_centerVertical="true">-->
+<!--    </ImageView>-->
+
+    <com.github.chrisbanes.photoview.PhotoView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/FullScreenImage"
+        android:layout_below="@id/FullScreenImage_toolbar"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+    </com.github.chrisbanes.photoview.PhotoView>
+
+</RelativeLayout>
