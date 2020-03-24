@@ -46,6 +46,7 @@ dependencies {
     implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     implementation 'com.algolia:algoliasearch-android:3.+'
     implementation 'com.github.Yalantis:SearchFilter:v1.0.4'
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

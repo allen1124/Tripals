@@ -51,6 +51,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
+import com.hku.tripals.FullScreenImageActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.adapter.MessageAdapter;
 import com.hku.tripals.model.Message;
@@ -75,7 +76,7 @@ public class MessageActivity extends AppCompatActivity {
     private String current_event_name, current_event_id, current_event_image, type, participants;
     private String currentUserID, currentUserName, currentUserURL;
     private String currentDate, currentTime;
-    private String checker ="", theUrl = "";
+    private String checker = "", theUrl = "";
     private CircleImageView chatIcon;
     private TextView chatTitle;
     private Uri fileUri;

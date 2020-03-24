@@ -15,11 +15,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".FullScreenImageActivity"></activity>
         <activity
             android:name=".EventActivity"
             android:label="@string/title_activity_event"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".CreateEventActivity" />
         <activity
             android:name=".PlaceActivity"
@@ -65,14 +66,14 @@
         <activity android:name=".ProfileActivity" />
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoginActivity" />
-        <activity
-            android:name=".ui.message.MessageActivity">
-            <!--            android:label="@string/title_message"-->
-            <!--            android:parentActivityName=".MainActivity">-->
-            <!--            <meta-data-->
-            <!--                android:name="android.support.PARENT_ACTIVITY"-->
-            <!--                android:value=".MainActivity" />-->
-            <!--            />-->
+        <activity android:name=".ui.message.MessageActivity">
+
+            <!-- android:label="@string/title_message" -->
+            <!-- android:parentActivityName=".MainActivity"> -->
+            <!-- <meta-data -->
+            <!-- android:name="android.support.PARENT_ACTIVITY" -->
+            <!-- android:value=".MainActivity" /> -->
+            <!-- /> -->
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
