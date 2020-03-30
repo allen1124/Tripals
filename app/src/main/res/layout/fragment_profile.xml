@@ -32,7 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:text="@string/display_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -44,7 +43,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="gender"
         app:layout_constraintEnd_toEndOf="@id/profile_user_display_name_textView"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@id/profile_user_display_name_textView"
@@ -55,10 +53,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:text="HomeCountry"
         app:layout_constraintBottom_toBottomOf="@id/profile_user_gender_textView"
         app:layout_constraintStart_toEndOf="@+id/profile_user_gender_textView"
         app:layout_constraintTop_toTopOf="@id/profile_user_gender_textView" />
+
+    <TextView
+        android:id="@+id/profile_user_interests_textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/profile_user_gender_textView"
+        app:layout_constraintTop_toBottomOf="@+id/profile_user_gender_textView" />
 
     <TextView
         android:id="@+id/profile_user_bio_textView"
@@ -66,10 +74,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="bio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/profile_user_gender_textView"
-        app:layout_constraintTop_toBottomOf="@+id/profile_user_gender_textView" />
+        app:layout_constraintStart_toStartOf="@id/profile_user_interests_textView"
+        app:layout_constraintTop_toBottomOf="@+id/profile_user_interests_textView" />
+
+    <Button
+        android:id="@+id/profile_user_logout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/logout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

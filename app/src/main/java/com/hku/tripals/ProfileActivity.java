@@ -1,6 +1,6 @@
- package com.hku.tripals;
+package com.hku.tripals;
 
-        import android.app.Activity;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;

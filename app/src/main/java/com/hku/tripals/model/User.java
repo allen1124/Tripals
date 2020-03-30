@@ -107,6 +107,17 @@ public class User {
         return interests;
     }
 
+    /*public String getInterestsstring() {
+        String intereststring = "";
+        for (int i=0; i<interests.size(); i++){
+            intereststring = intereststring + interests[i].toString();
+            if(i != interests.size() -1) {
+                intereststring = intereststring + ", ";
+            }
+        }
+        return intereststring;
+    }*/
+
     public void setInterests(List<String> interests) {
         this.interests = interests;
     }
