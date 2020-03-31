@@ -54,7 +54,7 @@
             android:text="@string/event_description"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintStart_toStartOf="@+id/event_location_title_textView"
-            app:layout_constraintTop_toBottomOf="@+id/event_quota_title_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/event_host_avatar_imageView" />
 
         <TextView
             android:id="@+id/event_location_textView"
@@ -86,6 +86,28 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintStart_toStartOf="@+id/event_location_textView"
             app:layout_constraintTop_toBottomOf="@+id/event_location_textView" />
+
+        <TextView
+            android:id="@+id/event_host_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintBottom_toBottomOf="@+id/event_host_avatar_imageView"
+            app:layout_constraintStart_toEndOf="@+id/event_host_avatar_imageView"
+            app:layout_constraintTop_toTopOf="@+id/event_host_avatar_imageView" />
+
+        <TextView
+            android:id="@+id/event_host_title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:drawableLeft="@drawable/ic_participant"
+            android:text="Host"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintStart_toStartOf="@+id/event_location_title_textView"
+            app:layout_constraintTop_toBottomOf="@+id/event_quota_title_textView" />
 
         <TextView
             android:id="@+id/event_description_textView"
@@ -202,15 +224,24 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/event_comment_recycler_view"
-            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/user_comment_cardView">
 
         </androidx.recyclerview.widget.RecyclerView>
+
+        <ImageView
+            android:id="@+id/event_host_avatar_imageView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@+id/event_quota_textView"
+            app:layout_constraintTop_toBottomOf="@+id/event_quota_textView"
+            tools:srcCompat="@tools:sample/avatars" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

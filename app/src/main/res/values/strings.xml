@@ -142,4 +142,7 @@
     <string name="logout">Logout</string>
     <string name="profile_created_events">Created Events</string>
     <string name="profile_joined_events">Joined Events</string>
+    <string name="title_activity_user_profile">UserProfileActivity</string>
+    <string name="no_event">No event in this place</string>
+    <string name="you_may_interested">You may interested</string>
 </resources>

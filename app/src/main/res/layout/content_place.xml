@@ -8,10 +8,32 @@
     tools:context=".PlaceActivity"
     tools:showIn="@layout/activity_place">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/place_event_recyclerView"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"/>
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/place_event_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/no_event_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_corner_pri_light"
+            android:text="@string/no_event"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginTop="32dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>

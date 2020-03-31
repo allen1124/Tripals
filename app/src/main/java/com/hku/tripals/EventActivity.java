@@ -45,6 +45,7 @@ import com.hku.tripals.model.Comment;
 import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Place;
 import com.hku.tripals.model.Request;
+import com.hku.tripals.model.User;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -74,6 +75,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -95,6 +97,9 @@ public class EventActivity extends AppCompatActivity {
     private TextView eventDescription;
     private TextView eventQuotaTitle;
     private TextView eventQuota;
+    private TextView eventHostName;
+    private ImageView eventHostAvatar;
+
     private Button eventButton;
     private ImageView appbarBg;
     private AppBarLayout appbar;
@@ -140,6 +145,8 @@ public class EventActivity extends AppCompatActivity {
         eventQuotaTitle = findViewById(R.id.event_quota_title_textView);
         eventQuota = findViewById(R.id.event_quota_textView);
         eventButton = findViewById(R.id.event_join_edit_button);
+        eventHostName = findViewById(R.id.event_host_textView);
+        eventHostAvatar = findViewById(R.id.event_host_avatar_imageView);
         commentUserAvatar = findViewById(R.id.c_avatar_imageView);
         commentUsername = findViewById(R.id.c_username_textView);
         commentText = findViewById(R.id.user_comment_editText);
@@ -150,6 +157,8 @@ public class EventActivity extends AppCompatActivity {
         commentUploadImage = findViewById(R.id.c_add_image_button);
         bookmarkPref = getSharedPreferences(BOOKMARK_PREF, MODE_PRIVATE);
         bookmarkJson = bookmarkPref.getString("bookmark", "[]");
+        eventHostName.setText(event.getHostName());
+        Glide.with(this).load(event.getHostAvatarUrl()).apply(RequestOptions.circleCropTransform()).into(eventHostAvatar);
         JSONArray jsonArray = null;
         try {
             jsonArray = new JSONArray(bookmarkJson);
@@ -326,6 +335,30 @@ public class EventActivity extends AppCompatActivity {
             }
         });
         getCommentData(event.getId());
+        eventHostName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!event.getHost().matches(currentUser.getUid())) {
+                    eventHostName.setEnabled(false);
+                    eventHostAvatar.setEnabled(false);
+                    goToUser(event.getHost());
+                    eventHostName.setEnabled(true);
+                    eventHostAvatar.setEnabled(true);
+                }
+            }
+        });
+        eventHostAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!event.getHost().matches(currentUser.getUid())) {
+                    eventHostName.setEnabled(false);
+                    eventHostAvatar.setEnabled(false);
+                    goToUser(event.getHost());
+                    eventHostName.setEnabled(true);
+                    eventHostAvatar.setEnabled(true);
+                }
+            }
+        });
     }
 
     @Override
@@ -477,5 +510,19 @@ public class EventActivity extends AppCompatActivity {
         BitmapFactory.Options o2 = new BitmapFactory.Options();
         o2.inSampleSize = scale;
         return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2);
+    }
+
+    private void goToUser(String uid){
+        db.collection("user-profile").document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User user = documentSnapshot.toObject(User.class);
+                Log.d(TAG, "onClick: go user detail :" + user.getUid());
+                Intent myIntent = new Intent(EventActivity.this, UserProfileActivity.class);
+                myIntent.putExtra("user", (Serializable) user);
+                startActivity(myIntent);
+                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
     }
 }

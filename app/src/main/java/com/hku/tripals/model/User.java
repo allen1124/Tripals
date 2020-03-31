@@ -1,10 +1,11 @@
 package com.hku.tripals.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class User {
+public class User implements Serializable {
     private String uid;
     private String displayName;
     private String avatarImageUrl;

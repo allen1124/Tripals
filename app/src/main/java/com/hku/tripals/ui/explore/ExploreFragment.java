@@ -45,8 +45,9 @@ public class ExploreFragment extends Fragment {
     private DestinationAdapter destinationAdapter;
 
     private RecyclerView eventRecyclerView;
-    private LinearLayoutManager eventLayoutManager;
-    private EventAdapter eventAdapter;
+    private RecyclerView YMIeventRecyclerView;
+    private LinearLayoutManager eventLayoutManager, YMIeventLayoutManager;
+    private EventAdapter eventAdapter, eventAdapter1;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -97,6 +98,20 @@ public class ExploreFragment extends Fragment {
         });
         exploreViewModel.loadEvent(5);
         eventRecyclerView.setAdapter(eventAdapter);
+
+        YMIeventRecyclerView = root.findViewById(R.id.you_may_interested_RecyclerView);
+        YMIeventLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        YMIeventRecyclerView.setLayoutManager(YMIeventLayoutManager);
+        eventAdapter1 = new EventAdapter(getActivity());
+        exploreViewModel.getYMIEvents().observe(getViewLifecycleOwner(), new Observer<List<Event>>() {
+            @Override
+            public void onChanged(List<Event> events) {
+                eventAdapter1.setEventList(events);
+                eventAdapter1.notifyDataSetChanged();
+            }
+        });
+        exploreViewModel.loadYMIEvent(5);
+        YMIeventRecyclerView.setAdapter(eventAdapter1);
 
         searchbar = root.findViewById(R.id.explore_searchView);
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);

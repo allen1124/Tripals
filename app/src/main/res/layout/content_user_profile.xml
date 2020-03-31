@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".UserProfileActivity"
+    tools:showIn="@layout/activity_user_profile">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/user_gender_title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/create_profile_gender_title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/user_gender_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintBottom_toBottomOf="@+id/user_gender_title_textView"
+            app:layout_constraintStart_toEndOf="@+id/user_gender_title_textView"
+            app:layout_constraintTop_toTopOf="@+id/user_gender_title_textView" />
+
+        <TextView
+            android:id="@+id/user_age_title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Age"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintStart_toStartOf="@+id/user_gender_title_textView"
+            app:layout_constraintTop_toBottomOf="@+id/user_gender_title_textView" />
+
+        <TextView
+            android:id="@+id/user_age_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintBottom_toBottomOf="@+id/user_age_title_textView"
+            app:layout_constraintStart_toStartOf="@+id/user_gender_textView"
+            app:layout_constraintTop_toTopOf="@+id/user_age_title_textView" />
+
+
+        <TextView
+        android:id="@+id/user_country_title_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Country"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintStart_toStartOf="@+id/user_age_title_textView"
+        app:layout_constraintTop_toBottomOf="@+id/user_age_title_textView" />
+
+
+        <TextView
+            android:id="@+id/user_country_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintStart_toStartOf="@+id/user_age_textView"
+            app:layout_constraintTop_toTopOf="@+id/user_country_title_textView" />
+
+        <TextView
+            android:id="@+id/user_interest_title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Interest"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintStart_toStartOf="@+id/user_country_title_textView"
+            app:layout_constraintTop_toBottomOf="@+id/user_country_title_textView" />
+
+
+        <TextView
+            android:id="@+id/user_interest_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/user_country_textView"
+            app:layout_constraintTop_toTopOf="@+id/user_interest_title_textView" />
+
+        <TextView
+            android:id="@+id/user_bio_title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Biography"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintStart_toStartOf="@+id/user_interest_title_textView"
+            app:layout_constraintTop_toBottomOf="@+id/user_interest_textView" />
+
+        <TextView
+            android:id="@+id/user_bio_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/round_corner_grey"
+            android:text="TextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/user_bio_title_textView"
+            app:layout_constraintTop_toBottomOf="@+id/user_bio_title_textView" />
+
+        <TextView
+            android:id="@+id/user_created_event_title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Created by User"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_bio_textView" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/user_created_event_RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/user_created_event_title_textView" />
+
+        <TextView
+            android:id="@+id/user_joined_event_title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Joined by User"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_created_event_RecyclerView" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/user_joined_event_RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/user_joined_event_title_textView" />
+
+        <TextView
+            android:id="@+id/no_joined_event_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/round_corner_pri_light"
+            android:text="No event joined by user"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintEnd_toEndOf="@+id/user_joined_event_RecyclerView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/user_joined_event_title_textView" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

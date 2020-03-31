@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,6 +54,7 @@ public class PlaceActivity extends AppCompatActivity {
     private LinearLayoutManager eventLayoutManager;
     private EventAdapter eventAdapter;
     private List<Event> eventList = new ArrayList<>();
+    private TextView noEvent;
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -68,6 +70,8 @@ public class PlaceActivity extends AppCompatActivity {
         Intent intent = getIntent();
         appbar = (AppBarLayout) findViewById(R.id.app_bar);
         place = (Place) intent.getSerializableExtra("place");
+        noEvent = findViewById(R.id.no_event_textView);
+        noEvent.setVisibility(View.GONE);
         if(intent.getStringExtra("photo") != null){
             Bitmap bmp = null;
             try {
@@ -123,6 +127,9 @@ public class PlaceActivity extends AppCompatActivity {
                             eventList.add(document.toObject(Event.class));
                             Log.d(TAG, document.getId() + " added");
                         }
+                        if(eventList.size() == 0){
+                            noEvent.setVisibility(View.VISIBLE);
+                        }
                         eventAdapter.setEventList(eventList);
                         eventAdapter.notifyDataSetChanged();
                     }
@@ -156,10 +163,10 @@ public class PlaceActivity extends AppCompatActivity {
         Canvas canvas = new Canvas(overlay);
         canvas.drawBitmap(src, 0, 0, null);
         Paint paint = new Paint();
-        LinearGradient shader = new LinearGradient(0, 200, 0, h, 0xFFFFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP);
+        LinearGradient shader = new LinearGradient(0, h-200, 0, h, 0xFFFFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP);
         paint.setShader(shader);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-        canvas.drawRect(0, 200, w, h, paint);
+        canvas.drawRect(0, h-200, w, h, paint);
         return overlay;
     }
 }
