@@ -10,6 +10,8 @@ public class EventChat {
     private String lastestMsg;
     private String type;
     private List<String> participants;
+    private List<String> participantName;
+    private List<String> participantPhotoUrl;
 
     public EventChat(){
     }
@@ -76,5 +78,21 @@ public class EventChat {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public List<String> getParticipantName() {
+        return participantName;
+    }
+
+    public void setParticipantName(List<String> participantName) {
+        this.participantName = participantName;
+    }
+
+    public List<String> getParticipantPhotoUrl() {
+        return participantPhotoUrl;
+    }
+
+    public void setParticipantPhotoUrl(List<String> participantPhotoUrl) {
+        this.participantPhotoUrl = participantPhotoUrl;
     }
 }

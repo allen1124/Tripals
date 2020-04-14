@@ -5,19 +5,25 @@ import android.os.Build;
 import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.hku.tripals.adapter.ChatAdapter;
 import com.hku.tripals.adapter.EventAdapter;
 import com.hku.tripals.model.Event;
 import com.hku.tripals.model.User;
+import com.hku.tripals.ui.message.MessageActivity;
+import com.hku.tripals.ui.message.MessageFragment;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -39,12 +45,21 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class UserProfileActivity extends AppCompatActivity {
 
     private static final String TAG = "UserProfileActivity";
     private User user;
+
+    //variables for individual chat
+    private String currentUserName;
+    private String currentUserUrl;
+    private String TargetID;
+    private String firmedName;
+    private String firmedUrl;
+    private int firmedChatID = 2;
 
     private ImageView avatar;
     private TextView gender;
@@ -126,14 +141,22 @@ public class UserProfileActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle(user.getDisplayName());
 
-
+        DocumentReference docRef = db.collection("user-profile").document(currentUser.getUid());
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                currentUserName = documentSnapshot.get("displayName").toString();
+                currentUserUrl = documentSnapshot.get("avatarImageUrl").toString();
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Direct Message", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Please click again", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                addChatRoom(user);
             }
         });
     }
@@ -210,4 +233,76 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void addChatRoom(User user){
+        final String chatID = currentUser.getUid() + user.getUid();
+        final String chatID2 = user.getUid() + currentUser.getUid();
+        TargetID = user.getUid();
+        firmedName = user.getDisplayName();
+        firmedUrl = user.getAvatarImageUrl();
+
+        DocumentReference dbRef = db.collection("chats").document(chatID);
+        final DocumentReference dbRef2 = db.collection("chats").document(chatID2);
+
+        dbRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()){
+                    firmedChatID = 0;
+                    gotoMsg(firmedChatID);
+                    firmedChatID = 2;
+                } else {
+                    dbRef2.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()){
+                                firmedChatID = 1;
+                                gotoMsg(firmedChatID);
+                                firmedChatID = 2;
+                            }
+                            else {
+                                List<String> participant = new ArrayList<>();
+                                List<String> participantName = new ArrayList<>();
+                                List<String> participantUrl = new ArrayList<>();
+                                participant.add(currentUser.getUid());
+                                participant.add(TargetID);
+                                participantName.add(currentUserName);
+                                participantUrl.add(currentUserUrl);
+                                participantName.add(firmedName);
+                                participantUrl.add(firmedUrl);
+
+                                firmedChatID = 0;
+                                HashMap<String, Object> chats = new HashMap<>();
+                                chats.put("eventId", chatID);
+                                chats.put("participants", participant);
+                                chats.put("participantName", participantName);
+                                chats.put("participantPhotoUrl", participantUrl);
+                                chats.put("type", "INDIVIDUAL");
+                                db.collection("chats").document(chatID).set(chats);
+
+                                gotoMsg(firmedChatID);
+                                firmedChatID = 2;
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void gotoMsg(int firmedChatID){
+        Intent chatIntent = new Intent(UserProfileActivity.this, MessageActivity.class);
+        if (firmedChatID == 0){
+            chatIntent.putExtra("eventID", currentUser.getUid() + TargetID);
+        } else if (firmedChatID == 1){
+            chatIntent.putExtra("eventID", TargetID + currentUser.getUid());
+        }
+        chatIntent.putExtra("eventName", firmedName);
+        chatIntent.putExtra("eventImage", firmedUrl);
+        chatIntent.putExtra("type", "INDIVIDUAL");
+        chatIntent.putExtra("targetUID", TargetID);
+        startActivity(chatIntent);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+    }
+
 }

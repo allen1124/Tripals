@@ -33,6 +33,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,11 +52,15 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
+import com.hku.tripals.EventActivity;
 import com.hku.tripals.FullScreenImageActivity;
 import com.hku.tripals.R;
+import com.hku.tripals.UserProfileActivity;
 import com.hku.tripals.adapter.MessageAdapter;
 import com.hku.tripals.model.Message;
+import com.hku.tripals.model.User;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -73,7 +78,7 @@ public class MessageActivity extends AppCompatActivity {
     private ImageButton sendimg_Button;
     private EditText userInput;
     private RecyclerView msg;
-    private String current_event_name, current_event_id, current_event_image, type, participants;
+    private String current_event_name, current_event_id, current_event_image, type, participants, targetUID;
     private String currentUserID, currentUserName, currentUserURL;
     private String currentDate, currentTime;
     private String checker = "", theUrl = "";
@@ -103,6 +108,9 @@ public class MessageActivity extends AppCompatActivity {
         current_event_name = getIntent().getExtras().get("eventName").toString();
         current_event_image = getIntent().getStringExtra("eventImage");
         type = getIntent().getStringExtra("type");
+        if (type.matches("INDIVIDUAL")){
+            targetUID = getIntent().getExtras().get("targetUID").toString();
+        }
 
         //UsersRef = FirebaseDatabase.getInstance().getReference().child("users_profile");
         EventRef = FirebaseDatabase.getInstance().getReference().child("events_msg").child(current_event_id);
@@ -134,6 +142,9 @@ public class MessageActivity extends AppCompatActivity {
                     participants = getIntent().getStringExtra("participants");
                     showParticipants(participants);
                 }else{
+                    if(!targetUID.matches(currentUserID)) {
+                        goToUser(targetUID);
+                    }
                     Log.d(TAG, "it is a 1-1 chat, go to user profile");
                 }
             }
@@ -145,6 +156,9 @@ public class MessageActivity extends AppCompatActivity {
                     participants = getIntent().getStringExtra("participants");
                     showParticipants(participants);
                 }else{
+                    if(!targetUID.matches(currentUserID)) {
+                        goToUser(targetUID);
+                    }
                     Log.d(TAG, "it is a 1-1 chat, go to user profile");
                 }
             }
@@ -366,5 +380,18 @@ public class MessageActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+    private void goToUser(String uid){
+        db.collection("user-profile").document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User user = documentSnapshot.toObject(User.class);
+                Log.d(TAG, "onClick: go user detail :" + user.getUid());
+                Intent myIntent = new Intent(MessageActivity.this, UserProfileActivity.class);
+                myIntent.putExtra("user", (Serializable) user);
+                startActivity(myIntent);
+                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
     }
 }

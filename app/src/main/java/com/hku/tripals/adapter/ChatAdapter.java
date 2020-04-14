@@ -58,20 +58,43 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @Override
     public void onBindViewHolder(@NonNull final ChatViewHolder holder, int position) {
         final EventChat chat = chatList.get(position);
-        holder.eventName.setText(chat.getEventTitle());
-        Glide.with(mContext)
-                .load(chat.getEventPhotoUrl())
-                .into(holder.icon_image);
+        final int user_check;
+        if(chat.getParticipants().get(1).equals(currentUserID)){
+            user_check = 0;
+        } else {
+            user_check = 1;
+        }
+        if(chat.getEventTitle() == null) {
+            holder.eventName.setText(chat.getParticipantName().get(user_check));
+        } else {
+            holder.eventName.setText(chat.getEventTitle());
+        }
+        if(chat.getEventPhotoUrl() == null){
+            Glide.with(mContext)
+                    .load(chat.getParticipantPhotoUrl().get(user_check))
+                    .into(holder.icon_image);
+        } else {
+            Glide.with(mContext)
+                    .load(chat.getEventPhotoUrl())
+                    .into(holder.icon_image);
+        }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent chatIntent = new Intent(mContext, MessageActivity.class);
-                chatIntent.putExtra("eventID", chat.getEventId());
-                chatIntent.putExtra("eventName", chat.getEventTitle());
-                chatIntent.putExtra("eventImage", chat.getEventPhotoUrl());
-                chatIntent.putExtra("type", chat.getType());
                 if(chat.getType().matches("EVENT")){
+                    chatIntent.putExtra("eventID", chat.getEventId());
+                    chatIntent.putExtra("eventName", chat.getEventTitle());
+                    chatIntent.putExtra("eventImage", chat.getEventPhotoUrl());
+                    chatIntent.putExtra("type", chat.getType());
                     chatIntent.putExtra("participants", String.valueOf(chat.getParticipants()));
+                }
+                else if(chat.getType().matches("INDIVIDUAL")){
+                    chatIntent.putExtra("eventID", chat.getEventId());
+                    chatIntent.putExtra("eventName", chat.getParticipantName().get(user_check));
+                    chatIntent.putExtra("eventImage", chat.getParticipantPhotoUrl().get(user_check));
+                    chatIntent.putExtra("type", chat.getType());
+                    chatIntent.putExtra("targetUID", chat.getParticipants().get(user_check));
                 }
                 mContext.startActivity(chatIntent);
             }
