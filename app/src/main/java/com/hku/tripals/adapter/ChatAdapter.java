@@ -59,17 +59,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     public void onBindViewHolder(@NonNull final ChatViewHolder holder, int position) {
         final EventChat chat = chatList.get(position);
         final int user_check;
-        if(chat.getParticipants().size() > 1 && chat.getParticipants().get(1).equals(currentUserID)){
+        if(chat.getType().matches("INDIVIDUAL") && chat.getParticipants().size() > 1 && chat.getParticipants().get(1).equals(currentUserID)){
             user_check = 0;
         } else {
             user_check = 1;
         }
-        if(chat.getEventTitle() == null) {
+        if(chat.getEventTitle() == null) { //"INDIVIDUAL"
             holder.eventName.setText(chat.getParticipantName().get(user_check));
         } else {
             holder.eventName.setText(chat.getEventTitle());
         }
-        if(chat.getEventPhotoUrl() == null){
+        if(chat.getEventPhotoUrl() == null){ //"INDIVIDUAL"
             Glide.with(mContext)
                     .load(chat.getParticipantPhotoUrl().get(user_check))
                     .into(holder.icon_image);
@@ -83,18 +83,18 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             public void onClick(View view) {
                 Intent chatIntent = new Intent(mContext, MessageActivity.class);
                 if(chat.getType().matches("EVENT")){
-                    chatIntent.putExtra("eventID", chat.getEventId());
-                    chatIntent.putExtra("eventName", chat.getEventTitle());
-                    chatIntent.putExtra("eventImage", chat.getEventPhotoUrl());
+                    chatIntent.putExtra("Chat_Id", chat.getEventId());
+                    chatIntent.putExtra("Chat_Name", chat.getEventTitle());
+                    chatIntent.putExtra("Chat_Icon", chat.getEventPhotoUrl());
                     chatIntent.putExtra("type", chat.getType());
                     chatIntent.putExtra("participants", String.valueOf(chat.getParticipants()));
                 }
                 else if(chat.getType().matches("INDIVIDUAL")){
-                    chatIntent.putExtra("eventID", chat.getEventId());
-                    chatIntent.putExtra("eventName", chat.getParticipantName().get(user_check));
-                    chatIntent.putExtra("eventImage", chat.getParticipantPhotoUrl().get(user_check));
+                    chatIntent.putExtra("Chat_Id", chat.getEventId());
+                    chatIntent.putExtra("Chat_Name", chat.getParticipantName().get(user_check));
+                    chatIntent.putExtra("Chat_Icon", chat.getParticipantPhotoUrl().get(user_check));
                     chatIntent.putExtra("type", chat.getType());
-                    chatIntent.putExtra("targetUID", chat.getParticipants().get(user_check));
+                    chatIntent.putExtra("participants", chat.getParticipants().get(user_check));
                 }
                 mContext.startActivity(chatIntent);
             }

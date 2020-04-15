@@ -3,7 +3,6 @@ package com.hku.tripals.ui.message;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -25,25 +24,26 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
-import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.core.Tag;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -52,8 +52,12 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
-import com.hku.tripals.EventActivity;
-import com.hku.tripals.FullScreenImageActivity;
+import com.hku.tripals.NotificationService.APIService;
+import com.hku.tripals.NotificationService.Client;
+import com.hku.tripals.NotificationService.Data;
+import com.hku.tripals.NotificationService.Response;
+import com.hku.tripals.NotificationService.Sender;
+import com.hku.tripals.NotificationService.Token;
 import com.hku.tripals.R;
 import com.hku.tripals.UserProfileActivity;
 import com.hku.tripals.adapter.MessageAdapter;
@@ -61,8 +65,6 @@ import com.hku.tripals.model.Message;
 import com.hku.tripals.model.User;
 
 import java.io.Serializable;
-import java.net.URI;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,7 +80,7 @@ public class MessageActivity extends AppCompatActivity {
     private ImageButton sendimg_Button;
     private EditText userInput;
     private RecyclerView msg;
-    private String current_event_name, current_event_id, current_event_image, type, participants, targetUID;
+    private String chat_name, chat_id, chat_icon, type, participants, targetUID;
     private String currentUserID, currentUserName, currentUserURL;
     private String currentDate, currentTime;
     private String checker = "", theUrl = "";
@@ -92,37 +94,38 @@ public class MessageActivity extends AppCompatActivity {
     private MessageAdapter messageAdapter;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference UsersRef, EventRef, EventMsgKeyRef;
+    private FirebaseUser currentUser;
+    private DatabaseReference EventRef, EventMsgKeyRef;
     private FirebaseFirestore db;
-    private DocumentReference docRef;
+
+    private APIService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        apiService = Client.getRetrofit("https://fcm.googleapis.com/").create(APIService.class);
+
         mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
         currentUserID = mAuth.getCurrentUser().getUid();
 
-        current_event_id = getIntent().getExtras().get("eventID").toString();
-        current_event_name = getIntent().getExtras().get("eventName").toString();
-        current_event_image = getIntent().getStringExtra("eventImage");
+        chat_id = getIntent().getExtras().get("Chat_Id").toString();
+        chat_name = getIntent().getExtras().get("Chat_Name").toString();
+        chat_icon = getIntent().getStringExtra("Chat_Icon");
         type = getIntent().getStringExtra("type");
+        participants = getIntent().getStringExtra("participants");
+
         if (type.matches("INDIVIDUAL")){
-            targetUID = getIntent().getExtras().get("targetUID").toString();
+            targetUID = getIntent().getStringExtra("participants");
         }
 
-        //UsersRef = FirebaseDatabase.getInstance().getReference().child("users_profile");
-        EventRef = FirebaseDatabase.getInstance().getReference().child("events_msg").child(current_event_id);
+        EventRef = FirebaseDatabase.getInstance().getReference().child("events_msg").child(chat_id);
         db = FirebaseFirestore.getInstance();
-        docRef = db.collection("user-profile").document(currentUserID);
-        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                currentUserName = documentSnapshot.getString("displayName");
-                currentUserURL = documentSnapshot.getString("avatarImageUrl");
-            }
-        });
+
+        currentUserName = currentUser.getDisplayName();
+        currentUserURL = currentUser.getPhotoUrl().toString();
 
         chat_toolbar = (Toolbar) findViewById(R.id.Chatlog_toolbar);
         setSupportActionBar(chat_toolbar);
@@ -131,15 +134,14 @@ public class MessageActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("");
         chatIcon = findViewById(R.id.chat_icon);
         Glide.with(this)
-                .load(current_event_image)
+                .load(chat_icon)
                 .into(chatIcon);
         chatTitle = findViewById(R.id.chat_title);
-        chatTitle.setText(current_event_name);
+        chatTitle.setText(chat_name);
         chatIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(type.matches("EVENT")){
-                    participants = getIntent().getStringExtra("participants");
                     showParticipants(participants);
                 }else{
                     if(!targetUID.matches(currentUserID)) {
@@ -153,7 +155,6 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(type.matches("EVENT")){
-                    participants = getIntent().getStringExtra("participants");
                     showParticipants(participants);
                 }else{
                     if(!targetUID.matches(currentUserID)) {
@@ -209,6 +210,7 @@ public class MessageActivity extends AppCompatActivity {
 
                 if (TextUtils.isEmpty(message)){
                 } else {
+                    userInput.setText("");
                     Calendar callDate = Calendar.getInstance();
                     SimpleDateFormat currentDateFormat = new SimpleDateFormat("dd MMM yyyy");
                     currentDate = currentDateFormat.format(callDate.getTime());
@@ -230,8 +232,19 @@ public class MessageActivity extends AppCompatActivity {
                         messageInfoMap.put("msgTime", currentTime);
                         messageInfoMap.put("msgType", "text");
                     EventMsgKeyRef.updateChildren(messageInfoMap);
+
+                    if(type.matches("EVENT")){
+                        participants = participants.replaceAll("^\\[|]$", "");
+                        List<String> userList = new ArrayList<String>(Arrays.asList(participants.split(", ")));
+                        for (int i = 0; i < userList.size(); i++) {
+                            if(currentUserID != userList.get(i)){
+                                sendNotification(userList.get(i), chat_id, chat_name, chat_icon, type, participants, currentUser.getDisplayName(), message);
+                            }
+                        }
+                    }else if(type.matches("INDIVIDUAL")){
+                        sendNotification( targetUID, chat_id, chat_name, chat_icon, type, participants, currentUser.getDisplayName(), message);
+                    }
                 }
-                userInput.setText("");
             }
         });
 
@@ -391,6 +404,45 @@ public class MessageActivity extends AppCompatActivity {
                 myIntent.putExtra("user", (Serializable) user);
                 startActivity(myIntent);
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
+    }
+
+
+    private void sendNotification(final String receiver, final String chatId, final String chatName, final String chatIcon, final String type, final String participants, final String username, final String message){
+        Log.d(TAG, "sendNotification: receiver: "+receiver+", chatId: "+chatId);
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("tokens");
+        Query query = tokens.orderByKey().equalTo(receiver);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    Token token = snapshot.getValue(Token.class);
+                    Log.d("Debug", "userid before sent: "+receiver);
+                    Data data = new Data(chatId, chatName, chatIcon, type, participants, R.mipmap.ic_launcher, username+": "+message, "New Message from "+username,
+                            receiver);
+                    Sender sender = new Sender(data, token.getToken());
+                    Log.d("Debug", "data is: "+ data);
+
+                    Log.d("Debug", "token is: "+ token.getToken());
+                    apiService.sendNotification(sender)
+                            .enqueue(new Callback<Response>() {
+                                @Override
+                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                    Log.d(TAG, "response.code: "+response.code());
+                                }
+
+                                @Override
+                                public void onFailure(Call<Response> call, Throwable t) {
+
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }

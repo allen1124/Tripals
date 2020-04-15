@@ -300,7 +300,7 @@ public class UserProfileActivity extends AppCompatActivity {
         chatIntent.putExtra("eventName", firmedName);
         chatIntent.putExtra("eventImage", firmedUrl);
         chatIntent.putExtra("type", "INDIVIDUAL");
-        chatIntent.putExtra("targetUID", TargetID);
+        chatIntent.putExtra("participants", TargetID);
         startActivity(chatIntent);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }

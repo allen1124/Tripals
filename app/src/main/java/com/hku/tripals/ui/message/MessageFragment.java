@@ -21,6 +21,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.hku.tripals.NotificationService.Token;
 import com.hku.tripals.R;
 import com.hku.tripals.adapter.ChatAdapter;
 import com.hku.tripals.model.EventChat;
