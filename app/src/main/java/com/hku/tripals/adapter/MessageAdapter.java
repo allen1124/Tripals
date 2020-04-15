@@ -13,6 +13,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -95,7 +97,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         String fromUserID = msg.getSenderID();
         String fromMessageType = msg.getmsgType();
 
-        if (msg_send.equals("1") && msg_receive.equals("1")){
+        if (msg_send.equals("1") || msg_receive.equals("1")){
             final String receiveImage = msg.getSenderURL();
             Picasso
                     .get()

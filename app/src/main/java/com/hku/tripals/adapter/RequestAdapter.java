@@ -94,8 +94,12 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
                 .load(request.getEventPhotoUrl())
                 .into(holder.eventPhoto);
         holder.eventTitle.setText(request.getEventTitle());
-        String quotaLeft = String.valueOf(request.getQuota()-request.getParticipantSize());
-        holder.eventQuota.setText(quotaLeft+" "+context.getString(R.string.left));
+        if(request.getQuota() == -1){
+            holder.eventQuota.setVisibility(View.GONE);
+        }else {
+            String quotaLeft = String.valueOf(request.getQuota() - request.getParticipantSize());
+            holder.eventQuota.setText(quotaLeft + " " + context.getString(R.string.left));
+        }
         holder.requestorName.setText(request.getRequestorName());
         holder.rejectButton.setOnClickListener(new View.OnClickListener() {
             @Override

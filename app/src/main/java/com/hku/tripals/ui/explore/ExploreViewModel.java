@@ -113,7 +113,7 @@ public class ExploreViewModel extends AndroidViewModel {
         return YMIevents;
     }
 
-    public void loadYMIEvent(int numberEvent){
+    public void loadYMIEvent(final int numberEvent){
         db.collection("user-profile").document(currentUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -122,7 +122,7 @@ public class ExploreViewModel extends AndroidViewModel {
                 String filter = "";
                 for(int i = 0; i < interest.size(); i++){
                     if(i != interest.size()-1) {
-                        filter += "interests:" + interest.get(i) + " AND ";
+                        filter += "interests:" + interest.get(i) + " OR ";
                     }else{
                         filter += "interests:" + interest.get(i);
                     }
@@ -130,6 +130,7 @@ public class ExploreViewModel extends AndroidViewModel {
                 filter += " AND privacy:PUBLIC";
                 Log.d(TAG, "filter:"+filter);
                 com.algolia.search.saas.Query q = new com.algolia.search.saas.Query().setFilters(filter);
+                q.setHitsPerPage(numberEvent);
                 searchEvent(q);
             }
         });

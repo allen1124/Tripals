@@ -257,6 +257,16 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
                 Toast.makeText(this, "English clicked", Toast.LENGTH_SHORT).show();
                 DisplayLanguage.setText(english);
                 return true;
+            case R.id.Cantonese:
+                String cantonese = "Cantonese";
+                Toast.makeText(this, "Cantonese clicked", Toast.LENGTH_SHORT).show();
+                DisplayLanguage.setText(cantonese);
+                return true;
+            case R.id.Mandarin:
+                String mandarin = "Mandarin";
+                Toast.makeText(this, "Cantonese clicked", Toast.LENGTH_SHORT).show();
+                DisplayLanguage.setText(mandarin);
+                return true;
             default:
                 return false;
         }

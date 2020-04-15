@@ -59,7 +59,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     public void onBindViewHolder(@NonNull final ChatViewHolder holder, int position) {
         final EventChat chat = chatList.get(position);
         final int user_check;
-        if(chat.getParticipants().get(1).equals(currentUserID)){
+        if(chat.getParticipants().size() > 1 && chat.getParticipants().get(1).equals(currentUserID)){
             user_check = 0;
         } else {
             user_check = 1;
