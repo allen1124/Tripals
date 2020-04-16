@@ -37,13 +37,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String sent = remoteMessaging.getData().get("sent");
 
+        SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
+        String currentUser = preferences.getString("CURRENT_USER", "none");
+
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         Log.d(TAG, "sender: "+sent);
         if (firebaseUser!= null && sent.equals(firebaseUser.getUid())) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                sendOreoNotification(remoteMessaging);
-            } else {
-                sendNotification(remoteMessaging);
+            if (!currentUser.equals(sent)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    sendOreoNotification(remoteMessaging);
+                } else {
+                    sendNotification(remoteMessaging);
+                }
             }
         }
     }

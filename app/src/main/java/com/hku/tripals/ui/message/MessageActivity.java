@@ -3,6 +3,7 @@ package com.hku.tripals.ui.message;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -242,7 +243,7 @@ public class MessageActivity extends AppCompatActivity {
                             }
                         }
                     }else if(type.matches("INDIVIDUAL")){
-                        sendNotification( targetUID, chat_id, chat_name, chat_icon, type, participants, currentUser.getDisplayName(), message);
+                        sendNotification( targetUID, chat_id, currentUserName, currentUserURL, type, currentUser.getUid(), currentUser.getDisplayName(), message);
                     }
                 }
             }
@@ -445,5 +446,23 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void currentUser(String userid){
+        SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+        editor.putString("CURRENT_USER", userid);
+        editor.apply();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        currentUser(currentUserID);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        currentUser("none");
     }
 }

@@ -3,6 +3,7 @@ package com.hku.tripals;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -49,6 +50,7 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -80,6 +82,7 @@ public class EditEventActivity extends AppCompatActivity {
     private List<String> selectedInterest;
     private Button createEvent;
     private ProgressBar progressBar;
+    private Bitmap eventBitmap;
 
     private Event event;
 
@@ -101,8 +104,10 @@ public class EditEventActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    @Override
+
+        @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_event);
@@ -113,18 +118,23 @@ public class EditEventActivity extends AppCompatActivity {
         event = new Event();
         back = findViewById(R.id.create_event_back_imageButton);
 
-        //getting information to edit event
-        event_id = getIntent().getExtras().get("event_id").toString();
-        event_name = getIntent().getExtras().get("event_name").toString();
-        event_description = getIntent().getStringExtra("event_description");
-        event_photo = getIntent().getStringExtra("event_photo");
-        event_datetime = getIntent().getStringExtra("event_datetime");
-        event_locationName = getIntent().getStringExtra("event_locationName");
-        event_location = getIntent().getStringExtra("event_location");
-        event_privacy = getIntent().getStringExtra("event_privacy");
-        event_interests = getIntent().getStringArrayListExtra("event_interests");
-        event_openness = getIntent().getStringExtra("event_openness");
-        event_quota = getIntent().getExtras().getInt("event_quota");
+        intent = getIntent();
+        event = (Event) intent.getSerializableExtra("event");
+        event_id = event.getId();
+        event_name = event.getTitle();
+        event_description = event.getDescription();
+        event_photo = event.getPhotoUrl();
+        event_datetime = simpleDateFormat.format(event.getDatetime());
+        event_locationName = event.getLocationName();
+        event_location = event.getLocation();
+        event_privacy = event.getPrivacy();
+        event_interests = (ArrayList<String>) event.getInterests();
+        selectedInterest = event.getInterests();
+        if(event_interests == null){
+            event_interests = new ArrayList<>();
+        }
+        event_openness = event.getOpenness();
+        event_quota = event.getQuota();
 
         eventPhoto = findViewById(R.id.event_header_imageView);
         eventName = findViewById(R.id.event_name_editText);
@@ -135,6 +145,12 @@ public class EditEventActivity extends AppCompatActivity {
         eventInterests = findViewById(R.id.event_interests_select_editText);
         listItems = getResources().getStringArray(R.array.interest_options);
         checkedItems = new boolean[listItems.length];
+        for(int i = 0; i < listItems.length; i++){
+            if(event_interests.contains(listItems[i])){
+                eventItems.add(i);
+                checkedItems[i] = true;
+            }
+        }
         createEvent = findViewById(R.id.create_event_button);
         progressBar = findViewById(R.id.create_event_progressBar);
         eventQuota = findViewById(R.id.event_quota_editText);
@@ -169,6 +185,7 @@ public class EditEventActivity extends AppCompatActivity {
             if (i+1 != event_interests.size()){
                 itemList = itemList + ", ";
             }
+            eventInterests.setText(itemList);
         }
         eventInterests.setText(itemList);
         if(event_openness.matches("OPEN")){
@@ -178,7 +195,9 @@ public class EditEventActivity extends AppCompatActivity {
             eventOpenness.clearCheck();
             eventOpenness.check(R.id.event_openness_radioButton2);
         }
-        //eventQuota.setText(event_quota.toString()); (do think it needs to be displayed)
+        if(event_quota != -1){
+            eventQuota.setText(event_quota.toString());
+        }
 
         if(!TextUtils.isEmpty(intent.getStringExtra("place_id"))){
             event.setLocation(intent.getStringExtra("place_id"));
@@ -317,11 +336,6 @@ public class EditEventActivity extends AppCompatActivity {
                             }
                         }
                         eventInterests.setText(item);
-                        String check_text = eventInterests.getText().toString();
-                        if (check_text.matches("")){
-                            eventInterests.setText(itemList);
-                            selectedInterest = event_interests;
-                        }
                     }
                 });
                 Interest_Builder.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
@@ -400,23 +414,33 @@ public class EditEventActivity extends AppCompatActivity {
         if(requestCode == IMAGE_PICKER_CODE && resultCode == RESULT_OK && data != null){
             Log.d(TAG, "Photo selected");
             eventPhotoUri = data.getData();
-            Bitmap bitmap = null;
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), eventPhotoUri);
+                eventBitmap = decodeUri(this, eventPhotoUri, 640);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            eventPhoto.setImageBitmap(bitmap);
+            eventPhoto.setImageBitmap(eventBitmap);
         }
     }
 
     private void editEvent(){
         Log.d(TAG, "editEvent: called");
+        Toast.makeText(EditEventActivity.this, "Updating event", Toast.LENGTH_SHORT).show();
         final DocumentReference Editeventref = db.collection("events").document(event_id);
         String check_location = eventLocation.getText().toString();
         if(eventPhotoUri == null && check_location.matches(event_locationName)){
-            event.setPhotoUrl(event_photo);
-            Editeventref.update("photoUrl", event.getPhotoUrl());
+            Editeventref.update(event.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "DocumentSnapshot updating with ID: " + event.getId());
+                    clearForm();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(TAG, "Error updating document", e);
+                }
+            });
         } else if(eventPhotoUri == null && !(check_location.matches(event_locationName))){
             Bitmap bmp = null;
             try {
@@ -434,8 +458,19 @@ public class EditEventActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(Uri uri) {
                                 event.setPhotoUrl(uri.toString());
-                                Log.d(TAG, "event photo url: "+ uri.toString());
-                                Editeventref.update("photoUrl", event.getPhotoUrl());
+                                db.collection("chats").document(event_id).update("eventPhotoUrl", uri.toString());
+                                Editeventref.update(event.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot updating with ID: " + event.getId());
+                                        clearForm();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error updating document", e);
+                                    }
+                                });
                             }
                         });
                     }
@@ -445,8 +480,10 @@ public class EditEventActivity extends AppCompatActivity {
                 Log.d(TAG, "edit event error: "+e.getMessage());
             }
         } else {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            eventBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             final StorageReference ref = FirebaseStorage.getInstance().getReference("/event-images/"+event_id);
-            ref.putFile(eventPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            ref.putBytes(baos.toByteArray()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -454,39 +491,31 @@ public class EditEventActivity extends AppCompatActivity {
                         public void onSuccess(Uri uri) {
                             event.setPhotoUrl(uri.toString());
                             Log.d(TAG, "event photo url: "+uri.toString());
-                            Editeventref.update("photoUrl", event.getPhotoUrl());
+                            Editeventref.update(event.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "DocumentSnapshot updating with ID: " + event.getId());
+                                    clearForm();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w(TAG, "Error updating document", e);
+                                }
+                            });
+                            db.collection("chats").document(event_id).update("eventPhotoUrl", event.getPhotoUrl());
                         }
                     });
                 }
             });
         }
-        editChatRoom(event);
-        Editeventref.update("title", event.getTitle());
-        Editeventref.update("description", event.getDescription());
-        //Editeventref.update("photoUrl", event.getPhotoUrl());
-        if (!(event.getDatetime() == null)){
-            Editeventref.update("datetime", event.getDatetime());
-        }
-        if(!(event.getInterests() == null)){
-            Editeventref.update("interests", event.getInterests());
-        }
-        if(!(event.getLocation() == null)){
-            Editeventref.update("location", event.getLocation());
-            Editeventref.update("locationName", event.getLocationName());
-        }
-        Editeventref.update("openness", event.getOpenness());
-        Editeventref.update("privacy", event.getPrivacy());
-        Editeventref.update("quota", event.getQuota());
-        Toast.makeText(EditEventActivity.this, "Updating event", Toast.LENGTH_SHORT).show();
-        clearForm();
-        Toast.makeText(EditEventActivity.this, "Event Updated", Toast.LENGTH_SHORT).show();
-        //finish();
-        setContentView(R.layout.activity_main);
-    }
-
-    private void editChatRoom(Event event){
-        db.collection("chats").document(event_id).update("eventPhotoUrl", event.getPhotoUrl());
         db.collection("chats").document(event_id).update("eventTitle", event.getTitle());
+        Toast.makeText(EditEventActivity.this, "Event Updated", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent();
+        intent.putExtra("UPDATED_EVENT", event);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     @Override
@@ -518,5 +547,23 @@ public class EditEventActivity extends AppCompatActivity {
         eventItems = new ArrayList<>();
         checkedItems = new boolean[listItems.length];
         eventPhoto.setImageResource(R.color.colorPrimary);
+    }
+
+    public static Bitmap decodeUri(Context c, Uri uri, final int requiredSize) throws FileNotFoundException {
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o);
+        int width_tmp = o.outWidth, height_tmp = o.outHeight;
+        int scale = 1;
+        while(true) {
+            if(width_tmp / 2 < requiredSize || height_tmp / 2 < requiredSize)
+                break;
+            width_tmp /= 2;
+            height_tmp /= 2;
+            scale *= 2;
+        }
+        BitmapFactory.Options o2 = new BitmapFactory.Options();
+        o2.inSampleSize = scale;
+        return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2);
     }
 }

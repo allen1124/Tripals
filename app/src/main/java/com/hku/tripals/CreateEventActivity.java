@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -45,6 +46,7 @@ import com.hku.tripals.model.Place;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,6 +78,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private List<String> selectedInterest;
     private Button createEvent;
     private ProgressBar progressBar;
+    private Bitmap eventBitmap;
 
     private Event event;
 
@@ -331,13 +334,12 @@ public class CreateEventActivity extends AppCompatActivity {
         if(requestCode == IMAGE_PICKER_CODE && resultCode == RESULT_OK && data != null){
             Log.d(TAG, "Photo selected");
             eventPhotoUri = data.getData();
-            Bitmap bitmap = null;
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), eventPhotoUri);
+                eventBitmap = decodeUri(this, eventPhotoUri, 640);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            eventPhoto.setImageBitmap(bitmap);
+            eventPhoto.setImageBitmap(eventBitmap);
         }
     }
 
@@ -389,8 +391,10 @@ public class CreateEventActivity extends AppCompatActivity {
                 Log.d(TAG, "Add event error: "+e.getMessage());
             }
         }else{
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            eventBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             final StorageReference ref = FirebaseStorage.getInstance().getReference("/event-images/"+event.getId());
-            ref.putFile(eventPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            ref.putBytes(baos.toByteArray()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Log.d(TAG, "avatar photo uploaded");
@@ -463,5 +467,23 @@ public class CreateEventActivity extends AppCompatActivity {
         eventItems = new ArrayList<>();
         checkedItems = new boolean[listItems.length];
         eventPhoto.setImageResource(R.color.colorPrimary);
+    }
+
+    public static Bitmap decodeUri(Context c, Uri uri, final int requiredSize) throws FileNotFoundException {
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o);
+        int width_tmp = o.outWidth, height_tmp = o.outHeight;
+        int scale = 1;
+        while(true) {
+            if(width_tmp / 2 < requiredSize || height_tmp / 2 < requiredSize)
+                break;
+            width_tmp /= 2;
+            height_tmp /= 2;
+            scale *= 2;
+        }
+        BitmapFactory.Options o2 = new BitmapFactory.Options();
+        o2.inSampleSize = scale;
+        return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2);
     }
 }

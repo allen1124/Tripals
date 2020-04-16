@@ -93,6 +93,7 @@ public class EventActivity extends AppCompatActivity {
     private static final String TAG = "EventActivity";
     private static final String BOOKMARK_PREF = "BOOKMARK_PREF";
     private static int IMAGE_PICKER_CODE = 2222;
+    private static int EVENT_EDIT_CODE = 3333;
     private Event event;
 
     private TextView eventLocation;
@@ -205,35 +206,20 @@ public class EventActivity extends AppCompatActivity {
         commentView.setLayoutManager(layoutManager);
         commentsAdapter = new CommentsAdapter(this);
         commentView.setAdapter(commentsAdapter);
-        if(event.getLocation() != null){
-            //Bitmap bmp = null;
-            try {
-                Picasso
-                        .get()
-                        .load(event.getPhotoUrl())
-                        .fetch(new Callback(){
-                            @Override
-                            public void onSuccess() {
-                                Picasso
-                                        .get()
-                                        .load(event.getPhotoUrl())
-                                        .into(appbarBg);
-                            }
-                            @Override
-                            public void onError(Exception e) { }
-                        });
-//                File cachedPhoto = new File(getCacheDir(), event.getLocation()+".png");
-//                FileInputStream is = new FileInputStream(cachedPhoto);
-//                bmp = BitmapFactory.decodeStream(is);
-//                appbarBg.setBackground(new BitmapDrawable(this.getResources(), bmp));
-//                is.close();
-            } catch (Exception e) {
-                Log.d(TAG, "No cached photo");
-                Glide.with(this)
-                        .load(event.getPhotoUrl())
-                        .into(appbarBg);
-            }
-        }
+        Picasso
+                .get()
+                .load(event.getPhotoUrl())
+                .fetch(new Callback(){
+                    @Override
+                    public void onSuccess() {
+                        Picasso
+                                .get()
+                                .load(event.getPhotoUrl())
+                                .into(appbarBg);
+                    }
+                    @Override
+                    public void onError(Exception e) { }
+                });
         if(event.getQuota() == -1){
             eventQuota.setVisibility(View.GONE);
             eventQuotaTitle.setVisibility(View.GONE);
@@ -299,9 +285,7 @@ public class EventActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(event.getHost().matches(currentUser.getUid())) {
-//                    Snackbar.make(view, "Edit Event", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-                    goToEditEvent(event.getId());
+                    goToEditEvent();
 
                 }else{
                     new AlertDialog.Builder(EventActivity.this)
@@ -511,6 +495,37 @@ public class EventActivity extends AppCompatActivity {
             commentPhoto.setVisibility(View.VISIBLE);
             commentUploadImage.setText(R.string.remove_image);
         }
+        if(requestCode == EVENT_EDIT_CODE && resultCode == RESULT_OK){
+            final Event updated = (Event) data.getSerializableExtra("UPDATED_EVENT");
+            Picasso
+                    .get()
+                    .load(updated.getPhotoUrl())
+                    .fetch(new Callback(){
+                        @Override
+                        public void onSuccess() {
+                            Picasso
+                                    .get()
+                                    .load(updated.getPhotoUrl())
+                                    .into(appbarBg);
+                        }
+                        @Override
+                        public void onError(Exception e) { }
+                    });
+            if(updated.getQuota() == -1){
+                eventQuota.setVisibility(View.GONE);
+                eventQuotaTitle.setVisibility(View.GONE);
+            }else{
+                int noPanticipant = 0;
+                if(updated.getParticipants() != null)
+                    noPanticipant = updated.getParticipants().size();
+                String quotaLeft = String.valueOf(updated.getQuota()-noPanticipant);
+                eventQuota.setText(quotaLeft+" "+getString(R.string.left));
+            }
+            eventLocation.setText(updated.getLocationName());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            eventDatetime.setText(simpleDateFormat.format(updated.getDatetime()));
+            eventDescription.setText(updated.getDescription());
+        }
     }
 
     public static Bitmap decodeUri(Context c, Uri uri, final int requiredSize) throws FileNotFoundException {
@@ -545,21 +560,16 @@ public class EventActivity extends AppCompatActivity {
         });
     }
 
-    private void goToEditEvent(String eventID){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private void goToEditEvent(){
         Intent editIntent = new Intent(EventActivity.this, EditEventActivity.class);
-        editIntent.putExtra("event_id", eventID);
-        editIntent.putExtra("event_name", event.getTitle());
-        editIntent.putExtra("event_description", event.getDescription());
-        editIntent.putExtra("event_photo", event.getPhotoUrl());
-        editIntent.putExtra("event_datetime", simpleDateFormat.format(event.getDatetime()));
-        editIntent.putExtra("event_locationName", event.getLocationName());
-        editIntent.putExtra("event_location", event.getLocation());
-        editIntent.putExtra("event_privacy", event.getPrivacy());
-        editIntent.putStringArrayListExtra("event_interests", (ArrayList<String>) event.getInterests());
-        editIntent.putExtra("event_openness", event.getOpenness());
-        editIntent.putExtra("event_quota", event.getQuota());
-        startActivity(editIntent);
+        editIntent.putExtra("event", (Serializable) event);
+        startActivityForResult(editIntent, EVENT_EDIT_CODE);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 }
