@@ -36,6 +36,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".CreateEventActivity" />
+        <activity android:name=".EditEventActivity" />
         <activity
             android:name=".PlaceActivity"
             android:label="@string/title_activity_place"

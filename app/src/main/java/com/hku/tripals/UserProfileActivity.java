@@ -293,12 +293,12 @@ public class UserProfileActivity extends AppCompatActivity {
     private void gotoMsg(int firmedChatID){
         Intent chatIntent = new Intent(UserProfileActivity.this, MessageActivity.class);
         if (firmedChatID == 0){
-            chatIntent.putExtra("eventID", currentUser.getUid() + TargetID);
+            chatIntent.putExtra("Chat_Id", currentUser.getUid() + TargetID);
         } else if (firmedChatID == 1){
-            chatIntent.putExtra("eventID", TargetID + currentUser.getUid());
+            chatIntent.putExtra("Chat_Id", TargetID + currentUser.getUid());
         }
-        chatIntent.putExtra("eventName", firmedName);
-        chatIntent.putExtra("eventImage", firmedUrl);
+        chatIntent.putExtra("Chat_Name", firmedName);
+        chatIntent.putExtra("Chat_Icon", firmedUrl);
         chatIntent.putExtra("type", "INDIVIDUAL");
         chatIntent.putExtra("participants", TargetID);
         startActivity(chatIntent);

@@ -46,6 +46,8 @@ import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Place;
 import com.hku.tripals.model.Request;
 import com.hku.tripals.model.User;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -78,6 +80,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -203,13 +206,27 @@ public class EventActivity extends AppCompatActivity {
         commentsAdapter = new CommentsAdapter(this);
         commentView.setAdapter(commentsAdapter);
         if(event.getLocation() != null){
-            Bitmap bmp = null;
+            //Bitmap bmp = null;
             try {
-                File cachedPhoto = new File(getCacheDir(), event.getLocation()+".png");
-                FileInputStream is = new FileInputStream(cachedPhoto);
-                bmp = BitmapFactory.decodeStream(is);
-                appbarBg.setBackground(new BitmapDrawable(this.getResources(), bmp));
-                is.close();
+                Picasso
+                        .get()
+                        .load(event.getPhotoUrl())
+                        .fetch(new Callback(){
+                            @Override
+                            public void onSuccess() {
+                                Picasso
+                                        .get()
+                                        .load(event.getPhotoUrl())
+                                        .into(appbarBg);
+                            }
+                            @Override
+                            public void onError(Exception e) { }
+                        });
+//                File cachedPhoto = new File(getCacheDir(), event.getLocation()+".png");
+//                FileInputStream is = new FileInputStream(cachedPhoto);
+//                bmp = BitmapFactory.decodeStream(is);
+//                appbarBg.setBackground(new BitmapDrawable(this.getResources(), bmp));
+//                is.close();
             } catch (Exception e) {
                 Log.d(TAG, "No cached photo");
                 Glide.with(this)
@@ -282,8 +299,10 @@ public class EventActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(event.getHost().matches(currentUser.getUid())) {
-                    Snackbar.make(view, "Edit Event", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                    Snackbar.make(view, "Edit Event", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                    goToEditEvent(event.getId());
+
                 }else{
                     new AlertDialog.Builder(EventActivity.this)
                             .setTitle("Confirmation")
@@ -524,5 +543,23 @@ public class EventActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+    }
+
+    private void goToEditEvent(String eventID){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Intent editIntent = new Intent(EventActivity.this, EditEventActivity.class);
+        editIntent.putExtra("event_id", eventID);
+        editIntent.putExtra("event_name", event.getTitle());
+        editIntent.putExtra("event_description", event.getDescription());
+        editIntent.putExtra("event_photo", event.getPhotoUrl());
+        editIntent.putExtra("event_datetime", simpleDateFormat.format(event.getDatetime()));
+        editIntent.putExtra("event_locationName", event.getLocationName());
+        editIntent.putExtra("event_location", event.getLocation());
+        editIntent.putExtra("event_privacy", event.getPrivacy());
+        editIntent.putStringArrayListExtra("event_interests", (ArrayList<String>) event.getInterests());
+        editIntent.putExtra("event_openness", event.getOpenness());
+        editIntent.putExtra("event_quota", event.getQuota());
+        startActivity(editIntent);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 }
