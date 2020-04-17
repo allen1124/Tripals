@@ -19,8 +19,12 @@ import com.google.android.material.tabs.TabLayout;
 import com.hku.tripals.R;
 import com.hku.tripals.adapter.EventAdapter;
 import com.hku.tripals.adapter.RequestAdapter;
+import com.hku.tripals.adapter.UserAdapter;
 import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Request;
+import com.hku.tripals.model.User;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -35,8 +39,9 @@ public class FavouriteFragment extends Fragment {
     private EventAdapter eventAdapter;
 
     private RecyclerView userRecyclerView;
+    private TextView noFavourite_user;
     private LinearLayoutManager userLayoutManager;
-//    private UserAdapter userAdapter;
+    private UserAdapter userAdapter;
 
     private TabLayout favouriteTab;
 
@@ -51,6 +56,14 @@ public class FavouriteFragment extends Fragment {
         favouriteLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         eventRecyclerView.setLayoutManager(favouriteLayoutManager);
         eventAdapter = new EventAdapter(getActivity());
+
+        userRecyclerView = root.findViewById(R.id.favourite_user_RecyclerView);
+        noFavourite_user = root.findViewById(R.id.no_favourite_user_textView);
+        userLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        userRecyclerView.setLayoutManager(userLayoutManager);
+        userAdapter = new UserAdapter(getActivity());
+
+
         favouriteViewModel.getEvents().observe(getViewLifecycleOwner(), new Observer<List<Event>>() {
             @Override
             public void onChanged(List<Event> events) {
@@ -65,21 +78,35 @@ public class FavouriteFragment extends Fragment {
         });
         eventRecyclerView.setAdapter(eventAdapter);
 
-        userRecyclerView = root.findViewById(R.id.favourite_user_RecyclerView);
+        userRecyclerView.setAdapter(userAdapter);
 
         favouriteTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 Log.d(TAG, "tab selected" +tab.getPosition());
                 if(tab.getPosition() == 0) {
+                    noFavourite_user.setVisibility(View.GONE);
                     favouriteViewModel.loadEvent();
                     eventRecyclerView.setVisibility(View.VISIBLE);
                     userRecyclerView.setVisibility(View.GONE);
 
                 }
                 if(tab.getPosition() == 1) {
-//                    favouriteViewModel.loadUser();
                     eventRecyclerView.setVisibility(View.GONE);
+                    noFavourite.setVisibility(View.GONE);
+                    favouriteViewModel.getUsers().observe(getViewLifecycleOwner(), new Observer<List<User>>() {
+                        @Override
+                        public void onChanged(List<User> users) {
+                            Log.d(TAG, "onChanged: "+users.size());
+                            userAdapter.setUserList(users);
+                            userAdapter.notifyDataSetChanged();
+                            if(userAdapter.getItemCount() > 0)
+                                noFavourite_user.setVisibility(View.GONE);
+                            else
+                                noFavourite_user.setVisibility(View.VISIBLE);
+                        }
+                    });
+                    favouriteViewModel.loadUser();
                     userRecyclerView.setVisibility(View.VISIBLE);
                 }
             }
@@ -101,5 +128,6 @@ public class FavouriteFragment extends Fragment {
         Log.d(TAG, "onResume: called");
         super.onResume();
         favouriteViewModel.loadEvent();
+        favouriteViewModel.loadUser();
     }
 }

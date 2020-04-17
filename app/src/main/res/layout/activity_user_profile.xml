@@ -24,6 +24,16 @@
             app:toolbarId="@+id/toolbar">
 
 
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_bookmark"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:elevation="5dp"
+                android:layout_gravity="end"
+                android:src="@mipmap/ic_bookmark_off" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -38,6 +48,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.appcompat.widget.Toolbar
@@ -48,6 +59,7 @@
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <include layout="@layout/content_user_profile" />

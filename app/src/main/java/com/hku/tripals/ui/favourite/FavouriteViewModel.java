@@ -16,6 +16,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.hku.tripals.model.Event;
+import com.hku.tripals.model.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,12 +39,17 @@ public class FavouriteViewModel extends AndroidViewModel {
     private static final String BOOKMARK_PREF = "BOOKMARK_PREF";
 
     private MutableLiveData<List<Event>> events;
+    private MutableLiveData<List<User>> users;
 
     private List<Event> eventList;
+    private List<User> userList;
 
-    SharedPreferences bookmarkPref;
+    SharedPreferences bookmarkPref, userbookmarkPref;
     private List<String> bookmarkList = new ArrayList<>();
     private String bookmarkJson;
+
+    private List<String> userbookmarkList = new ArrayList<>();
+    private String userbookmarkJson;
 
     private FirebaseFirestore db;
 
@@ -52,6 +58,8 @@ public class FavouriteViewModel extends AndroidViewModel {
         db = FirebaseFirestore.getInstance();
         eventList = new ArrayList<>();
         events = new MutableLiveData<>();
+        userList = new ArrayList<>();
+        users = new MutableLiveData<>();
     }
 
     public void loadEvent(){
@@ -97,7 +105,54 @@ public class FavouriteViewModel extends AndroidViewModel {
         }
     }
 
+    public void loadUser(){
+        userbookmarkPref = getApplication().getSharedPreferences(BOOKMARK_PREF, MODE_PRIVATE);
+        userbookmarkJson = userbookmarkPref.getString("bookmark", "[]");
+        JSONArray jsonArray = null;
+        userbookmarkList.clear();
+        try {
+            jsonArray = new JSONArray(userbookmarkJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                userbookmarkList.add(jsonArray.getString(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.d(TAG, "loadUser: "+userbookmarkList.toString());
+        if(userbookmarkList.size() > 0) {
+            db.collection("user-profile")
+                    .whereIn(FieldPath.documentId(), userbookmarkList)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                            Log.w(TAG, "Getting documents.");
+                            if (e != null) {
+                                Log.w(TAG, "Error getting documents.", e);
+                                return;
+                            }
+                            userList.clear();
+                            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                userList.add(document.toObject(User.class));
+                                Log.d(TAG, document.getId() + " added");
+                            }
+                            users.setValue(userList);
+                        }
+                    });
+        }else {
+            userList.clear();
+            users.setValue(userList);
+        }
+    }
+
     public LiveData<List<Event>> getEvents(){
         return events;
+    }
+
+    public LiveData<List<User>> getUsers(){
+        return users;
     }
 }

@@ -365,10 +365,10 @@ public class EditEventActivity extends AppCompatActivity {
                             eventItems.clear();
                             eventInterests.setText("");
                         }
-                        String check_text = eventInterests.getText().toString();
-                        if (check_text.matches("")){
-                            eventInterests.setText(itemList);
-                        }
+//                        String check_text = eventInterests.getText().toString();
+//                        if (check_text.matches("")){
+//                            eventInterests.setText(itemList);
+//                        }
                     }
                 });
                 AlertDialog interestDialog = Interest_Builder.create();

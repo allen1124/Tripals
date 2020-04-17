@@ -1,6 +1,7 @@
 package com.hku.tripals;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -38,6 +39,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,9 +52,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class UserProfileActivity extends AppCompatActivity {
 
     private static final String TAG = "UserProfileActivity";
+    private static final String BOOKMARK_PREF = "BOOKMARK_PREF";
     private User user;
 
     //variables for individual chat
@@ -76,6 +83,12 @@ public class UserProfileActivity extends AppCompatActivity {
     private EventAdapter createdEventAdapter, joinedEventAdapter;
     private List<Event> createdEventList = new ArrayList<>();
     private List<Event> joinedEventList = new ArrayList<>();
+
+    private CircleImageView bookmarkButton;
+    private boolean bookmarked = false;
+    SharedPreferences userbookmarkPref;
+    private List<String> userbookmarkList = new ArrayList<>();
+    private String userbookmarkJson;
 
     DateFormat df = new SimpleDateFormat("d/M/yyyy");
 
@@ -117,6 +130,49 @@ public class UserProfileActivity extends AppCompatActivity {
         joinedEvent.setAdapter(joinedEventAdapter);
         loadCreatedEvent();
         loadJoinedEvent();
+
+        bookmarkButton = findViewById(R.id.user_bookmark);
+        userbookmarkPref = getSharedPreferences(BOOKMARK_PREF, MODE_PRIVATE);
+        userbookmarkJson = userbookmarkPref.getString("bookmark", "[]");
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(userbookmarkJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                userbookmarkList.add(jsonArray.getString(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        bookmarked = userbookmarkList.contains(user.getUid());
+        if(bookmarked){
+            bookmarkButton.setImageResource(R.mipmap.ic_bookmark_on);
+        }else{
+            bookmarkButton.setImageResource(R.mipmap.ic_bookmark_off);
+        }
+        bookmarkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = userbookmarkPref.edit();
+                if(bookmarked){
+                    bookmarkButton.setImageResource(R.mipmap.ic_bookmark_off);
+                    bookmarked = false;
+                    userbookmarkList.remove(user.getUid());
+                }else{
+                    bookmarkButton.setImageResource(R.mipmap.ic_bookmark_on);
+                    bookmarked = true;
+                    userbookmarkList.add(user.getUid());
+                }
+                JSONArray json = new JSONArray(userbookmarkList);
+                editor.putString("bookmark", json.toString());
+                Log.d(TAG, "bookmark in json: "+json.toString());
+                editor.commit();
+            }
+        });
+
         gender.setText(user.getGender());
         try {
             Date birthday = df.parse(user.getBirthday());
