@@ -1,18 +1,25 @@
 package com.hku.tripals.NotificationService;
 
 public class Data {
+    // New Message Notification
     private String chat_id;
     private String chat_name;
     private String chat_icon;
     private String chat_type;
     private String chat_participants;
 
+    // Event Notification
+    private String event_id;
+
+    private String type_code;
     private int icon;
     private String body;
     private String title;
     private String sent;
 
-    public Data(String chat_id, String chat_name, String chat_icon, String chat_type, String chat_participants, int icon, String body, String title, String sent) {
+    // New Message Notification
+    public Data(String type_code, String chat_id, String chat_name, String chat_icon, String chat_type, String chat_participants, int icon, String body, String title, String sent) {
+        this.type_code = type_code;
         this.chat_id = chat_id;
         this.chat_name = chat_name;
         this.chat_icon = chat_icon;
@@ -24,7 +31,33 @@ public class Data {
         this.sent = sent;
     }
 
+    //Event Notification
+    public Data(String type_code, String event_id, int icon, String body, String title, String sent) {
+        this.type_code = type_code;
+        this.event_id = event_id;
+        this.icon = icon;
+        this.body = body;
+        this.title = title;
+        this.sent = sent;
+    }
+
     public Data() {
+    }
+
+    public String getEvent_id() {
+        return event_id;
+    }
+
+    public void setEvent_id(String event_id) {
+        this.event_id = event_id;
+    }
+
+    public String getType_code() {
+        return type_code;
+    }
+
+    public void setType_code(String type_code) {
+        this.type_code = type_code;
     }
 
     public String getChat_id() {

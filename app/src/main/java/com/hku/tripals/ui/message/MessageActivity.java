@@ -338,6 +338,7 @@ public class MessageActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        currentUser("none");
         finish();
         super.onBackPressed();
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
@@ -420,7 +421,7 @@ public class MessageActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Token token = snapshot.getValue(Token.class);
                     Log.d("Debug", "userid before sent: "+receiver);
-                    Data data = new Data(chatId, chatName, chatIcon, type, participants, R.mipmap.ic_launcher, username+": "+message, "New Message from "+username,
+                    Data data = new Data("NEWMESSAGE", chatId, chatName, chatIcon, type, participants, R.drawable.ic_plane_24dp, username+": "+message, "New Message from "+username,
                             receiver);
                     Sender sender = new Sender(data, token.getToken());
                     Log.d("Debug", "data is: "+ data);

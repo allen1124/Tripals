@@ -28,6 +28,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import retrofit2.Call;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -35,14 +36,23 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.hku.tripals.NotificationService.APIService;
+import com.hku.tripals.NotificationService.Client;
+import com.hku.tripals.NotificationService.Data;
+import com.hku.tripals.NotificationService.Response;
+import com.hku.tripals.NotificationService.Sender;
+import com.hku.tripals.NotificationService.Token;
 import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Place;
 import com.squareup.picasso.Picasso;
@@ -106,11 +116,13 @@ public class EditEventActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
+    private APIService apiService;
 
         @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_event);
+        apiService = Client.getRetrofit("https://fcm.googleapis.com/").create(APIService.class);
         db = FirebaseFirestore.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -511,7 +523,11 @@ public class EditEventActivity extends AppCompatActivity {
         }
         db.collection("chats").document(event_id).update("eventTitle", event.getTitle());
         Toast.makeText(EditEventActivity.this, "Event Updated", Toast.LENGTH_SHORT).show();
-
+        for(int i = 0; i < event.getParticipants().size(); i++){
+            if(!event.getParticipants().get(i).matches(currentUser.getUid())) {
+                sendNotification(event.getParticipants().get(i), event.getId(), event.getTitle());
+            }
+        }
         Intent intent = new Intent();
         intent.putExtra("UPDATED_EVENT", event);
         setResult(RESULT_OK, intent);
@@ -565,5 +581,39 @@ public class EditEventActivity extends AppCompatActivity {
         BitmapFactory.Options o2 = new BitmapFactory.Options();
         o2.inSampleSize = scale;
         return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2);
+    }
+
+    private void sendNotification(final String receiver, final String eventId, final String eventTitle){
+        Log.d(TAG, "sendNotification: receiver: "+receiver+", eventId: "+eventId);
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("tokens");
+        com.google.firebase.database.Query query = tokens.orderByKey().equalTo(receiver);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    Token token = snapshot.getValue(Token.class);
+                    Data data = new Data("EVENT", eventId, R.drawable.ic_plane_24dp, eventTitle, "Event Updated by Host",
+                            receiver);
+                    Sender sender = new Sender(data, token.getToken());
+                    apiService.sendNotification(sender)
+                            .enqueue(new retrofit2.Callback<Response>() {
+                                @Override
+                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                    Log.d(TAG, "response.code: "+response.code());
+                                }
+
+                                @Override
+                                public void onFailure(Call<Response> call, Throwable t) {
+
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

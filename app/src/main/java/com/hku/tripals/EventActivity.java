@@ -39,6 +39,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.hku.tripals.NotificationService.APIService;
+import com.hku.tripals.NotificationService.Client;
+import com.hku.tripals.NotificationService.Data;
+import com.hku.tripals.NotificationService.Response;
+import com.hku.tripals.NotificationService.Sender;
+import com.hku.tripals.NotificationService.Token;
 import com.hku.tripals.adapter.CommentsAdapter;
 import com.hku.tripals.adapter.EventAdapter;
 import com.hku.tripals.model.Comment;
@@ -57,6 +63,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
 
 import android.provider.MediaStore;
 import android.util.Log;
@@ -131,10 +138,13 @@ public class EventActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
+    private APIService apiService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
+        apiService = Client.getRetrofit("https://fcm.googleapis.com/").create(APIService.class);
         db = FirebaseFirestore.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -398,6 +408,7 @@ public class EventActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "Request added");
+                sendNotification(event.getHost(), event.getId(), "New Request from "+currentUser.getDisplayName(), currentUser.getDisplayName()+" wants to join "+event.getTitle());
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -408,9 +419,9 @@ public class EventActivity extends AppCompatActivity {
         eventButton.setEnabled(false);
     }
 
-    private void postComment(String commentString){
+    private void postComment(final String commentString){
         Log.d(TAG, "postComment: called");
-        String eventKey = event.getId();
+        final String eventKey = event.getId();
         final DocumentReference newCommentRef = db.collection("events").document(eventKey).collection("comments").document();
         String newCommentId = newCommentRef.getId();
         final Comment comment = new Comment(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getPhotoUrl().toString(), commentString);
@@ -419,6 +430,9 @@ public class EventActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(Void aVoid) {
                     Log.d(TAG, "onSuccess: comment added");
+                    if(!event.getHost().matches(currentUser.getUid())){
+                        sendNotification(event.getHost(), eventKey, "New Comment from "+currentUser.getDisplayName(), currentUser.getDisplayName()+": "+commentString);
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -443,6 +457,9 @@ public class EventActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Log.d(TAG, "onSuccess: comment added");
+                                    if(!event.getHost().matches(currentUser.getUid())){
+                                        sendNotification(event.getHost(), eventKey, "New Comment from "+currentUser.getDisplayName(), currentUser.getDisplayName()+": "+commentString);
+                                    }
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -570,6 +587,39 @@ public class EventActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+    }
 
+    private void sendNotification(final String receiver, final String eventId, final String title, final  String body){
+        Log.d(TAG, "sendNotification: receiver: "+receiver+", eventId: "+eventId);
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("tokens");
+        com.google.firebase.database.Query query = tokens.orderByKey().equalTo(receiver);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    Token token = snapshot.getValue(Token.class);
+                    Data data = new Data("EVENT", eventId, R.drawable.ic_plane_24dp, body, title,
+                            receiver);
+                    Sender sender = new Sender(data, token.getToken());
+                    apiService.sendNotification(sender)
+                            .enqueue(new retrofit2.Callback<Response>() {
+                                @Override
+                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                    Log.d(TAG, "response.code: "+response.code());
+                                }
+
+                                @Override
+                                public void onFailure(Call<Response> call, Throwable t) {
+
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
