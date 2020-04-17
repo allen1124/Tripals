@@ -145,4 +145,6 @@
     <string name="title_activity_user_profile">UserProfileActivity</string>
     <string name="no_event">No event in this place</string>
     <string name="you_may_interested">You may interested</string>
+    <string name="events">Events</string>
+    <string name="users">Users</string>
 </resources>

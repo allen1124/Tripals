@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.tabs.TabLayout;
 import com.hku.tripals.R;
 import com.hku.tripals.adapter.EventAdapter;
 import com.hku.tripals.adapter.RequestAdapter;
@@ -33,11 +34,18 @@ public class FavouriteFragment extends Fragment {
     private LinearLayoutManager favouriteLayoutManager;
     private EventAdapter eventAdapter;
 
+    private RecyclerView userRecyclerView;
+    private LinearLayoutManager userLayoutManager;
+//    private UserAdapter userAdapter;
+
+    private TabLayout favouriteTab;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         favouriteViewModel =
                 ViewModelProviders.of(this).get(FavouriteViewModel.class);
         View root = inflater.inflate(R.layout.fragment_favourite, container, false);
+        favouriteTab = root.findViewById(R.id.tabLayout_favourite);
         eventRecyclerView = root.findViewById(R.id.favourite_event_RecyclerView);
         noFavourite = root.findViewById(R.id.no_favourite_textView);
         favouriteLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
@@ -55,8 +63,36 @@ public class FavouriteFragment extends Fragment {
                     noFavourite.setVisibility(View.VISIBLE);
             }
         });
-        favouriteViewModel.loadEvent();
         eventRecyclerView.setAdapter(eventAdapter);
+
+        userRecyclerView = root.findViewById(R.id.favourite_user_RecyclerView);
+
+        favouriteTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                Log.d(TAG, "tab selected" +tab.getPosition());
+                if(tab.getPosition() == 0) {
+                    favouriteViewModel.loadEvent();
+                    eventRecyclerView.setVisibility(View.VISIBLE);
+                    userRecyclerView.setVisibility(View.GONE);
+
+                }
+                if(tab.getPosition() == 1) {
+//                    favouriteViewModel.loadUser();
+                    eventRecyclerView.setVisibility(View.GONE);
+                    userRecyclerView.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+
         return root;
     }
 

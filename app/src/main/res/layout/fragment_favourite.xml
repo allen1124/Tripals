@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -22,23 +23,61 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="56dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/favourite_title_textView"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout_favourite"
+        app:layout_constraintVertical_bias="0" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/favourite_user_RecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="56dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout_favourite"
         app:layout_constraintVertical_bias="0" />
 
     <TextView
         android:id="@+id/no_favourite_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/round_corner_pri_light"
         android:text="@string/no_favourite"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/favourite_title_textView" />
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout_favourite" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout_favourite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/favourite_title_textView"
+        app:tabIndicatorColor="#A1C3FF"
+        app:tabTextAppearance="@android:style/TextAppearance">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tap_events"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/events" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tap_users"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/users" />
+    </com.google.android.material.tabs.TabLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
