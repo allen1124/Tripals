@@ -17,14 +17,23 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.hku.tripals.NotificationService.APIService;
+import com.hku.tripals.NotificationService.Client;
+import com.hku.tripals.NotificationService.Data;
+import com.hku.tripals.NotificationService.Response;
+import com.hku.tripals.NotificationService.Sender;
+import com.hku.tripals.NotificationService.Token;
 import com.hku.tripals.R;
 import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Request;
@@ -37,6 +46,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import retrofit2.Call;
 
 public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHolder>{
 
@@ -50,6 +60,8 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
 
     private DatabaseReference eventMsgRef, EventMsgKeyRef;
     private String currentDate, currentTime;
+
+    private APIService apiService = Client.getRetrofit("https://fcm.googleapis.com/").create(APIService.class);;
 
     public RequestAdapter(Activity context){
         this.context = context;
@@ -118,6 +130,7 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
                                 Log.w(TAG, "Error deleting document", e);
                             }
                         });
+                sendNotification(request.getRequestorUid(), request.getEventId(), "Request Rejected", "You are rejected to join "+request.getEventTitle());
                 Toast.makeText(context, "Request rejected.",
                         Toast.LENGTH_LONG).show();
             }
@@ -222,7 +235,41 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
         messageInfoMap.put("msgTime", currentTime);
         messageInfoMap.put("msgType", "join");
         EventMsgKeyRef.updateChildren(messageInfoMap);
-
+        sendNotification(request.getRequestorUid(), request.getEventId(), "Request Accepted", "You joined "+request.getEventTitle());
         db.collection("requests").document(request.getRequestorUid()+"-"+request.getEventId()).delete();
+    }
+
+    private void sendNotification(final String receiver, final String eventId, final String title, final  String body){
+        Log.d(TAG, "sendNotification: receiver: "+receiver+", eventId: "+eventId);
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("tokens");
+        com.google.firebase.database.Query query = tokens.orderByKey().equalTo(receiver);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    Token token = snapshot.getValue(Token.class);
+                    Data data = new Data("EVENT", eventId, R.drawable.ic_plane_24dp, body, title,
+                            receiver);
+                    Sender sender = new Sender(data, token.getToken());
+                    apiService.sendNotification(sender)
+                            .enqueue(new retrofit2.Callback<Response>() {
+                                @Override
+                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                    Log.d(TAG, "response.code: "+response.code());
+                                }
+
+                                @Override
+                                public void onFailure(Call<Response> call, Throwable t) {
+
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

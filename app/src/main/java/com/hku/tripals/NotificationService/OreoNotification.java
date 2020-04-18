@@ -15,7 +15,7 @@ import androidx.core.app.NotificationManagerCompat;
 public class OreoNotification extends ContextWrapper {
 
     private static final String ID = "com.hku.tripals";
-    private static final String NAME = "chat";
+    private static final String NAME = "Tripals";
 
     private NotificationManager notificationManager;
 
