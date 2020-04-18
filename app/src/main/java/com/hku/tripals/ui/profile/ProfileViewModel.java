@@ -91,7 +91,6 @@ public class ProfileViewModel extends ViewModel {
     public void loadCreatedEvent(int numberEvent){
         Log.d(TAG, "loadCreateEvent: called");
         db.collection("events")
-                .whereEqualTo("privacy", "PUBLIC")
                 .whereEqualTo("host", currentUser.getUid())
                 .limit(numberEvent)
                 .orderBy("timestamp", Query.Direction.DESCENDING)

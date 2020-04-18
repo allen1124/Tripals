@@ -79,6 +79,20 @@ public class FavouriteFragment extends Fragment {
         eventRecyclerView.setAdapter(eventAdapter);
 
         userRecyclerView.setAdapter(userAdapter);
+        favouriteViewModel.getUsers().observe(getViewLifecycleOwner(), new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> users) {
+                Log.d(TAG, "onChanged: "+users.size());
+                userAdapter.setUserList(users);
+                userAdapter.notifyDataSetChanged();
+                if(favouriteTab.getSelectedTabPosition() == 1) {
+                    if (userAdapter.getItemCount() > 0)
+                        noFavourite_user.setVisibility(View.GONE);
+                    else
+                        noFavourite_user.setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
         favouriteTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -94,18 +108,6 @@ public class FavouriteFragment extends Fragment {
                 if(tab.getPosition() == 1) {
                     eventRecyclerView.setVisibility(View.GONE);
                     noFavourite.setVisibility(View.GONE);
-                    favouriteViewModel.getUsers().observe(getViewLifecycleOwner(), new Observer<List<User>>() {
-                        @Override
-                        public void onChanged(List<User> users) {
-                            Log.d(TAG, "onChanged: "+users.size());
-                            userAdapter.setUserList(users);
-                            userAdapter.notifyDataSetChanged();
-                            if(userAdapter.getItemCount() > 0)
-                                noFavourite_user.setVisibility(View.GONE);
-                            else
-                                noFavourite_user.setVisibility(View.VISIBLE);
-                        }
-                    });
                     favouriteViewModel.loadUser();
                     userRecyclerView.setVisibility(View.VISIBLE);
                 }
