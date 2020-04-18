@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -45,6 +46,10 @@ public class FavouriteViewModel extends AndroidViewModel {
 
     private static final String TAG = "FavouriteViewModel";
     private static final String BOOKMARK_PREF = "BOOKMARK_PREF";
+    private static final String USER_BOOKMARK_PREF = "USER_BOOKMARK_PREF";
+    //can test more than 10 values by using the PREF below instead of the one above
+    //private static final String USER_BOOKMARK_PREF = "BOOKMARK_PREF";
+
 
     private MutableLiveData<List<Event>> events;
     private MutableLiveData<List<User>> users;
@@ -58,6 +63,7 @@ public class FavouriteViewModel extends AndroidViewModel {
 
     private List<String> userbookmarkList = new ArrayList<>();
     private String userbookmarkJson;
+    private int user_index = 0;
 
     private FirebaseFirestore db;
     Client searchClient;
@@ -170,10 +176,11 @@ public class FavouriteViewModel extends AndroidViewModel {
     }
 
     public void loadUser(){
-        userbookmarkPref = getApplication().getSharedPreferences(BOOKMARK_PREF, MODE_PRIVATE);
+        userbookmarkPref = getApplication().getSharedPreferences(USER_BOOKMARK_PREF, MODE_PRIVATE);
         userbookmarkJson = userbookmarkPref.getString("bookmark", "[]");
         JSONArray jsonArray = null;
         userbookmarkList.clear();
+        user_index = 0;
         try {
             jsonArray = new JSONArray(userbookmarkJson);
         } catch (JSONException e) {
@@ -186,27 +193,34 @@ public class FavouriteViewModel extends AndroidViewModel {
                 e.printStackTrace();
             }
         }
-        Log.d(TAG, "loadUser: "+userbookmarkList.toString());
+        Log.d(TAG, "loadUser: "+ userbookmarkList.toString());
+        userList.clear();
         if(userbookmarkList.size() > 0) {
-            db.collection("user-profile")
-                    .whereIn(FieldPath.documentId(), userbookmarkList)
-                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                            Log.w(TAG, "Getting documents.");
-                            if (e != null) {
-                                Log.w(TAG, "Error getting documents.", e);
-                                return;
+            while(user_index < userbookmarkList.size()){
+                db.collection("user-profile")
+                        .whereIn(FieldPath.documentId(), Collections.singletonList(userbookmarkList.get(user_index)))
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                Log.w(TAG, "Getting documents.");
+                                if (e != null) {
+                                    Log.w(TAG, "Error getting documents.", e);
+                                    userList.clear();
+                                    users.setValue(userList);
+                                    user_index = 0;
+                                    return;
+                                }
+                                //userList.clear();
+                                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                    userList.add(document.toObject(User.class));
+                                    Log.d(TAG, document.getId() + " added");
+                                }
+                                users.setValue(userList);
                             }
-                            userList.clear();
-                            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                                userList.add(document.toObject(User.class));
-                                Log.d(TAG, document.getId() + " added");
-                            }
-                            users.setValue(userList);
-                        }
-                    });
-        }else {
+                        });
+                user_index = user_index + 1;
+            }
+        } else {
             userList.clear();
             users.setValue(userList);
         }

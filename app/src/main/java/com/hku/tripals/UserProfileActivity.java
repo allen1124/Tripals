@@ -57,7 +57,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UserProfileActivity extends AppCompatActivity {
 
     private static final String TAG = "UserProfileActivity";
-    private static final String BOOKMARK_PREF = "BOOKMARK_PREF";
+    private static final String USER_BOOKMARK_PREF = "USER_BOOKMARK_PREF";
+    //can test more than 10 values by using the PREF below instead of the one above
+    //private static final String USER_BOOKMARK_PREF = "BOOKMARK_PREF";
     private User user;
 
     //variables for individual chat
@@ -132,7 +134,7 @@ public class UserProfileActivity extends AppCompatActivity {
         loadJoinedEvent();
 
         bookmarkButton = findViewById(R.id.user_bookmark);
-        userbookmarkPref = getSharedPreferences(BOOKMARK_PREF, MODE_PRIVATE);
+        userbookmarkPref = getSharedPreferences(USER_BOOKMARK_PREF, MODE_PRIVATE);
         userbookmarkJson = userbookmarkPref.getString("bookmark", "[]");
         JSONArray jsonArray = null;
         try {
@@ -168,7 +170,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
                 JSONArray json = new JSONArray(userbookmarkList);
                 editor.putString("bookmark", json.toString());
-                Log.d(TAG, "bookmark in json: "+json.toString());
+                Log.d(TAG, "user bookmark in json: "+ json.toString());
                 editor.commit();
             }
         });
