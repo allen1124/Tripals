@@ -22,6 +22,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
 
     private static final String TAG = "ParserTask";
@@ -97,7 +99,7 @@ public class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, 
             place.setRating(Double.parseDouble(hmPlace.get("rating")));
             markerOptions.position(latLng);
             markerOptions.title(name);
-            bookmarkPref = context.getSharedPreferences(BOOKMARK_PREF, Context.MODE_PRIVATE);
+            bookmarkPref = context.getSharedPreferences(BOOKMARK_PREF, MODE_PRIVATE);
             bookmarked = bookmarkPref.getBoolean(hmPlace.get("place_id"), false);
             if(bookmarked){
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
@@ -110,9 +112,10 @@ public class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, 
     }
 
     public StringBuilder nearbyUrlNextPageBuilder(String pageToken){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("keys" , MODE_PRIVATE);
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("&pagetoken=" + pageToken);
-        sb.append("&key="+context.getString(R.string.place_key));
+        sb.append("&key="+sharedPreferences.getString("place_key" , ""));
         return sb;
     }
 }

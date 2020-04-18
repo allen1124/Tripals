@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -340,11 +341,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public StringBuilder nearbyUrlBuilder(LatLng location){
+        SharedPreferences sharedPreferences = getSharedPreferences("keys" , MODE_PRIVATE);
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("location=" + location.latitude + "," + location.longitude);
         sb.append("&radius=4000");
         sb.append("&types=" + "tourist_attraction");
-        sb.append("&key="+getString(R.string.place_key));
+        sb.append("&key="+sharedPreferences.getString("place_key" , ""));
         return sb;
     }
 
@@ -410,10 +412,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public StringBuilder photoUrlBuilder(String reference){
+        SharedPreferences sharedPreferences = getSharedPreferences("keys" , MODE_PRIVATE);
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/photo?");
         sb.append("maxwidth="+400);
         sb.append("&photoreference="+reference);
-        sb.append("&key="+getString(R.string.place_key));
+        sb.append("&key="+sharedPreferences.getString("place_key" , ""));
         return sb;
     }
 

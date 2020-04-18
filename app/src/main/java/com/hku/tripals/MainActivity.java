@@ -1,9 +1,11 @@
 package com.hku.tripals;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -12,6 +14,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.hku.tripals.NotificationService.Token;
 
 import androidx.annotation.NonNull;
@@ -25,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    private FirebaseRemoteConfig firebaseRemoteConfig;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +41,11 @@ public class MainActivity extends AppCompatActivity {
         // menu should be considered as top level destinations.
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(navView, navController);
+        firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        SharedPreferences sharedPreferences = getSharedPreferences("keys" , MODE_PRIVATE);
+        configureFirebaseRemoteConfigInstance();
+        sharedPreferences.edit().putString("map_key" , firebaseRemoteConfig.getValue("map_key").asString()).apply();
+        sharedPreferences.edit().putString("place_key" , firebaseRemoteConfig.getValue("place_key").asString()).apply();
         updateToken();
     }
 
@@ -58,4 +69,10 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    public void configureFirebaseRemoteConfigInstance(){
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setMinimumFetchIntervalInSeconds(7200)
+                .build();
+        firebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+    }
 }
