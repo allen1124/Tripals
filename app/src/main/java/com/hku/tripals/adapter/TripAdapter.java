@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.hku.tripals.EventActivity;
 import com.hku.tripals.R;
+import com.hku.tripals.TripActivity;
 import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Trip;
 
@@ -42,6 +43,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
         public TextView tripTitle;
         public TextView tripDestination;
         public TextView timestamp;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tripCard = itemView.findViewById(R.id.trip_recycler_cardView);
@@ -75,10 +77,10 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: go trip detail :" + trip.getId());
-//                Intent myIntent = new Intent(context, EventActivity.class);
-//                myIntent.putExtra("trip", (Serializable) trip);
-//                context.startActivity(myIntent);
-//                context.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                Intent myIntent = new Intent(context, TripActivity.class);
+                myIntent.putExtra("trip", (Serializable) trip);
+                context.startActivity(myIntent);
+                context.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
     }
