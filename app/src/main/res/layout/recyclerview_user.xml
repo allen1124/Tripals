@@ -27,20 +27,9 @@
             android:src="@drawable/ic_person_clicked">
         </de.hdodenhof.circleimageview.CircleImageView>
 
-
-        <!--        <TextView-->
-<!--            android:id="@+id/user_gender_recycler_textView"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="4dp"-->
-<!--            android:layout_marginTop="4dp"-->
-<!--            android:text="TextView"-->
-<!--            app:layout_constraintStart_toEndOf="@+id/user_title_recycler_textView"-->
-<!--            app:layout_constraintTop_toTopOf="@+id/user_title_recycler_textView" />-->
-
         <TextView
             android:id="@+id/user_title_recycler_textView"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"

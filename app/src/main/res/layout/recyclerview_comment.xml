@@ -11,6 +11,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/user_comment_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -69,6 +70,19 @@
             app:layout_constraintEnd_toEndOf="@+id/c_user_comment_textView"
             app:layout_constraintTop_toBottomOf="@+id/c_user_comment_textView"
             app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/c_pin_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textColor="#444444"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/c_petty_time_textView" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,15 +15,21 @@ public class Comment {
     String comment;
     String commentPhoto;
     Date timestamp;
+    String hostId;
+    String highlighted;
+    String eventId;
+    String commentId;
 
     public Comment() {
     }
 
-    public Comment(String userId, String username, String userPhoto, String comment) {
+    public Comment(String userId, String username, String userPhoto, String comment, String hostId, String highlighted, String eventId, String commentId) {
         this.userId = userId;
         this.username = username;
         this.userPhoto = userPhoto;
         this.comment = comment;
+        this.hostId = hostId;
+        this.highlighted = highlighted;
     }
 
     public String getUserId() {
@@ -74,6 +80,30 @@ public class Comment {
         this.timestamp = timestamp;
     }
 
+    public String getHostId() { return hostId; }
+
+    public void setHostId(String hostId) { this.hostId = hostId; }
+
+    public String getHighlighted() { return highlighted; }
+
+    public void setHighlighted(String highlighted) { this.highlighted = highlighted; }
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
+
+    public String getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -83,6 +113,10 @@ public class Comment {
         result.put("comment", comment);
         result.put("commentPhoto", commentPhoto);
         result.put("timestamp", FieldValue.serverTimestamp());
+        result.put("hostId", hostId);
+        result.put("highlighted", highlighted);
+        result.put("eventId", eventId);
+        result.put("commentId", commentId);
         return result;
     }
 }

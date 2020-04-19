@@ -452,7 +452,7 @@ public class EventActivity extends AppCompatActivity {
         final String eventKey = event.getId();
         final DocumentReference newCommentRef = db.collection("events").document(eventKey).collection("comments").document();
         String newCommentId = newCommentRef.getId();
-        final Comment comment = new Comment(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getPhotoUrl().toString(), commentString);
+        final Comment comment = new Comment(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getPhotoUrl().toString(), commentString, event.getHost(), "NO", event.getId(), newCommentId);
         if(commentPhotoUri == null){
             newCommentRef.set(comment.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
