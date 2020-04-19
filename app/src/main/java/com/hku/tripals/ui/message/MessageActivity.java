@@ -98,6 +98,7 @@ public class MessageActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private DatabaseReference EventRef, EventMsgKeyRef;
     private FirebaseFirestore db;
+    private String P_UserID;
 
     private APIService apiService;
 
@@ -366,7 +367,7 @@ public class MessageActivity extends AppCompatActivity {
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>
                 (this, R.layout.recyclerview_chats, userList){
             @Override
-            public View getView(int position, View view, ViewGroup parent){
+            public View getView(int position, View view, ViewGroup parent) {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = inflater.inflate(R.layout.recyclerview_chats, null);
                 CardView cardView = view.findViewById(R.id.Chats_cardview);
@@ -389,7 +390,10 @@ public class MessageActivity extends AppCompatActivity {
 
         builder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int position) {
-                Log.d(TAG, "onClick: "+userList.get(position));
+                Log.d(TAG, "onClick: (Yes) "+userList.get(position));
+                if(!(userList.get(position)).matches(currentUserID)) {
+                    goToUser(userList.get(position));
+                }
             }
         });
 

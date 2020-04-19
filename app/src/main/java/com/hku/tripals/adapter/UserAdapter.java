@@ -14,18 +14,12 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.hku.tripals.EventActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.UserProfileActivity;
-import com.hku.tripals.model.Event;
 import com.hku.tripals.model.User;
 
-import org.ocpsoft.prettytime.PrettyTime;
-
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
@@ -83,6 +77,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 context.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+
     }
 
     @Override
@@ -95,4 +90,5 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     public void setUserList(List<User> userList) {
         this.userList = userList;
     }
+
 }

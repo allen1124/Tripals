@@ -1,36 +1,51 @@
 package com.hku.tripals.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.hku.tripals.FullScreenImageActivity;
 import com.hku.tripals.R;
+import com.hku.tripals.UserProfileActivity;
 import com.hku.tripals.model.Comment;
+import com.hku.tripals.model.User;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
-import java.text.ParseException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHolder>{
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
     private ArrayList<Comment> commentList;
     Context context;
+
+    private FirebaseFirestore db;
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     public CommentsAdapter(Context context) {
         this.context = context;
@@ -86,6 +101,34 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         holder.comment.setText(comment.getComment());
         PrettyTime prettyTime = new PrettyTime(Locale.getDefault());
         holder.pettyTime.setText(prettyTime.format(comment.getTimestamp()));
+        preGoToUser();
+
+        holder.username.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!comment.getUserId().matches(currentUser.getUid())) {
+                    //holder.username.setEnabled(false);
+                    //holder.commentPhoto.setEnabled(false);
+                    goToUser(comment.getUserId());
+                    //holder.username.setEnabled(true);
+                    //holder.commentPhoto.setEnabled(true);
+                }
+            }
+        });
+
+        holder.avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!comment.getUserId().matches(currentUser.getUid())) {
+                    //holder.username.setEnabled(false);
+                    //holder.commentPhoto.setEnabled(false);
+                    goToUser(comment.getUserId());
+                    //holder.username.setEnabled(true);
+                    //holder.commentPhoto.setEnabled(true);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -97,5 +140,26 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
 
     public void setCommentList(ArrayList<Comment> commentList) {
         this.commentList = commentList;
+    }
+
+    private void preGoToUser() {
+        db = FirebaseFirestore.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+    }
+
+    private void goToUser(String uid){
+        db.collection("user-profile").document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User user = documentSnapshot.toObject(User.class);
+                Log.d("CommentsAdapter: ", "onClick: go user detail :" + user.getUid());
+                Intent myIntent = new Intent(context, UserProfileActivity.class);
+                myIntent.putExtra("user", (Serializable) user);
+                context.startActivity(myIntent);
+                ((Activity) context).overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
     }
 }

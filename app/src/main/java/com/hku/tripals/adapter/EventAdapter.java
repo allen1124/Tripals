@@ -9,10 +9,23 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.hku.tripals.EventActivity;
 import com.hku.tripals.R;
+import com.hku.tripals.UserProfileActivity;
 import com.hku.tripals.model.Event;
+import com.hku.tripals.model.User;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -21,15 +34,16 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
-
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
 
     private static final String TAG = "EventAdapter";
     private Activity context;
     private List<Event> eventList;
+
+    private FirebaseFirestore db;
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     public EventAdapter(Activity context){
         this.context = context;
@@ -46,6 +60,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         public TextView locationName;
         public TextView quota;
         public TextView timestamp;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             eventCard = itemView.findViewById(R.id.event_recycler_cardView);
@@ -98,6 +113,20 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.datetime.setText(simpleDateFormat.format(event.getDatetime()));
         PrettyTime prettyTime = new PrettyTime(Locale.getDefault());
         holder.timestamp.setText(prettyTime.format(event.getTimestamp()));
+        preGoToUser();
+
+        holder.hostName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!event.getHost().matches(currentUser.getUid())) {
+                    holder.hostName.setEnabled(false);
+                    holder.hostImage.setEnabled(false);
+                    goToUser(event.getHost());
+                    holder.hostName.setEnabled(true);
+                    holder.hostImage.setEnabled(true);
+                }
+            }
+        });
 
         holder.eventCard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,6 +138,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                 context.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+
     }
 
     @Override
@@ -120,5 +150,26 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
     public void setEventList(List<Event> eventList) {
         this.eventList = eventList;
+    }
+
+    private void preGoToUser() {
+        db = FirebaseFirestore.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+    }
+
+    private void goToUser(String uid){
+        db.collection("user-profile").document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User user = documentSnapshot.toObject(User.class);
+                Log.d(TAG, "onClick: go user detail :" + user.getUid());
+                Intent myIntent = new Intent(context, UserProfileActivity.class);
+                myIntent.putExtra("user", (Serializable) user);
+                context.startActivity(myIntent);
+                context.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            }
+        });
     }
 }
