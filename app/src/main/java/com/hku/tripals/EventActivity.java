@@ -1,9 +1,11 @@
 package com.hku.tripals;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,6 +14,8 @@ import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -60,17 +64,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -83,9 +90,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -94,6 +104,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 public class EventActivity extends AppCompatActivity {
 
@@ -101,6 +113,7 @@ public class EventActivity extends AppCompatActivity {
     private static final String BOOKMARK_PREF = "BOOKMARK_PREF";
     private static int IMAGE_PICKER_CODE = 2222;
     private static int EVENT_EDIT_CODE = 3333;
+    private static final int SHARE = 1111;
     private Event event;
 
     private TextView eventLocation;
@@ -119,6 +132,8 @@ public class EventActivity extends AppCompatActivity {
     SharedPreferences bookmarkPref;
     private List<String> bookmarkList = new ArrayList<>();
     private String bookmarkJson;
+    private ImageButton shareButton;
+    private Bitmap eventBitmap;
 
     private ArrayList<Comment> comments = new ArrayList<>();
     private ImageView commentUserAvatar;
@@ -139,6 +154,7 @@ public class EventActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
 
     private APIService apiService;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,6 +185,7 @@ public class EventActivity extends AppCompatActivity {
         bookmarkButton = findViewById(R.id.bookmark_imageView);
         commentPhoto = findViewById(R.id.c_comment_imageView);
         commentUploadImage = findViewById(R.id.c_add_image_button);
+        shareButton = findViewById(R.id.event_share_imageButton);
         bookmarkPref = getSharedPreferences(BOOKMARK_PREF, MODE_PRIVATE);
         bookmarkJson = bookmarkPref.getString("bookmark", "[]");
         eventHostName.setText(event.getHostName());
@@ -216,20 +233,18 @@ public class EventActivity extends AppCompatActivity {
         commentView.setLayoutManager(layoutManager);
         commentsAdapter = new CommentsAdapter(this);
         commentView.setAdapter(commentsAdapter);
-        Picasso
-                .get()
+
+        Glide.with(this)
+                .asBitmap()
                 .load(event.getPhotoUrl())
-                .fetch(new Callback(){
+                .into(new SimpleTarget<Bitmap>() {
                     @Override
-                    public void onSuccess() {
-                        Picasso
-                                .get()
-                                .load(event.getPhotoUrl())
-                                .into(appbarBg);
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        appbarBg.setImageBitmap(resource);
+                        eventBitmap = resource;
                     }
-                    @Override
-                    public void onError(Exception e) { }
-                });
+                }
+        );
         if(event.getQuota() == -1){
             eventQuota.setVisibility(View.GONE);
             eventQuotaTitle.setVisibility(View.GONE);
@@ -274,7 +289,6 @@ public class EventActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle(event.getTitle());
         eventLocation.setText(event.getLocationName());
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         eventDatetime.setText(simpleDateFormat.format(event.getDatetime()));
         eventDescription.setText(event.getDescription());
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -369,6 +383,20 @@ public class EventActivity extends AppCompatActivity {
                     goToUser(event.getHost());
                     eventHostName.setEnabled(true);
                     eventHostAvatar.setEnabled(true);
+                }
+            }
+        });
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    if (ActivityCompat.checkSelfPermission(EventActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(EventActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, SHARE);
+                    } else {
+                        shareTo();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -621,5 +649,43 @@ public class EventActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void shareTo() {
+        String shareBody = event.getTitle()+" at "+simpleDateFormat.format(event.getDatetime())+" hosted by "+event.getHostName()+"\nDescription: "+event.getDescription();
+//        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+//        sharingIntent.setType("text/plain");
+//        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Event in Tripals: "+event.getTitle());
+//        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+//        startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_using)));
+        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setType("image/*");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, getImageUri(eventBitmap));
+        shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Event in Tripals: "+event.getTitle());
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+//        shareIntent.setPackage("com.instagram.android");
+//        startActivity(shareIntent);
+
+        startActivity(Intent.createChooser(shareIntent, getResources().getString(R.string.share_using)));
+    }
+
+    public Uri getImageUri(Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(EventActivity.this.getContentResolver(), inImage, UUID.randomUUID().toString() + ".png", "drawing");
+        return Uri.parse(path);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case SHARE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    shareTo();
+                } else {
+                    Toast.makeText(this, "Please granted storage access right to share", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 }
