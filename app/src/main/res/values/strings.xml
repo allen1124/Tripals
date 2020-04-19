@@ -110,6 +110,7 @@
     <string name="create_event_welcome">Start a new Tripals event</string>
     <string name="not_complete_event_message">You did not complete the event form.</string>
     <string name="create_event_complete_message">Event Created</string>
+    <string name="create_trip_complete_message">Trip Created</string>
     <!--    Event RecyclerView-->
     <string name="left">place(s) left</string>
     <string name="title_activity_event">EventActivity</string>
@@ -148,4 +149,5 @@
     <string name="events">Events</string>
     <string name="users">Users</string>
     <string name="share_using">Share using</string>
+    <string name="profile_created_trip">Created Trip</string>
 </resources>

@@ -195,6 +195,7 @@ public class CreateEventActivity extends AppCompatActivity {
                     event.setDescription(eventDescription.getText().toString());
                     event.setHostAvatarUrl(currentUser.getPhotoUrl().toString());
                     event.setHostName(currentUser.getDisplayName());
+
                     if(eventPrivacy.getCheckedRadioButtonId() == R.id.event_privacy_radioButton1){
                         event.setPrivacy("PUBLIC");
                     }else{

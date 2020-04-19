@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -21,7 +22,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.hku.tripals.adapter.ChatAdapter;
 import com.hku.tripals.adapter.EventAdapter;
+import com.hku.tripals.adapter.TripAdapter;
 import com.hku.tripals.model.Event;
+import com.hku.tripals.model.Trip;
 import com.hku.tripals.model.User;
 import com.hku.tripals.ui.message.MessageActivity;
 import com.hku.tripals.ui.message.MessageFragment;
@@ -30,6 +33,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -85,12 +90,19 @@ public class UserProfileActivity extends AppCompatActivity {
     private EventAdapter createdEventAdapter, joinedEventAdapter;
     private List<Event> createdEventList = new ArrayList<>();
     private List<Event> joinedEventList = new ArrayList<>();
+    private List<Trip> createdTripList = new ArrayList<>();
 
     private CircleImageView bookmarkButton;
     private boolean bookmarked = false;
     SharedPreferences userbookmarkPref;
     private List<String> userbookmarkList = new ArrayList<>();
     private String userbookmarkJson;
+
+    private ConstraintLayout constraintLayout;
+    private TabLayout createdTab;
+    private RecyclerView createdTripsRecyclerView;
+    private LinearLayoutManager createdTripsLayoutManager;
+    private TripAdapter createdTripAdapter;
 
     DateFormat df = new SimpleDateFormat("d/M/yyyy");
 
@@ -117,21 +129,28 @@ public class UserProfileActivity extends AppCompatActivity {
         country = findViewById(R.id.user_country_textView);
         interest = findViewById(R.id.user_interest_textView);
         bio = findViewById(R.id.user_bio_textView);
-        eventCreatedTitle = findViewById(R.id.user_created_event_title_textView);
+        constraintLayout = findViewById(R.id.user_profile_constraintLayout);
         noJoinedEvent = findViewById(R.id.no_joined_event_textView);
         noJoinedEvent.setVisibility(View.GONE);
         createdEvent = findViewById(R.id.user_created_event_RecyclerView);
         joinedEvent = findViewById(R.id.user_joined_event_RecyclerView);
+        createdTab = findViewById(R.id.user_created_tabLayout);
+        createdTripsRecyclerView = findViewById(R.id.user_created_trip_RecyclerView);
+        createdTripsLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         createdEventLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         joinedEventLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        createdTripAdapter = new TripAdapter(this);
         createdEventAdapter = new EventAdapter(this);
         joinedEventAdapter = new EventAdapter(this);
         createdEvent.setLayoutManager(createdEventLayoutManager);
         createdEvent.setAdapter(createdEventAdapter);
         joinedEvent.setLayoutManager(joinedEventLayoutManager);
         joinedEvent.setAdapter(joinedEventAdapter);
+        createdTripsRecyclerView.setLayoutManager(createdTripsLayoutManager);
+        createdTripsRecyclerView.setAdapter(createdTripAdapter);
         loadCreatedEvent();
         loadJoinedEvent();
+        loadCreatedTrip();
 
         bookmarkButton = findViewById(R.id.user_bookmark);
         userbookmarkPref = getSharedPreferences(USER_BOOKMARK_PREF, MODE_PRIVATE);
@@ -217,6 +236,37 @@ public class UserProfileActivity extends AppCompatActivity {
                 addChatRoom(user);
             }
         });
+
+        createdTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                Log.d(TAG, "tab selected" +tab.getPosition());
+                if(tab.getPosition() == 0) {
+                    createdTripsRecyclerView.setVisibility(View.GONE);
+                    createdEvent.setVisibility(View.VISIBLE);
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(R.id.user_joined_event_title_textView, ConstraintSet.TOP, R.id.user_created_event_RecyclerView,ConstraintSet.BOTTOM,0);
+                    constraintSet.applyTo(constraintLayout);
+                }
+                if(tab.getPosition() == 1) {
+                    createdEvent.setVisibility(View.GONE);
+                    createdTripsRecyclerView.setVisibility(View.VISIBLE);
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(R.id.user_joined_event_title_textView, ConstraintSet.TOP, R.id.user_created_trip_RecyclerView,ConstraintSet.BOTTOM,0);
+                    constraintSet.applyTo(constraintLayout);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
     }
 
     @Override
@@ -288,6 +338,30 @@ public class UserProfileActivity extends AppCompatActivity {
                         }
                         joinedEventAdapter.setEventList(joinedEventList);
                         joinedEventAdapter.notifyDataSetChanged();
+                    }
+                });
+    }
+
+    public void loadCreatedTrip(){
+        Log.d(TAG, "loadJoinedEvent: called");
+        db.collection("trips")
+                .whereEqualTo("host", user.getUid())
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        Log.w(TAG, "Getting documents.");
+                        if (e != null) {
+                            Log.w(TAG, "Error getting documents.", e);
+                            return;
+                        }
+                        createdTripList.clear();
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            createdTripList.add(document.toObject(Trip.class));
+                            Log.d(TAG, document.getId() + " added");
+                        }
+                        createdTripAdapter.setTripList(createdTripList);
+                        createdTripAdapter.notifyDataSetChanged();
                     }
                 });
     }

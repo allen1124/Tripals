@@ -39,6 +39,7 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".CreateEventActivity" />
+        <activity android:name=".CreateTripActivity" />
         <activity android:name=".EditEventActivity" />
         <activity
             android:name=".PlaceActivity"

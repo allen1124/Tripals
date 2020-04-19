@@ -19,6 +19,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.hku.tripals.model.Event;
+import com.hku.tripals.model.Trip;
 import com.hku.tripals.model.User;
 
 import java.util.ArrayList;
@@ -39,6 +40,9 @@ public class ProfileViewModel extends ViewModel {
     private MutableLiveData<List<Event>> joined_events;
     private List<Event> joined_eventList;
 
+    private MutableLiveData<List<Trip>> created_trip;
+    private List<Trip> created_tripList;
+
     public ProfileViewModel() {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -51,6 +55,8 @@ public class ProfileViewModel extends ViewModel {
         joined_eventList = new ArrayList<>();
         joined_events = new MutableLiveData<>();
 
+        created_tripList = new ArrayList<>();
+        created_trip = new MutableLiveData<>();
     }
 
     //Users
@@ -88,11 +94,10 @@ public class ProfileViewModel extends ViewModel {
         return created_events;
     }
 
-    public void loadCreatedEvent(int numberEvent){
+    public void loadCreatedEvent(){
         Log.d(TAG, "loadCreateEvent: called");
         db.collection("events")
                 .whereEqualTo("host", currentUser.getUid())
-                .limit(numberEvent)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -118,12 +123,11 @@ public class ProfileViewModel extends ViewModel {
         return joined_events;
     }
 
-    public void loadJoinedEvent(int numberEvent){
+    public void loadJoinedEvent(){
         Log.d(TAG, "loadJoinedEvent: called");
         db.collection("events")
                 .whereEqualTo("privacy", "PUBLIC")
                 .whereArrayContains("participants", currentUser.getUid())
-                .limit(numberEvent)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -143,4 +147,30 @@ public class ProfileViewModel extends ViewModel {
                 });
     }
 
+    public LiveData<List<Trip>> getCreatedTrip() {
+        return created_trip;
+    }
+
+    public void loadCreatedTrip(){
+        Log.d(TAG, "loadJoinedEvent: called");
+        db.collection("trips")
+                .whereEqualTo("host", currentUser.getUid())
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        Log.w(TAG, "Getting documents.");
+                        if (e != null) {
+                            Log.w(TAG, "Error getting documents.", e);
+                            return;
+                        }
+                        created_tripList.clear();
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            created_tripList.add(document.toObject(Trip.class));
+                            Log.d(TAG, document.getId() + " added");
+                        }
+                        created_trip.setValue(created_tripList);
+                    }
+                });
+    }
 }

@@ -27,6 +27,7 @@ public class Event implements Serializable {
     private String photoUrl;
     private List<String> interests;
     private Date timestamp;
+    private boolean isSelected = false;
 
     public Event() {
     }
@@ -172,6 +173,15 @@ public class Event implements Serializable {
 
     public Date getTimestamp() {
         return timestamp;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+
+    public boolean isSelected() {
+        return isSelected;
     }
 
     public Map<String, Object> toMap() {

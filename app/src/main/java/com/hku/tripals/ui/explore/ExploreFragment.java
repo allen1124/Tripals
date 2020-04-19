@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hku.tripals.CreateEventActivity;
+import com.hku.tripals.CreateTripActivity;
 import com.hku.tripals.MapsActivity;
 import com.hku.tripals.SearchResultsActivity;
 import com.hku.tripals.R;
@@ -38,6 +39,7 @@ public class ExploreFragment extends Fragment {
     private SearchView searchbar;
     private CardView createEventCard;
     private CardView nearByCard;
+    private CardView createTripCard;
 
     private List<Destination> destinationList = new ArrayList<>();
     private RecyclerView destinationRecyclerView;
@@ -59,6 +61,14 @@ public class ExploreFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), CreateEventActivity.class);
+                startActivity(intent);
+            }
+        });
+        createTripCard = root.findViewById(R.id.create_trip_cardView);
+        createTripCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), CreateTripActivity.class);
                 startActivity(intent);
             }
         });
