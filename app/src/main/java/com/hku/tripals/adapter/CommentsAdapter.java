@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -31,17 +32,11 @@ import com.hku.tripals.model.Comment;
 import com.hku.tripals.model.User;
 
 import org.ocpsoft.prettytime.PrettyTime;
-import org.w3c.dom.Text;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
-
-import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHolder>{
 
@@ -53,6 +48,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    private String currentUserID;
 
     public CommentsAdapter(Context context) {
         this.context = context;
@@ -115,8 +111,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         holder.comment.setText(comment.getComment());
         PrettyTime prettyTime = new PrettyTime(Locale.getDefault());
         holder.pettyTime.setText(prettyTime.format(comment.getTimestamp()));
-        preGoToUser();
 
+        preGoToUser();
         holder.username.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -142,7 +138,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
                 }
             }
         });
-
 
         if(comment.getHostId() != null){
             if(comment.getHostId().matches(currentUserID)){
@@ -193,9 +188,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     }
 
     private void preGoToUser() {
-        db = FirebaseFirestore.getInstance();
+        //db = FirebaseFirestore.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mAuth = FirebaseAuth.getInstance();
+        //mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
     }
 
