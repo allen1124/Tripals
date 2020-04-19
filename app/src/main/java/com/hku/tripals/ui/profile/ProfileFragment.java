@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -18,13 +20,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.hku.tripals.LoginActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.StartActivity;
 import com.hku.tripals.adapter.EventAdapter;
+import com.hku.tripals.adapter.TripAdapter;
 import com.hku.tripals.model.Event;
+import com.hku.tripals.model.Trip;
 import com.hku.tripals.model.User;
 
 import java.util.List;
@@ -51,6 +56,12 @@ public class ProfileFragment extends Fragment {
     private LinearLayoutManager joinedEventLayoutManager;
     private EventAdapter joinedEventAdapter;
 
+    private ConstraintLayout constraintLayout;
+    private TabLayout createdTab;
+    private RecyclerView createdTripsRecyclerView;
+    private LinearLayoutManager createdTripsLayoutManager;
+    private TripAdapter createdTripAdapter;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         profileViewModel =
@@ -63,7 +74,8 @@ public class ProfileFragment extends Fragment {
         interests = root.findViewById(R.id.profile_user_interests_textView);
         bio = root.findViewById(R.id.profile_user_bio_textView);
         logout = root.findViewById(R.id.profile_user_logout_button);
-
+        createdTab = root.findViewById(R.id.profile_created_tabLayout);
+        constraintLayout = root.findViewById(R.id.profile_user_constraintLayout);
         profileViewModel.getUser().observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
             public void onChanged(User user) {
@@ -96,7 +108,7 @@ public class ProfileFragment extends Fragment {
                 createdEventAdapter.notifyDataSetChanged();
             }
         });
-        profileViewModel.loadCreatedEvent(5);
+        profileViewModel.loadCreatedEvent();
         createdEventRecyclerView.setAdapter(createdEventAdapter);
         Log.d(TAG, "createdEventAdapter: "+createdEventAdapter);
 
@@ -112,9 +124,25 @@ public class ProfileFragment extends Fragment {
                 joinedEventAdapter.notifyDataSetChanged();
             }
         });
-        profileViewModel.loadJoinedEvent(5);
+        profileViewModel.loadJoinedEvent();
+        profileViewModel.loadCreatedEvent();
+        profileViewModel.loadCreatedTrip();
         joinedEventRecyclerView.setAdapter(joinedEventAdapter);
         Log.d(TAG, "createdEventAdapter: "+joinedEventAdapter);
+
+
+        createdTripsRecyclerView = root.findViewById(R.id.created_trips_RecyclerView);
+        createdTripsLayoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        createdTripsRecyclerView.setLayoutManager(createdTripsLayoutManager);
+        createdTripAdapter = new TripAdapter(getActivity());
+        profileViewModel.getCreatedTrip().observe(getViewLifecycleOwner(), new Observer<List<Trip>>() {
+            @Override
+            public void onChanged(List<Trip> trips) {
+                createdTripAdapter.setTripList(trips);
+                joinedEventAdapter.notifyDataSetChanged();
+            }
+        });
+        createdTripsRecyclerView.setAdapter(createdTripAdapter);
 
         //Logout Button
         logout.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +153,37 @@ public class ProfileFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), StartActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
+            }
+        });
+
+        createdTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                Log.d(TAG, "tab selected" +tab.getPosition());
+                if(tab.getPosition() == 0) {
+                    createdTripsRecyclerView.setVisibility(View.GONE);
+                    createdEventRecyclerView.setVisibility(View.VISIBLE);
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(R.id.joined_events_textView, ConstraintSet.TOP, R.id.created_events_RecyclerView,ConstraintSet.BOTTOM,0);
+                    constraintSet.applyTo(constraintLayout);
+                }
+                if(tab.getPosition() == 1) {
+                    createdEventRecyclerView.setVisibility(View.GONE);
+                    createdTripsRecyclerView.setVisibility(View.VISIBLE);
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(R.id.joined_events_textView, ConstraintSet.TOP, R.id.created_trips_RecyclerView,ConstraintSet.BOTTOM,0);
+                    constraintSet.applyTo(constraintLayout);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
             }
         });
 

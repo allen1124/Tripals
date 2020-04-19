@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/user_recycler_cardView"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trip_recycler_cardView"
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
     android:layout_marginTop="8dp"
@@ -14,55 +15,49 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/user_recycler_imageView"
-            android:paddingStart="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+        <ImageView
+            android:id="@+id/trip_recycler_imageView"
+            android:layout_width="150dp"
+            android:layout_height="80dp"
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/ic_person_clicked">
-        </de.hdodenhof.circleimageview.CircleImageView>
+            tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/user_title_recycler_textView"
-            android:layout_width="wrap_content"
+            android:id="@+id/trip_title_recycler_textView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="TextView"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="18sp"
-            app:layout_constraintStart_toEndOf="@+id/user_recycler_imageView"
+            app:layout_constraintStart_toEndOf="@+id/trip_recycler_imageView"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/user_description_recycler_textView"
+            android:id="@+id/trip_destination_recycler_textView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:ellipsize="end"
-            android:maxLines="2"
+            android:layout_marginTop="4dp"
+            android:drawableLeft="@drawable/ic_location"
             android:text="TextView"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/user_country_recycler_textView"
-            app:layout_constraintTop_toBottomOf="@+id/user_country_recycler_textView" />
+            app:layout_constraintStart_toStartOf="@+id/trip_title_recycler_textView"
+            app:layout_constraintTop_toBottomOf="@+id/trip_title_recycler_textView" />
 
         <TextView
-            android:id="@+id/user_country_recycler_textView"
+            android:id="@+id/trip_timestamp_recycler_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
             android:text="TextView"
-            app:layout_constraintStart_toStartOf="@+id/user_title_recycler_textView"
-            app:layout_constraintTop_toTopOf="@+id/user_title_recycler_textView" />
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

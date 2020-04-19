@@ -9,6 +9,7 @@
     tools:showIn="@layout/activity_user_profile">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/user_profile_constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -121,17 +122,26 @@
             app:layout_constraintStart_toStartOf="@+id/user_bio_title_textView"
             app:layout_constraintTop_toBottomOf="@+id/user_bio_title_textView" />
 
-        <TextView
-            android:id="@+id/user_created_event_title_textView"
-            android:layout_width="wrap_content"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/user_created_tabLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:text="Created by User"
+            android:layout_marginTop="8dp"
+            app:tabIndicatorColor="#A1C3FF"
+            app:tabTextAppearance="@android:style/TextAppearance"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/user_bio_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/user_bio_textView">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_created_events" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_created_trip" />
+        </com.google.android.material.tabs.TabLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/user_created_event_RecyclerView"
@@ -141,7 +151,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/user_created_event_title_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/user_created_tabLayout" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/user_created_trip_RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/user_created_tabLayout" />
 
         <TextView
             android:id="@+id/user_joined_event_title_textView"
