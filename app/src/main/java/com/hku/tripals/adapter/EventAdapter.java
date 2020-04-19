@@ -118,6 +118,21 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.hostName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "onClick: go User Profile :" + event.getHost());
+                if(!event.getHost().matches(currentUser.getUid())) {
+                    holder.hostName.setEnabled(false);
+                    holder.hostImage.setEnabled(false);
+                    goToUser(event.getHost());
+                    holder.hostName.setEnabled(true);
+                    holder.hostImage.setEnabled(true);
+                }
+            }
+        });
+
+        holder.hostImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: go User Profile :" + event.getHost());
                 if(!event.getHost().matches(currentUser.getUid())) {
                     holder.hostName.setEnabled(false);
                     holder.hostImage.setEnabled(false);
