@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F2F2F2"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/edit_profile_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:collapseIcon="@drawable/places_ic_clear"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <ImageView
+                android:id="@+id/edit_profile_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/places_ic_clear" />
+
+            <TextView
+                android:id="@+id/edit_profile_toolbar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@id/edit_profile_close"
+                android:text="Edit Profile"
+                android:textColor="@color/common_google_signin_btn_text_light_focused"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/edit_profile_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:text="SAVE"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp">
+
+        <ImageView
+            android:id="@+id/edit_profile_avatar"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginEnd="60dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <Button
+            android:id="@+id/edit_profile_avatar_button"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:background="@android:color/transparent"
+            android:text="@string/select_photo" />
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="-186dp"
+        tools:layout_editor_absoluteY="-16dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="24dp">
+
+            <EditText
+                android:id="@+id/edit_profile_username_editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:hint="@string/edit_profile_username"
+                android:inputType="textShortMessage"
+                android:selectAllOnFocus="false"
+                android:singleLine="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/edit_profile_Gender_Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/create_profile_gender_title"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_profile_username_editText" />
+
+            <TextView
+                android:id="@+id/edit_profile_gender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:drawableEnd="@drawable/ic_enter"
+                android:hint="@string/create_profile_select_gender_title"
+                android:onClick="selectGender"
+                android:textAlignment="textEnd"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_profile_Gender_Title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/edit_profile_Gender_Title"
+                app:layout_constraintVertical_bias="0" />
+
+            <TextView
+                android:id="@+id/edit_profile_BirthDate_Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/create_profile_birth_date_title"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_profile_Gender_Title" />
+
+            <TextView
+                android:id="@+id/edit_profile_birthday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:drawableEnd="@drawable/ic_enter"
+                android:hint="@string/create_profile_select_birth_date_title"
+                android:textAlignment="textEnd"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_profile_BirthDate_Title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/edit_profile_BirthDate_Title" />
+
+            <TextView
+                android:id="@+id/edit_profile_HomeCountry_Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/create_profile_home_country_title"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_profile_BirthDate_Title" />
+
+            <TextView
+                android:id="@+id/edit_profile_homeCountry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:drawableEnd="@drawable/ic_enter"
+                android:hint="@string/create_profile_select_country_title"
+                android:textAlignment="textEnd"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_profile_HomeCountry_Title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/edit_profile_HomeCountry_Title"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/edit_profile_Language_Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/create_profile_language_title"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_profile_HomeCountry_Title" />
+
+            <TextView
+                android:id="@+id/edit_profile_language"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:drawableEnd="@drawable/ic_enter"
+                android:hint="@string/create_profile_select_lang_title"
+                android:onClick="selectLanguage"
+                android:textAlignment="textEnd"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_profile_Language_Title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/edit_profile_Language_Title"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/edit_profile_Interest_Title"
+                android:layout_width="wrap_content"
+                android:layout_height="23dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/create_profile_interest_title"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_profile_Language_Title" />
+
+            <TextView
+                android:id="@+id/edit_profile_interest"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:drawableEnd="@drawable/ic_enter"
+                android:ellipsize="start"
+                android:focusable="false"
+                android:gravity="right"
+                android:hint="@string/create_profile_select_interests_title"
+                android:maxLines="2"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_profile_Interest_Title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constraintStart_toEndOf="@+id/edit_profile_Interest_Title"
+                app:layout_constraintTop_toTopOf="@+id/edit_profile_Interest_Title"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/edit_profile_AboutYou_Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/create_profile_about_you_title"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_profile_interest" />
+
+            <EditText
+                android:id="@+id/edit_profile_bio_editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/round_corner_grey"
+                android:ems="10"
+                android:hint="@string/create_profile_bio_hint"
+                android:includeFontPadding="false"
+                android:inputType="textMultiLine"
+                android:lines="3"
+                android:padding="5dp"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="5dp"
+                android:paddingRight="5dp"
+                android:scrollbars="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/edit_profile_AboutYou_Title"
+                app:layout_constraintVertical_bias="0.0" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</LinearLayout>
