@@ -70,7 +70,7 @@ public class ProfileViewModel extends ViewModel {
         return mUser;
     }
 
-    private void loadProfile(){
+    public void loadProfile(){
         Log.d(TAG, "loadProfile: called");
         DocumentReference docRef = db.collection("user-profile").document(currentUser.getUid());
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {

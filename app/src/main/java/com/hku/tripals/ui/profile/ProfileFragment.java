@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.hku.tripals.EditProfileActivity;
 import com.hku.tripals.LoginActivity;
 import com.hku.tripals.R;
 import com.hku.tripals.StartActivity;
@@ -44,6 +45,7 @@ public class ProfileFragment extends Fragment {
     private TextView homeCountry;
     private TextView interests;
     private TextView bio;
+    private Button editProfileBtn;
     private Button logout;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -74,6 +76,7 @@ public class ProfileFragment extends Fragment {
         interests = root.findViewById(R.id.profile_user_interests_textView);
         bio = root.findViewById(R.id.profile_user_bio_textView);
         logout = root.findViewById(R.id.profile_user_logout_button);
+        editProfileBtn = root.findViewById(R.id.profile_user_edit_button);
         createdTab = root.findViewById(R.id.profile_created_tabLayout);
         constraintLayout = root.findViewById(R.id.profile_user_constraintLayout);
         profileViewModel.getUser().observe(getViewLifecycleOwner(), new Observer<User>() {
@@ -143,6 +146,15 @@ public class ProfileFragment extends Fragment {
             }
         });
         createdTripsRecyclerView.setAdapter(createdTripAdapter);
+
+        //Profile Edit Button
+        editProfileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent (getContext(), EditProfileActivity.class));
+                profileViewModel.loadProfile();
+            }
+        });
 
         //Logout Button
         logout.setOnClickListener(new View.OnClickListener() {

@@ -88,17 +88,17 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        initialize();
-        setListener();
+        initialize(); //date
+        setListener(); //date
 
-        DisplayBirthDate = (TextView) findViewById(R.id.CreateP_SelectBirthDate);
-        DisplayGender = (TextView) findViewById(R.id.CreateP_SelectGender);
-        DisplayLanguage = (TextView) findViewById(R.id.CreateP_SelectLanguage);
-        DisplayHomeCountry = (TextView) findViewById(R.id.CreateP_SelectHomeCountry);
-        DisplayInterest = (TextView) findViewById(R.id.CreateP_SelectInterest);
+        DisplayBirthDate = (TextView) findViewById(R.id.Create_Profile_SelectBirthDate);
+        DisplayGender = (TextView) findViewById(R.id.Create_Profile_SelectGender);
+        DisplayLanguage = (TextView) findViewById(R.id.Create_Profile_SelectLanguage);
+        DisplayHomeCountry = (TextView) findViewById(R.id.Create_Profile_SelectHomeCountry);
+        DisplayInterest = (TextView) findViewById(R.id.Create_Profile_SelectInterest);
         listItems = getResources().getStringArray(R.array.interest_options);
         checkedItems = new boolean[listItems.length];
-        DisplayBio = (TextView) findViewById(R.id.CreateP_InputBio);
+        DisplayBio = (TextView) findViewById(R.id.Create_Profile_bio_editText);
         CreateBtn = (Button) findViewById(R.id.CreateProfileButton);
         avatar = (ImageView) findViewById(R.id.avatar_imageView);
         avatarButton = (Button) findViewById(R.id.avatar_button);
@@ -284,7 +284,7 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
     //Country Selection and Popup Menu
 
     private void initialize() { //***Explanation Remarks***
-        DisplayHomeCountry = findViewById(R.id.CreateP_SelectHomeCountry);
+        DisplayHomeCountry = findViewById(R.id.Create_Profile_SelectHomeCountry);
         countryPicker =
                 new CountryPicker.Builder().with(this)
                         .listener(this)
@@ -300,7 +300,6 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
         });
     }
 
-    @Override
     public void onSelectCountry(Country country) { //***Explanation Remarks***
         String selectedHomeCountry = country.getName();
         DisplayHomeCountry.setText(selectedHomeCountry);

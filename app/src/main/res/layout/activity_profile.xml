@@ -56,7 +56,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/avatar_imageView" />
 
             <TextView
-                android:id="@+id/CreateP_SelectGender"
+                android:id="@+id/Create_Profile_SelectGender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="32dp"
@@ -83,7 +83,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/CreateP_Gender_Title" />
 
             <TextView
-                android:id="@+id/CreateP_SelectBirthDate"
+                android:id="@+id/Create_Profile_SelectBirthDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="32dp"
@@ -108,7 +108,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/CreateP_BirthDate_Title" />
 
             <TextView
-                android:id="@+id/CreateP_SelectHomeCountry"
+                android:id="@+id/Create_Profile_SelectHomeCountry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="32dp"
@@ -134,7 +134,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/CreateP_HomeCountry_Title" />
 
             <TextView
-                android:id="@+id/CreateP_SelectLanguage"
+                android:id="@+id/Create_Profile_SelectLanguage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="32dp"
@@ -161,7 +161,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/CreateP_Language_Title" />
 
             <TextView
-                android:id="@+id/CreateP_SelectInterest"
+                android:id="@+id/Create_Profile_SelectInterest"
                 android:layout_width="280dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="32dp"
@@ -189,10 +189,10 @@
                 android:textColor="@android:color/secondary_text_light"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/CreateP_SelectInterest" />
+                app:layout_constraintTop_toBottomOf="@+id/Create_Profile_SelectInterest" />
 
             <EditText
-                android:id="@+id/CreateP_InputBio"
+                android:id="@+id/Create_Profile_bio_editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"

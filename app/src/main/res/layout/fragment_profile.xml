@@ -97,11 +97,11 @@
 
             <Button
                 android:id="@+id/profile_user_logout_button"
+                style="@style/Widget.AppCompat.Button.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/round_corner_pri_light"
                 android:text="@string/logout"
                 android:textAllCaps="false"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -118,6 +118,20 @@
 <!--                android:textStyle="bold"-->
 <!--                app:layout_constraintStart_toStartOf="parent"-->
 <!--                app:layout_constraintTop_toBottomOf="@+id/profile_user_avatar_imageView" />-->
+
+            <Button
+                android:id="@+id/profile_user_edit_button"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="4dp"
+                android:text="Edit"
+                android:textAllCaps="false"
+                app:layout_constraintEnd_toStartOf="@+id/profile_user_logout_button"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/profile_titile_textView"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/created_events_RecyclerView"
