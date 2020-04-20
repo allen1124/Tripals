@@ -1,6 +1,5 @@
 package com.hku.tripals.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,31 +11,27 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hku.tripals.FullScreenImageActivity;
 import com.hku.tripals.R;
-import com.hku.tripals.UserProfileActivity;
 import com.hku.tripals.model.Comment;
-import com.hku.tripals.model.User;
 
 import org.ocpsoft.prettytime.PrettyTime;
+import org.w3c.dom.Text;
 
-import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
+
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHolder>{
 
@@ -44,11 +39,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     private ArrayList<Comment> commentList;
     Context context;
 
-    private FirebaseFirestore db;
-    private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
-    private String currentUserID;
+    //private String currentUserID;
+    //private FirebaseFirestore db;
 
     public CommentsAdapter(Context context) {
         this.context = context;
@@ -60,8 +53,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         public TextView comment;
         public ImageView commentPhoto;
         public TextView pettyTime;
-        public TextView commentPin;
-        public CardView commentCard;
+        //public TextView commentPin;
+        //public CardView commentCard;
 
         public ViewHolder(@NonNull final View itemView) {
             super(itemView);
@@ -70,8 +63,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             comment = (TextView) itemView.findViewById(R.id.c_user_comment_textView);
             commentPhoto = (ImageView) itemView.findViewById(R.id.c_comment_imageView);
             pettyTime = (TextView) itemView.findViewById(R.id.c_petty_time_textView);
-            commentPin = (TextView) itemView.findViewById(R.id.c_pin_textView);
-            commentCard = (CardView) itemView.findViewById(R.id.user_comment_cardView);
+            //commentPin = (TextView) itemView.findViewById(R.id.c_pin_textView);
+            //commentCard = (CardView) itemView.findViewById(R.id.user_comment_cardView);
         }
     }
 
@@ -79,8 +72,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         mAuth = FirebaseAuth.getInstance();
-        currentUserID = mAuth.getCurrentUser().getUid();
-        db = FirebaseFirestore.getInstance();
+        //currentUserID = mAuth.getCurrentUser().getUid();
+        //db = FirebaseFirestore.getInstance();
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_comment, parent, false);
         ViewHolder holder = new ViewHolder(view);
         return holder;
@@ -112,68 +105,41 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         PrettyTime prettyTime = new PrettyTime(Locale.getDefault());
         holder.pettyTime.setText(prettyTime.format(comment.getTimestamp()));
 
-        preGoToUser();
-        holder.username.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!comment.getUserId().matches(currentUser.getUid())) {
-                    //holder.username.setEnabled(false);
-                    //holder.commentPhoto.setEnabled(false);
-                    goToUser(comment.getUserId());
-                    //holder.username.setEnabled(true);
-                    //holder.commentPhoto.setEnabled(true);
-                }
-            }
-        });
-
-        holder.avatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!comment.getUserId().matches(currentUser.getUid())) {
-                    //holder.username.setEnabled(false);
-                    //holder.commentPhoto.setEnabled(false);
-                    goToUser(comment.getUserId());
-                    //holder.username.setEnabled(true);
-                    //holder.commentPhoto.setEnabled(true);
-                }
-            }
-        });
-
-        if(comment.getHostId() != null){
-            if(comment.getHostId().matches(currentUserID)){
-                holder.commentPin.setVisibility(View.VISIBLE);
-                if(comment.getHighlighted().matches("NO")){
-                    holder.commentPin.setText("Highlight");
-                } else {
-                    holder.commentPin.setText("Highlighted");
-                    holder.commentCard.setCardBackgroundColor(Color.parseColor("#d4f6ff"));
-                }
-                holder.commentPin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(holder.commentPin.getText().toString().matches("Highlight")){
-                            holder.commentPin.setText("Highlighted");
-                            holder.commentCard.setCardBackgroundColor(Color.parseColor("#d4f6ff"));
-                            comment.setHighlighted("YES");
-                            db.collection("events").document(comment.getEventId()).collection("comments").document(comment.getCommentId()).update("highlighted", "YES");
-
-                        } else {
-                            holder.commentPin.setText("Highlight");
-                            holder.commentCard.setCardBackgroundColor(Color.parseColor("#ffffff"));
-                            comment.setHighlighted("NO");
-                            db.collection("events").document(comment.getEventId()).collection("comments").document(comment.getCommentId()).update("highlighted", "NO");
-                        }
-                    }
-                });
-            } else {
-                holder.commentPin.setVisibility(View.GONE);
-                if(comment.getHighlighted().matches("NO")){
-                    holder.commentCard.setCardBackgroundColor(Color.parseColor("#ffffff"));
-                } else {
-                    holder.commentCard.setCardBackgroundColor(Color.parseColor("#d4f6ff"));
-                }
-            }
-        }
+//        if(comment.getHostId() != null){
+//            if(comment.getHostId().matches(currentUserID)){
+//                holder.commentPin.setVisibility(View.VISIBLE);
+//                if(comment.getHighlighted().matches("NO")){
+//                    holder.commentPin.setText("Highlight");
+//                } else {
+//                    holder.commentPin.setText("Highlighted");
+//                    holder.commentCard.setCardBackgroundColor(Color.parseColor("#d4f6ff"));
+//                }
+//                holder.commentPin.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if(holder.commentPin.getText().toString().matches("Highlight")){
+//                            holder.commentPin.setText("Highlighted");
+//                            holder.commentCard.setCardBackgroundColor(Color.parseColor("#d4f6ff"));
+//                            comment.setHighlighted("YES");
+//                            db.collection("events").document(comment.getEventId()).collection("comments").document(comment.getCommentId()).update("highlighted", "YES");
+//
+//                        } else {
+//                            holder.commentPin.setText("Highlight");
+//                            holder.commentCard.setCardBackgroundColor(Color.parseColor("#ffffff"));
+//                            comment.setHighlighted("NO");
+//                            db.collection("events").document(comment.getEventId()).collection("comments").document(comment.getCommentId()).update("highlighted", "NO");
+//                        }
+//                    }
+//                });
+//            } else {
+//                holder.commentPin.setVisibility(View.GONE);
+//                if(comment.getHighlighted().matches("NO")){
+//                    holder.commentCard.setCardBackgroundColor(Color.parseColor("#ffffff"));
+//                } else {
+//                    holder.commentCard.setCardBackgroundColor(Color.parseColor("#d4f6ff"));
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -185,26 +151,5 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
 
     public void setCommentList(ArrayList<Comment> commentList) {
         this.commentList = commentList;
-    }
-
-    private void preGoToUser() {
-        //db = FirebaseFirestore.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        //mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-    }
-
-    private void goToUser(String uid){
-        db.collection("user-profile").document(uid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User user = documentSnapshot.toObject(User.class);
-                Log.d("CommentsAdapter: ", "onClick: go user detail :" + user.getUid());
-                Intent myIntent = new Intent(context, UserProfileActivity.class);
-                myIntent.putExtra("user", (Serializable) user);
-                context.startActivity(myIntent);
-                ((Activity) context).overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-            }
-        });
     }
 }
