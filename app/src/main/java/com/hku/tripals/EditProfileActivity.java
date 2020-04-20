@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -48,7 +49,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.hku.tripals.model.User;
+import com.mukesh.countrypicker.Country;
 import com.mukesh.countrypicker.CountryPicker;
+import com.mukesh.countrypicker.OnCountryPickerListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -57,7 +60,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class EditProfileActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
+public class EditProfileActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener, OnCountryPickerListener {
 
     private static final String TAG = "EditProfileActivity";
 
@@ -93,8 +96,8 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-        //initialize(); //date
-        //setListener(); //date
+        initialize();
+        setListener();
 
         close = findViewById(R.id.edit_profile_close);
         username = findViewById(R.id.edit_profile_username_editText);
@@ -115,8 +118,8 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
-
-        retrieveUser();
+        mUser = (User) getIntent().getSerializableExtra("user");
+        retrieveUser(mUser);
 
         reference = FirebaseDatabase
                 .getInstance()
@@ -177,6 +180,10 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
                         android.R.style.Theme_Holo_Light_Dialog_MinWidth,
                         mDateSetListener,
                         year, month, day);
+                if(!mUser.getBirthday().matches("")){
+                    String[] birthday = mUser.getBirthday().split("/");
+                    dialog.updateDate(Integer.parseInt(birthday[2]), Integer.parseInt(birthday[0])-1, Integer.parseInt(birthday[1]));
+                }
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.show();
             }
@@ -193,14 +200,14 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
             }
         });
 
-        /*mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+        mDateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month = month + 1;
                 String date = month + "/" + dayOfMonth + "/" + year;
                 birthday.setText(date);
             }
-        };*/
+        };
 
         interests.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -264,36 +271,24 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         });
     }
 
-    private void retrieveUser(){
+    private void retrieveUser(User mUser){
+        username.setText(mUser.getDisplayName());
+        gender.setText(mUser.getGender());
+        birthday.setText(mUser.getBirthday());
+        homeCountry.setText(mUser.getHomeCountry());
+        language.setText(mUser.getLanguage());
+        bio.setText(mUser.getBio());
 
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
-        db = FirebaseFirestore.getInstance();
-
-        DocumentReference docRef = db.collection("user-profile").document(currentUser.getUid());
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                mUser= documentSnapshot.toObject(User.class);
-                Log.d(TAG, "user.getDisplayName(): " + mUser.getDisplayName());
-                Log.d(TAG, "user.getBio(): " + mUser.getBio());
-                Log.d(TAG, "user.getGender(): " + mUser.getGender());
-                Log.d(TAG, "user.getInterests(): " + mUser.getInterests().toString());
-                Log.d(TAG, "user.getHomeCountry(): " + mUser.getHomeCountry());
-                Log.d(TAG, "user.getLanguage(): " + mUser.getLanguage());
-
-                username.setText(mUser.getDisplayName());
-                gender.setText(mUser.getGender());
-                birthday.setText(mUser.getBirthday());
-                homeCountry.setText(mUser.getHomeCountry());
-                language.setText(mUser.getLanguage());
-                bio.setText(mUser.getBio());
-
-                String interestList = mUser.getInterests().toString();
-                String interestString = interestList.substring(1, interestList.length() - 1);
-                interests.setText(interestString);
+        String interestList = mUser.getInterests().toString();
+        String interestString = interestList.substring(1, interestList.length() - 1);
+        interests.setText(interestString);
+        for(int i = 0; i < listItems.length; i++){
+            if(mUser.getInterests().contains(listItems[i])){
+                mUserItems.add(i);
+                checkedItems[i] = true;
             }
-        });
+        }
+
     }
 
     //Gender Selection and Popup Menu
@@ -354,28 +349,28 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
 
     //Country Selection and Popup Menu
 
-    /*public void initialize() { //***Explanation Remarks***
+    public void initialize() {
         homeCountry = findViewById(R.id.edit_profile_homeCountry);
         countryPicker =
                 new CountryPicker.Builder().with(this)
                         .listener(this)
                         .build();
-    }*/
+    }
 
-    /*private void setListener() {
+    private void setListener() {
         homeCountry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 countryPicker.showDialog(getSupportFragmentManager());
             }
         });
-    }*/
+    }
 
-    /*@Override
+    @Override
     public void onSelectCountry(Country country) { //***Explanation Remarks***
         String selectedHomeCountry = country.getName();
         homeCountry.setText(selectedHomeCountry);
-    }*/
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -471,7 +466,6 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         //DocumentReference documentReference = fstore.collection("users").document(userID);
         User user = new User();
         user.setUid(uid);
-        user.setDisplayName(mAuth.getCurrentUser().getDisplayName());
 
         if(avatarImageUrl.matches("")){
             user.setAvatarImageUrl(mAuth.getCurrentUser().getPhotoUrl().toString());
@@ -479,6 +473,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
             user.setAvatarImageUrl(avatarImageUrl);
         }
         user.setDisplayName(username.getText().toString());
+        updateUserDisplayName(currentUser, username.getText().toString());
         user.setGender(gender.getText().toString());
         user.setBirthday(birthday.getText().toString());
         user.setHomeCountry(homeCountry.getText().toString());
@@ -486,16 +481,11 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         user.setBio(bio.getText().toString());
         if ( selectedInterest != null) {
             user.setInterests(selectedInterest);
-
         } else {
             user.setInterests(mUser.getInterests());
         }
 
         Log.d(TAG, user.toString());
-
-        //DatabaseReference refence = FirebaseDatabase.getInstance().getReference("Users").child(mUser.getUID());
-        DocumentReference docRef = db.collection("user-profile").document(currentUser.getUid());
-
         db.collection("user-profile").document(uid)
                 .set(user.toMap())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -510,6 +500,10 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
                         Log.w(TAG, "Error writing document", e);
                     }
                 });
+        Intent intent = new Intent();
+        intent.putExtra("UPDATED_USER", user);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     public static Bitmap decodeUri(Context c, Uri uri, final int requiredSize) throws FileNotFoundException {
@@ -530,4 +524,18 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2);
     }
 
+    private void updateUserDisplayName(FirebaseUser user, String displayName){
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(displayName)
+                .build();
+        user.updateProfile(profileUpdates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User profile updated.");
+                        }
+                    }
+                });
+    }
 }

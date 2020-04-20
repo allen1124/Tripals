@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
@@ -35,9 +36,12 @@ import com.hku.tripals.model.User;
 
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+
 public class ProfileFragment extends Fragment {
 
     private static final String TAG = "ProfileFragment";
+    private static int USER_EDIT_CODE = 4444;
     private ProfileViewModel profileViewModel;
     private ImageView avatar;
     private TextView username;
@@ -49,6 +53,7 @@ public class ProfileFragment extends Fragment {
     private Button logout;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private User userProfile;
 
     private RecyclerView createdEventRecyclerView;
     private LinearLayoutManager createdEventLayoutManager;
@@ -79,9 +84,11 @@ public class ProfileFragment extends Fragment {
         editProfileBtn = root.findViewById(R.id.profile_user_edit_button);
         createdTab = root.findViewById(R.id.profile_created_tabLayout);
         constraintLayout = root.findViewById(R.id.profile_user_constraintLayout);
+        profileViewModel.loadProfile();
         profileViewModel.getUser().observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
             public void onChanged(User user) {
+                userProfile = user;
                 //profileViewModel.loadProfile();
                 username.setText(user.getDisplayName());
                 gender.setText(user.getGender());
@@ -151,8 +158,11 @@ public class ProfileFragment extends Fragment {
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent (getContext(), EditProfileActivity.class));
-                profileViewModel.loadProfile();
+                if(userProfile != null){
+                    Intent intent = new Intent(getContext(), EditProfileActivity.class);
+                    intent.putExtra("user", userProfile);
+                    startActivityForResult(intent, USER_EDIT_CODE);
+                }
             }
         });
 
@@ -230,4 +240,23 @@ public class ProfileFragment extends Fragment {
     }
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == USER_EDIT_CODE && resultCode == RESULT_OK){
+            final User updated = (User) data.getSerializableExtra("UPDATED_USER");
+            username.setText(updated.getDisplayName());
+            gender.setText(updated.getGender());
+            homeCountry.setText(updated.getHomeCountry());
+            bio.setText(updated.getBio());
+            String interestList = updated.getInterests().toString();
+            String interestString = interestList.substring(1, interestList.length() - 1);
+            interests.setText(interestString);
+            Glide.with(getActivity())
+                    .load(updated.getAvatarImageUrl())
+                    .circleCrop()
+                    .into(avatar);
+            userProfile = updated;
+        }
+    }
 }

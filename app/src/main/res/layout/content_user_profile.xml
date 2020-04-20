@@ -57,14 +57,14 @@
 
 
         <TextView
-        android:id="@+id/user_country_title_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Country"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintStart_toStartOf="@+id/user_age_title_textView"
-        app:layout_constraintTop_toBottomOf="@+id/user_age_title_textView" />
+            android:id="@+id/user_country_title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Country"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintStart_toStartOf="@+id/user_age_title_textView"
+            app:layout_constraintTop_toBottomOf="@+id/user_age_title_textView" />
 
 
         <TextView

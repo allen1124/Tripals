@@ -117,6 +117,7 @@ public class TripActivity extends AppCompatActivity {
     private void loadEvent(){
         Log.d(TAG, "loadJoinedEvent: called");
         db.collection("trips").document(trip.getId()).collection("events")
+                .orderBy("datetime")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
