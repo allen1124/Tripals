@@ -42,8 +42,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -68,7 +66,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
     private ImageView close;
     private TextView Save;
     private Button avatarButton;
-    private EditText username, bio;
+    private EditText username, bio, FB_url;
     private TextView gender, birthday, homeCountry, language;
 
     private ImageView avatar;
@@ -107,6 +105,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         language = findViewById(R.id.edit_profile_language);
         interests = findViewById(R.id.edit_profile_interest);
         bio = findViewById(R.id.edit_profile_bio_editText);
+        FB_url = findViewById(R.id.edit_profile_FB_editText);
         avatar = (ImageView) findViewById(R.id.edit_profile_avatar);
 
         listItems = getResources().getStringArray(R.array.interest_options);
@@ -278,6 +277,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         homeCountry.setText(mUser.getHomeCountry());
         language.setText(mUser.getLanguage());
         bio.setText(mUser.getBio());
+        FB_url.setText(mUser.getFacebook());
 
         String interestList = mUser.getInterests().toString();
         String interestString = interestList.substring(1, interestList.length() - 1);
@@ -479,6 +479,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         user.setHomeCountry(homeCountry.getText().toString());
         user.setLanguage(language.getText().toString());
         user.setBio(bio.getText().toString());
+        user.setFacebook(FB_url.getText().toString());
         if ( selectedInterest != null) {
             user.setInterests(selectedInterest);
         } else {

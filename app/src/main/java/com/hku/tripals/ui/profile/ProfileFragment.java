@@ -1,6 +1,7 @@
 package com.hku.tripals.ui.profile;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,6 +56,9 @@ public class ProfileFragment extends Fragment {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private User userProfile;
 
+    private TextView FB_Btn;
+    private String FB_url;
+
     private RecyclerView createdEventRecyclerView;
     private LinearLayoutManager createdEventLayoutManager;
     private EventAdapter createdEventAdapter;
@@ -80,6 +84,8 @@ public class ProfileFragment extends Fragment {
         homeCountry = root.findViewById(R.id.profile_user_home_country_textView);
         interests = root.findViewById(R.id.profile_user_interests_textView);
         bio = root.findViewById(R.id.profile_user_bio_textView);
+        FB_Btn = root.findViewById(R.id.profile_Facebook_textview);
+
         logout = root.findViewById(R.id.profile_user_logout_button);
         editProfileBtn = root.findViewById(R.id.profile_user_edit_button);
         createdTab = root.findViewById(R.id.profile_created_tabLayout);
@@ -97,6 +103,7 @@ public class ProfileFragment extends Fragment {
                 String interestList = user.getInterests().toString();
                 String interestString = interestList.substring(1, interestList.length() - 1);
                 interests.setText(interestString);
+                FB_url = user.getFacebook();
                 Glide.with(getActivity())
                         .load(user.getAvatarImageUrl())
                         .circleCrop()
@@ -153,6 +160,21 @@ public class ProfileFragment extends Fragment {
             }
         });
         createdTripsRecyclerView.setAdapter(createdTripAdapter);
+
+        //Facebook Button
+        FB_Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if ( FB_url != "") {
+                    String fb_link = "https://fb.com/" + FB_url;
+                    Log.d(TAG, fb_link);
+                    clicked_btn(fb_link);
+                } else {
+                    FB_Btn.setVisibility(View.GONE);
+                }
+            }
+        });
+
 
         //Profile Edit Button
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
@@ -258,5 +280,11 @@ public class ProfileFragment extends Fragment {
                     .into(avatar);
             userProfile = updated;
         }
+    }
+
+    public void clicked_btn(String url) {
+        Intent intent = new Intent (Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
     }
 }

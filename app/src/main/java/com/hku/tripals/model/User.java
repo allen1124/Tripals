@@ -15,6 +15,7 @@ public class User implements Serializable {
     private String language;
     private String bio;
     private List<String> interests;
+    private String facebook;
 
 
     public User() {
@@ -38,6 +39,17 @@ public class User implements Serializable {
         this.language = language;
         this.bio = bio;
         this.avatarImageUrl = avatarImageUrl;
+    }
+
+    public User(String uid, String gender, String birthday, String homeCountry, String language, String bio, String avatarImageUrl, String facebook){
+        this.uid = uid;
+        this.gender = gender;
+        this.birthday = birthday;
+        this.homeCountry = homeCountry;
+        this.language = language;
+        this.bio = bio;
+        this.avatarImageUrl = avatarImageUrl;
+        this.facebook = facebook;
     }
 
     public String getUid() {
@@ -104,6 +116,14 @@ public class User implements Serializable {
         this.bio = bio;
     }
 
+    public String getFacebook() {
+        return facebook;
+    }
+
+    public void setFacebook(String facebook) {
+        this.facebook = facebook;
+    }
+
     public List<String> getInterests() {
         return interests;
     }
@@ -134,6 +154,7 @@ public class User implements Serializable {
         result.put("language", language);
         result.put("bio", bio);
         result.put("interests", interests);
+        result.put("facebook", facebook);
         return result;
     }
 }

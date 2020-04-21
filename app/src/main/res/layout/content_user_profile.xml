@@ -109,6 +109,20 @@
             app:layout_constraintTop_toBottomOf="@+id/user_interest_textView" />
 
         <TextView
+            android:id="@+id/profile_Facebook_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Facebook"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/quantum_googblue700"
+            android:textStyle="italic"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/user_interest_textView"
+            app:layout_constraintTop_toTopOf="@+id/user_bio_title_textView"
+            app:layout_constraintStart_toEndOf="@+id/user_bio_title_textView" />
+
+        <TextView
             android:id="@+id/user_bio_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

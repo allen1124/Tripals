@@ -2,13 +2,25 @@ package com.hku.tripals;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,29 +32,12 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.hku.tripals.adapter.ChatAdapter;
 import com.hku.tripals.adapter.EventAdapter;
 import com.hku.tripals.adapter.TripAdapter;
 import com.hku.tripals.model.Event;
 import com.hku.tripals.model.Trip;
 import com.hku.tripals.model.User;
 import com.hku.tripals.ui.message.MessageActivity;
-import com.hku.tripals.ui.message.MessageFragment;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,8 +45,6 @@ import org.json.JSONException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Period;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -81,6 +74,8 @@ public class UserProfileActivity extends AppCompatActivity {
     private TextView country;
     private TextView interest;
     private TextView bio;
+    private TextView FB_btn;
+    private String FB_url;
     private TextView eventCreatedTitle;
     private TextView noJoinedEvent;
     private RecyclerView createdEvent;
@@ -129,6 +124,7 @@ public class UserProfileActivity extends AppCompatActivity {
         country = findViewById(R.id.user_country_textView);
         interest = findViewById(R.id.user_interest_textView);
         bio = findViewById(R.id.user_bio_textView);
+        FB_btn = findViewById(R.id.profile_Facebook_textview);
         constraintLayout = findViewById(R.id.user_profile_constraintLayout);
         noJoinedEvent = findViewById(R.id.no_joined_event_textView);
         noJoinedEvent.setVisibility(View.GONE);
@@ -212,6 +208,7 @@ public class UserProfileActivity extends AppCompatActivity {
         }
         interest.setText(userInteret);
         bio.setText(user.getBio());
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -236,6 +233,24 @@ public class UserProfileActivity extends AppCompatActivity {
                 addChatRoom(user);
             }
         });
+
+        //Facebook Button
+        if (user.getFacebook().isEmpty()){
+            FB_btn.setVisibility(View.GONE);
+            FB_url = "No Facebook";
+        } else {
+            FB_url = user.getFacebook();
+        }
+
+        FB_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String fb_link = "https://fb.com/" + FB_url;
+                Log.d(TAG, fb_link);
+                clicked_btn(fb_link);
+            }
+        });
+
 
         createdTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -437,4 +452,10 @@ public class UserProfileActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
+    //Open Browser HTTP
+    public void clicked_btn(String url) {
+        Intent intent = new Intent (Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
+    }
 }
