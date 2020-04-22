@@ -1,9 +1,14 @@
 package com.hku.tripals;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -117,12 +122,13 @@ public class StartActivity extends AppCompatActivity {
                 StartActivity.this.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+        if(!isConnected(StartActivity.this)) buildDialog(StartActivity.this).show();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if(currentUser != null){
+        if(currentUser != null && isConnected(StartActivity.this)){
             signInButton.setVisibility(View.GONE);
             emailSignInButton.setVisibility(View.GONE);
 //            noLoginButton.setVisibility(View.GONE);
@@ -214,5 +220,36 @@ public class StartActivity extends AppCompatActivity {
             Toast.makeText(StartActivity.this, R.string.email_not_verified,
                     Toast.LENGTH_LONG).show();
         }
+    }
+
+    public boolean isConnected(Context context) {
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netinfo = cm.getActiveNetworkInfo();
+
+        if (netinfo != null && netinfo.isConnectedOrConnecting()) {
+            android.net.NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            android.net.NetworkInfo mobile = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+            if((mobile != null && mobile.isConnectedOrConnecting()) || (wifi != null && wifi.isConnectedOrConnecting())) return true;
+        else return false;
+        } else
+        return false;
+    }
+
+    public AlertDialog.Builder buildDialog(Context c) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(c);
+        builder.setTitle("No Internet Connection");
+        builder.setMessage("You need to have Mobile Data or Wifi to access Tripals. Press ok to Exit");
+
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+
+        return builder;
     }
 }
