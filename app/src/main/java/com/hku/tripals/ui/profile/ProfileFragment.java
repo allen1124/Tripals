@@ -104,6 +104,11 @@ public class ProfileFragment extends Fragment {
                 String interestString = interestList.substring(1, interestList.length() - 1);
                 interests.setText(interestString);
                 FB_url = user.getFacebook();
+                if (FB_url.matches("")) {
+                    FB_Btn.setVisibility(View.GONE);
+                }else{
+                    FB_Btn.setVisibility(View.VISIBLE);
+                }
                 Glide.with(getActivity())
                         .load(user.getAvatarImageUrl())
                         .circleCrop()
@@ -165,7 +170,7 @@ public class ProfileFragment extends Fragment {
         FB_Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ( FB_url != "") {
+                if (!FB_url.matches("")) {
                     String fb_link = "https://fb.com/" + FB_url;
                     Log.d(TAG, fb_link);
                     clicked_btn(fb_link);
@@ -274,6 +279,12 @@ public class ProfileFragment extends Fragment {
             String interestList = updated.getInterests().toString();
             String interestString = interestList.substring(1, interestList.length() - 1);
             interests.setText(interestString);
+            FB_url = updated.getFacebook();
+            if (FB_url.matches("")) {
+                FB_Btn.setVisibility(View.GONE);
+            }else{
+                FB_Btn.setVisibility(View.VISIBLE);
+            }
             Glide.with(getActivity())
                     .load(updated.getAvatarImageUrl())
                     .circleCrop()

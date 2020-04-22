@@ -264,6 +264,9 @@ public class EventActivity extends AppCompatActivity {
                     eventButton.setEnabled(false);
                 }
             }
+            if(event.getDatetime().before(new Date())){
+                eventButton.setEnabled(false);
+            }
             db.collection("requests").document(currentUser.getUid()+'-'+event.getId()).get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
