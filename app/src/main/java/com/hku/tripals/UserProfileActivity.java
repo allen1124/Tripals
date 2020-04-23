@@ -238,11 +238,19 @@ public class UserProfileActivity extends AppCompatActivity {
         });
 
         //Facebook Button
-        if (user.getFacebook().isEmpty()){
+        if (user.getFacebook() == null || user.getFacebook() != null && user.getFacebook().isEmpty()){
             FB_btn.setVisibility(View.GONE);
             FB_url = "No Facebook";
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(constraintLayout);
+            constraintSet.connect(R.id.profile_Instagram_textview, ConstraintSet.START, R.id.user_interest_textView,ConstraintSet.START,0);
+            constraintSet.applyTo(constraintLayout);
         } else {
             FB_url = user.getFacebook();
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(constraintLayout);
+            constraintSet.connect(R.id.profile_Instagram_textview, ConstraintSet.START, R.id.profile_Facebook_textview,ConstraintSet.END,12);
+            constraintSet.applyTo(constraintLayout);
         }
 
         FB_btn.setOnClickListener(new View.OnClickListener() {
@@ -255,7 +263,7 @@ public class UserProfileActivity extends AppCompatActivity {
         });
 
         //Instagram Button
-        if (user.getInstagram().isEmpty()){
+        if (user.getInstagram() == null || user.getInstagram() != null && user.getInstagram().isEmpty()){
             IG_btn.setVisibility(View.GONE);
             IG_url = "No Instagram";
         } else {

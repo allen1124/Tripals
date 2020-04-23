@@ -109,13 +109,13 @@ public class ProfileFragment extends Fragment {
                 String interestString = interestList.substring(1, interestList.length() - 1);
                 interests.setText(interestString);
                 FB_url = user.getFacebook();
-                if (FB_url.matches("")) {
+                if (FB_url == null || FB_url != null && FB_url.matches("")) {
                     FB_Btn.setVisibility(View.GONE);
                 }else{
                     FB_Btn.setVisibility(View.VISIBLE);
                 }
                 IG_url = user.getInstagram();
-                if (IG_url.matches("")) {
+                if (IG_url == null || IG_url != null && IG_url.matches("")) {
                     IG_Btn.setVisibility(View.GONE);
                 }else{
                     IG_Btn.setVisibility(View.VISIBLE);
