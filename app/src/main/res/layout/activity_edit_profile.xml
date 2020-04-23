@@ -289,11 +289,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="36dp"
                 android:text="www.facebook.com/"
                 android:textColor="@android:color/secondary_text_light"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -320,6 +318,45 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/edit_profile_FB_Title"
                 app:layout_constraintTop_toTopOf="@+id/edit_profile_FB_Title"
+                app:layout_constraintVertical_bias="0.52" />
+
+            <TextView
+                android:id="@+id/edit_profile_IG_Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="36dp"
+                android:text="www.instagram.com/"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_profile_FB_editText" />
+
+            <EditText
+                android:id="@+id/edit_profile_IG_editText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/round_corner_grey"
+                android:hint="url"
+                android:includeFontPadding="false"
+                android:inputType="textMultiLine"
+                android:lines="1"
+                android:padding="5dp"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="5dp"
+                android:paddingRight="5dp"
+                android:singleLine="true"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_profile_IG_Title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/edit_profile_IG_Title"
+                app:layout_constraintTop_toTopOf="@+id/edit_profile_IG_Title"
                 app:layout_constraintVertical_bias="0.52" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

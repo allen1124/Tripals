@@ -66,7 +66,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
     private ImageView close;
     private TextView Save;
     private Button avatarButton;
-    private EditText username, bio, FB_url;
+    private EditText username, bio, FB_url, IG_url;
     private TextView gender, birthday, homeCountry, language;
 
     private ImageView avatar;
@@ -106,6 +106,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         interests = findViewById(R.id.edit_profile_interest);
         bio = findViewById(R.id.edit_profile_bio_editText);
         FB_url = findViewById(R.id.edit_profile_FB_editText);
+        IG_url = findViewById(R.id.edit_profile_IG_editText);
         avatar = (ImageView) findViewById(R.id.edit_profile_avatar);
 
         listItems = getResources().getStringArray(R.array.interest_options);
@@ -278,6 +279,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         language.setText(mUser.getLanguage());
         bio.setText(mUser.getBio());
         FB_url.setText(mUser.getFacebook());
+        IG_url.setText(mUser.getInstagram());
 
         String interestList = mUser.getInterests().toString();
         String interestString = interestList.substring(1, interestList.length() - 1);
@@ -480,6 +482,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         user.setLanguage(language.getText().toString());
         user.setBio(bio.getText().toString());
         user.setFacebook(FB_url.getText().toString());
+        user.setInstagram(IG_url.getText().toString());
         if ( selectedInterest != null) {
             user.setInterests(selectedInterest);
         } else {

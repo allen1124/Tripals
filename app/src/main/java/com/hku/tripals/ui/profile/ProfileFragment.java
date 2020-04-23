@@ -1,5 +1,6 @@
 package com.hku.tripals.ui.profile;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -59,6 +60,9 @@ public class ProfileFragment extends Fragment {
     private TextView FB_Btn;
     private String FB_url;
 
+    private TextView IG_Btn;
+    private String IG_url;
+
     private RecyclerView createdEventRecyclerView;
     private LinearLayoutManager createdEventLayoutManager;
     private EventAdapter createdEventAdapter;
@@ -85,6 +89,7 @@ public class ProfileFragment extends Fragment {
         interests = root.findViewById(R.id.profile_user_interests_textView);
         bio = root.findViewById(R.id.profile_user_bio_textView);
         FB_Btn = root.findViewById(R.id.profile_Facebook_textview);
+        IG_Btn = root.findViewById(R.id.profile_Instagram_textview);
 
         logout = root.findViewById(R.id.profile_user_logout_button);
         editProfileBtn = root.findViewById(R.id.profile_user_edit_button);
@@ -108,6 +113,12 @@ public class ProfileFragment extends Fragment {
                     FB_Btn.setVisibility(View.GONE);
                 }else{
                     FB_Btn.setVisibility(View.VISIBLE);
+                }
+                IG_url = user.getInstagram();
+                if (IG_url.matches("")) {
+                    IG_Btn.setVisibility(View.GONE);
+                }else{
+                    IG_Btn.setVisibility(View.VISIBLE);
                 }
                 Glide.with(getActivity())
                         .load(user.getAvatarImageUrl())
@@ -176,6 +187,20 @@ public class ProfileFragment extends Fragment {
                     clicked_btn(fb_link);
                 } else {
                     FB_Btn.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        //Instagram Button
+        IG_Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!IG_url.matches("")) {
+                    String ig_link = "https://instagram.com/" + IG_url;
+                    Log.d(TAG, ig_link);
+                    clicked_IG_btn(IG_url);
+                } else {
+                    IG_Btn.setVisibility(View.GONE);
                 }
             }
         });
@@ -285,6 +310,14 @@ public class ProfileFragment extends Fragment {
             }else{
                 FB_Btn.setVisibility(View.VISIBLE);
             }
+
+            IG_url = updated.getInstagram();
+            if (IG_url.matches("")) {
+                IG_Btn.setVisibility(View.GONE);
+            }else{
+                IG_Btn.setVisibility(View.VISIBLE);
+            }
+
             Glide.with(getActivity())
                     .load(updated.getAvatarImageUrl())
                     .circleCrop()
@@ -297,5 +330,24 @@ public class ProfileFragment extends Fragment {
         Intent intent = new Intent (Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
         startActivity(intent);
+
+    }
+
+    public void clicked_IG_btn(String url) {
+        //Intent intent = new Intent (Intent.ACTION_VIEW);
+        //intent.setData(Uri.parse(url));
+        //startActivity(intent);
+
+        Uri uri = Uri.parse("http://instagram.com/_u/"+url);
+        Intent likeIng = new Intent(Intent.ACTION_VIEW, uri);
+
+        likeIng.setPackage("com.instagram.android");
+
+        try {
+            startActivity(likeIng);
+        } catch (ActivityNotFoundException e) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://instagram.com/"+url)));
+        }
     }
 }

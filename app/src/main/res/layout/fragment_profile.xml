@@ -79,14 +79,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Facebook"
+                android:text="FB"
                 android:textColor="@color/quantum_googblue700"
                 android:textStyle="italic"
-                app:layout_constraintBottom_toBottomOf="@id/profile_user_home_country_textView"
+                app:layout_constraintBottom_toBottomOf="@+id/profile_user_home_country_textView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/profile_user_home_country_textView"
                 app:layout_constraintTop_toTopOf="@id/profile_user_home_country_textView" />
+
+            <TextView
+                android:id="@+id/profile_Instagram_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="IG"
+                android:textColor="@color/quantum_googblue700"
+                android:textStyle="italic"
+                app:layout_constraintBottom_toBottomOf="@+id/profile_Facebook_textview"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/profile_Facebook_textview"
+                app:layout_constraintTop_toTopOf="@id/profile_Facebook_textview" />
 
             <TextView
                 android:id="@+id/profile_user_interests_textView"

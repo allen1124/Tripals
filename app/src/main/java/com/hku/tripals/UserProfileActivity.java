@@ -76,6 +76,8 @@ public class UserProfileActivity extends AppCompatActivity {
     private TextView bio;
     private TextView FB_btn;
     private String FB_url;
+    private TextView IG_btn;
+    private String IG_url;
     private TextView eventCreatedTitle;
     private TextView noJoinedEvent;
     private RecyclerView createdEvent;
@@ -125,6 +127,7 @@ public class UserProfileActivity extends AppCompatActivity {
         interest = findViewById(R.id.user_interest_textView);
         bio = findViewById(R.id.user_bio_textView);
         FB_btn = findViewById(R.id.profile_Facebook_textview);
+        IG_btn = findViewById(R.id.profile_Instagram_textview);
         constraintLayout = findViewById(R.id.user_profile_constraintLayout);
         noJoinedEvent = findViewById(R.id.no_joined_event_textView);
         noJoinedEvent.setVisibility(View.GONE);
@@ -248,6 +251,23 @@ public class UserProfileActivity extends AppCompatActivity {
                 String fb_link = "https://fb.com/" + FB_url;
                 Log.d(TAG, fb_link);
                 clicked_btn(fb_link);
+            }
+        });
+
+        //Instagram Button
+        if (user.getInstagram().isEmpty()){
+            IG_btn.setVisibility(View.GONE);
+            IG_url = "No Instagram";
+        } else {
+            IG_url = user.getInstagram();
+        }
+
+        IG_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String ig_link = "https://instagram.com/" + IG_url;
+                Log.d(TAG, ig_link);
+                clicked_btn(ig_link);
             }
         });
 
