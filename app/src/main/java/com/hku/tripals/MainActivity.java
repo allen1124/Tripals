@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         SharedPreferences sharedPreferences = getSharedPreferences("keys" , MODE_PRIVATE);
         configureFirebaseRemoteConfigInstance();
+        firebaseRemoteConfig.setDefaultsAsync(R.xml.config);
+        updateConfig();
         sharedPreferences.edit().putString("map_key" , firebaseRemoteConfig.getValue("map_key").asString()).apply();
         sharedPreferences.edit().putString("place_key" , firebaseRemoteConfig.getValue("place_key").asString()).apply();
         updateToken();
@@ -71,8 +73,34 @@ public class MainActivity extends AppCompatActivity {
 
     public void configureFirebaseRemoteConfigInstance(){
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(7200)
+                .setMinimumFetchIntervalInSeconds(3600)
                 .build();
         firebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+    }
+
+    public void updateConfig() {
+        firebaseRemoteConfig.fetch(0).addOnCompleteListener(this,
+                new OnCompleteListener<Void>() {
+
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            firebaseRemoteConfig.activateFetched();
+                            applyConfig();
+                        } else {
+                            // Fetch failed
+                        }
+                    }
+                });
+    }
+
+    public void applyConfig(){
+        SharedPreferences sharedPreferences = getSharedPreferences("keys" , MODE_PRIVATE);
+        configureFirebaseRemoteConfigInstance();
+        firebaseRemoteConfig.setDefaultsAsync(R.xml.config);
+        sharedPreferences.edit().putString("map_key" , firebaseRemoteConfig.getValue("map_key").asString()).apply();
+        sharedPreferences.edit().putString("place_key" , firebaseRemoteConfig.getValue("place_key").asString()).apply();
+        Log.d(TAG, "map_key: "+firebaseRemoteConfig.getValue("map_key").asString());
+        Log.d(TAG, "place_key: "+firebaseRemoteConfig.getValue("place_key").asString());
     }
 }
