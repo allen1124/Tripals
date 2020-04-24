@@ -522,10 +522,12 @@ public class EditEventActivity extends AppCompatActivity {
             });
         }
         db.collection("chats").document(event_id).update("eventTitle", event.getTitle());
-        Toast.makeText(EditEventActivity.this, "Event Updated, Please Refresh", Toast.LENGTH_SHORT).show();
-        for(int i = 0; i < event.getParticipants().size(); i++){
-            if(!event.getParticipants().get(i).matches(currentUser.getUid())) {
-                sendNotification(event.getParticipants().get(i), event.getId(), event.getTitle());
+        Toast.makeText(EditEventActivity.this, "Event Updated", Toast.LENGTH_SHORT).show();
+        if(event.getParticipants() != null) {
+            for (int i = 0; i < event.getParticipants().size(); i++) {
+                if (!event.getParticipants().get(i).matches(currentUser.getUid())) {
+                    sendNotification(event.getParticipants().get(i), event.getId(), event.getTitle());
+                }
             }
         }
         Intent intent = new Intent();
