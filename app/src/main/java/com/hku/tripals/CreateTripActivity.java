@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.algolia.search.saas.AlgoliaException;
@@ -63,6 +64,7 @@ public class CreateTripActivity extends AppCompatActivity {
     private List<Event> selectedList = new ArrayList<>();
     private List<String> selectedIdList = new ArrayList<>();
     private SelectionTracker selectionTracker;
+    private TextView noEventMessage;
 
     private Trip trip;
 
@@ -91,6 +93,7 @@ public class CreateTripActivity extends AppCompatActivity {
         tripDestination = findViewById(R.id.trip_destination_editText);
         createTrip = findViewById(R.id.create_trip_button);
         progressBar = findViewById(R.id.create_trip_progressBar);
+        noEventMessage = findViewById(R.id.no_event_message_textView);
         progressBar.setVisibility(View.GONE);
         eventRecyclerView = findViewById(R.id.create_trip_events_RecyclerView);
         eventLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
@@ -171,6 +174,11 @@ public class CreateTripActivity extends AppCompatActivity {
                             return o1.getDatetime().compareTo(o2.getDatetime());
                         }
                     });
+                    if(eventList.size() == 0){
+                        noEventMessage.setVisibility(View.VISIBLE);
+                    }else{
+                        noEventMessage.setVisibility(View.GONE);
+                    }
                     selectableEventAdapter.setEventList(eventList);
                     selectableEventAdapter.notifyDataSetChanged();
                 }catch (JSONException err){

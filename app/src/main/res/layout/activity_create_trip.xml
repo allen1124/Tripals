@@ -149,6 +149,19 @@
                 app:layout_constraintTop_toBottomOf="@+id/divider3"
                 app:layout_constraintVertical_bias="0" />
 
+            <TextView
+                android:id="@+id/no_event_message_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:visibility="gone"
+                android:background="@drawable/round_corner_pri_light"
+                android:text="@string/no_event_message"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider3" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

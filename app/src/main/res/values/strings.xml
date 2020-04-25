@@ -151,4 +151,5 @@
     <string name="share_using">Share using</string>
     <string name="profile_created_trip">Created Trip</string>
     <string name="edit_profile_username">Username</string>
+    <string name="no_event_message">You have no event created or joined.\nStart your first event on the explore page</string>
 </resources>
