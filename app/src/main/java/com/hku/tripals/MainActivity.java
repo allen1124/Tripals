@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         updateConfig();
         sharedPreferences.edit().putString("map_key" , firebaseRemoteConfig.getValue("map_key").asString()).apply();
         sharedPreferences.edit().putString("place_key" , firebaseRemoteConfig.getValue("place_key").asString()).apply();
+        Log.d(TAG, "map_key: "+firebaseRemoteConfig.getValue("map_key").asString());
+        Log.d(TAG, "place_key: "+firebaseRemoteConfig.getValue("place_key").asString());
         updateToken();
     }
 

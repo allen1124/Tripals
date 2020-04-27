@@ -25,8 +25,10 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -94,6 +96,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private AutocompleteSupportFragment autocompleteFragment;
     private ImageView gps;
     private Button nearbyButton;
+    private Switch mode;
+    private String ATTRACTIONS = "tourist_attraction";
+    private String RESTAURANT = "restaurant";
+    private String locationType = ATTRACTIONS;
     private HashMap<String, Boolean> markerList = new HashMap<>();
 
     @Override
@@ -112,6 +118,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placeDetail = (Button) findViewById(R.id.button_details);
         placeRating = (RatingBar) findViewById(R.id.place_ratingBar);
         fabDirection = (FloatingActionButton) findViewById(R.id.fab_direction);
+        mode = findViewById(R.id.location_mode_switch);
+        mode.setChecked(false);
+        mode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    mMap.clear();
+                    lastSearchLatLng = null;
+                    locationType = RESTAURANT;
+                    markerList = new HashMap<>();
+                    LatLng cameraPosition = mMap.getCameraPosition().target;
+                    getNearbyAttractions(cameraPosition);
+                }else{
+                    mMap.clear();
+                    lastSearchLatLng = null;
+                    locationType = ATTRACTIONS;
+                    markerList = new HashMap<>();
+                    LatLng cameraPosition = mMap.getCameraPosition().target;
+                    getNearbyAttractions(cameraPosition);
+                }
+            }
+        });
         fabDirection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -344,8 +372,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SharedPreferences sharedPreferences = getSharedPreferences("keys" , MODE_PRIVATE);
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("location=" + location.latitude + "," + location.longitude);
-        sb.append("&radius=4000");
-        sb.append("&types=" + "tourist_attraction");
+        sb.append("&radius=3000");
+        sb.append("&types=" + locationType);
         sb.append("&key="+sharedPreferences.getString("place_key" , ""));
         return sb;
     }
