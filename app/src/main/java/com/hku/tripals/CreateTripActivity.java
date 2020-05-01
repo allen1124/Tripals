@@ -112,13 +112,25 @@ public class CreateTripActivity extends AppCompatActivity {
         createTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(tripTitle.getText().toString().matches("") || tripDestination.getText().toString().matches("")){
+                selectedList.clear();
+                selectedIdList.clear();
+                for(int i = 0; i < eventList.size(); i++){
+                    if(eventList.get(i).isSelected()){
+                        selectedList.add(eventList.get(i));
+                        selectedIdList.add(eventList.get(i).getId());
+                    }
+                }
+                if(tripTitle.getText().toString().matches("") || tripDestination.getText().toString().matches("") || selectedList.size() == 0){
                     Toast.makeText(CreateTripActivity.this,
                             R.string.not_complete_message, Toast.LENGTH_SHORT).show();
                     if(tripTitle.getText().toString().matches(""))
                         tripTitle.setError(getText(R.string.required));
                     if(tripDestination.getText().toString().matches(""))
                         tripDestination.setError(getText(R.string.required));
+                    if(selectedList.size() == 0){
+                        Toast.makeText(CreateTripActivity.this,
+                                R.string.no_event_is_selected, Toast.LENGTH_LONG).show();
+                    }
                 }else{
                     progressBar.setVisibility(View.VISIBLE);
                     trip.setHost(currentUser.getUid());
@@ -126,15 +138,8 @@ public class CreateTripActivity extends AppCompatActivity {
                     trip.setDestination(tripDestination.getText().toString());
                     trip.setHostAvatarUrl(currentUser.getPhotoUrl().toString());
                     trip.setHostName(currentUser.getDisplayName());
-                    selectedList.clear();
-                    selectedIdList.clear();
-                    for(int i = 0; i < eventList.size(); i++){
-                        if(eventList.get(i).isSelected()){
-                            selectedList.add(eventList.get(i));
-                            selectedIdList.add(eventList.get(i).getId());
-                        }
-                    }
                     trip.setEvents(selectedIdList);
+                    trip.setPhotoUrl(selectedList.get(0).getPhotoUrl());
                     tripPhoto.setEnabled(false);
                     tripTitle.setEnabled(false);
                     tripDestination.setEnabled(false);
@@ -195,16 +200,14 @@ public class CreateTripActivity extends AppCompatActivity {
         final DocumentReference newTripRef = db.collection("trips").document();
         String newTripId = newTripRef.getId();
         trip.setId(newTripId);
-        if(selectedList.size() > 1) {
-            trip.setPhotoUrl(selectedList.get(0).getPhotoUrl());
-        }
         newTripRef.set(trip.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "DocumentSnapshot added with ID: " + trip.getId());
                 Toast.makeText(CreateTripActivity.this,
-                        R.string.create_trip_complete_message, Toast.LENGTH_SHORT).show();
+                        R.string.create_trip_complete_message, Toast.LENGTH_LONG).show();
                 clearForm();
+                onBackPressed();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

@@ -222,6 +222,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:hint="@string/event_location_meet_up_location"
                 android:layout_marginEnd="16dp"
                 android:drawableEnd="@drawable/ic_enter"
                 android:ems="10"
@@ -356,6 +357,16 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/event_openness_radioGroup"
                 app:layout_constraintTop_toBottomOf="@+id/event_openness_select_textView" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/invisible_to_the_public"
+                app:layout_constraintBottom_toBottomOf="@+id/event_privacy_radioGroup"
+                app:layout_constraintStart_toEndOf="@+id/event_privacy_radioGroup"
+                app:layout_constraintTop_toTopOf="@+id/event_privacy_radioGroup" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

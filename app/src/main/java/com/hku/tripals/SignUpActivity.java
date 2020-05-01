@@ -93,6 +93,8 @@ public class SignUpActivity extends AppCompatActivity {
                         password.setError(getText(R.string.required));
                     if(confirmPassword.getText().toString().matches(""))
                         confirmPassword.setError(getText(R.string.required));
+                }else if(password.getText().toString().length() < 8 || password.getText().toString().contains(" ")) {
+                    password.setError(getText(R.string.format_password_message));
                 }else if(!password.getText().toString().matches(confirmPassword.getText().toString())){
                     confirmPassword.setError(getText(R.string.confirm_password_message));
                 }else{

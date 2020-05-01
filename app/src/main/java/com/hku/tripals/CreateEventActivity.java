@@ -175,7 +175,7 @@ public class CreateEventActivity extends AppCompatActivity {
         createEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(eventName.getText().toString().matches("") || eventDescription.getText().toString().matches("")
+                if(eventName.getText().toString().matches("") || eventName.getText().toString().trim().length() == 0 || eventDescription.getText().toString().matches("")
                     || eventDateTime.getText().toString().matches("") || eventLocation.getText().toString().matches("")){
                     Toast.makeText(CreateEventActivity.this,
                             R.string.not_complete_event_message, Toast.LENGTH_SHORT).show();
@@ -373,9 +373,10 @@ public class CreateEventActivity extends AppCompatActivity {
                                     public void onSuccess(Void aVoid) {
                                         Log.d(TAG, "DocumentSnapshot added with ID: " + event.getId());
                                         Toast.makeText(CreateEventActivity.this,
-                                                R.string.create_event_complete_message, Toast.LENGTH_SHORT).show();
+                                                R.string.create_event_complete_message, Toast.LENGTH_LONG).show();
                                         addChatRoom(event);
                                         clearForm();
+                                        onBackPressed();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -409,9 +410,10 @@ public class CreateEventActivity extends AppCompatActivity {
                                 public void onSuccess(Void aVoid) {
                                     Log.d(TAG, "DocumentSnapshot added with ID: " + event.getId());
                                     Toast.makeText(CreateEventActivity.this,
-                                            R.string.create_event_complete_message, Toast.LENGTH_SHORT).show();
+                                            R.string.create_event_complete_message, Toast.LENGTH_LONG).show();
                                     addChatRoom(event);
                                     clearForm();
+                                    onBackPressed();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override

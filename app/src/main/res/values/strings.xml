@@ -22,6 +22,7 @@
     <string name="login">Login</string>
     <string name="not_complete_message">You did not complete the entire form.</string>
     <string name="confirm_password_message">Password are not matching</string>
+    <string name="format_password_message">Password must be at least 8 characters</string>
     <string name="required">Required</string>
     <!--    LoginActivity-->
     <string name="log_in">Log in</string>
@@ -92,7 +93,7 @@
     <string name="event_name">Event Name</string>
     <string name="event_name_hint">What do you want to call your event?</string>
     <string name="event_description">Description</string>
-    <string name="event_description_hint">What will you do? What do you expect?</string>
+    <string name="event_description_hint">What will you do?\nHow long does it take?\nWhere is the meet up location?</string>
     <string name="date_time">Date &amp; Time</string>
     <string name="privacy">Privacy</string>
     <string name="_public">Public</string>
@@ -118,8 +119,13 @@
     <string name="comment_post">Post</string>
     <string name="comment">Comment</string>
     <string name="quota">Quota</string>
+    <string name="private_event">Private Event</string>
+    <string name="closed_event">Closed Event</string>
+    <string name="request_sent">Request Sent</string>
     <string name="join_event">Join Event</string>
+    <string name="full_event">Full</string>
     <string name="edit_event">Edit Event</string>
+    <string name="event_joined">Event Joined</string>
     <string name="comment_alert">You did not enter comment</string>
     <string name="add_image">Add Image</string>
     <string name="remove_image">Remove Image</string>
@@ -152,4 +158,9 @@
     <string name="profile_created_trip">Created Trip</string>
     <string name="edit_profile_username">Username</string>
     <string name="no_event_message">You have no event created or joined.\nStart your first event on the explore page</string>
+    <string name="invisible_to_the_public">(Invisible to the public)</string>
+    <string name="event_location_meet_up_location">Event location / Meet-up Location</string>
+    <string name="start_a_new_trip">Start a New Trip</string>
+    <string name="create_your_ideal_trip_collection">Create your ideal trip collection!</string>
+    <string name="no_event_is_selected">No event is selected, please select at least one event.</string>
 </resources>

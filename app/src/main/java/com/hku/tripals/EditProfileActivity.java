@@ -56,6 +56,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class EditProfileActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener, OnCountryPickerListener {
@@ -205,7 +206,16 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month = month + 1;
                 String date = month + "/" + dayOfMonth + "/" + year;
-                birthday.setText(date);
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DATE, dayOfMonth);
+                Date d = calendar.getTime();
+                if(d.before(new Date())){
+                    birthday.setText(date);
+                }else{
+                    Toast.makeText(EditProfileActivity.this, "Invalid Birthday, please re-enter.", Toast.LENGTH_SHORT).show();
+                }
             }
         };
 

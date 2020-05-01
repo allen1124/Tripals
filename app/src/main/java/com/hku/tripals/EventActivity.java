@@ -122,6 +122,7 @@ public class EventActivity extends AppCompatActivity {
     private TextView eventQuotaTitle;
     private TextView eventQuota;
     private TextView eventHostName;
+    private TextView eventNoParticipant;
     private ImageView eventHostAvatar;
 
     private Button eventButton;
@@ -184,6 +185,7 @@ public class EventActivity extends AppCompatActivity {
         commentView = findViewById(R.id.event_comment_recycler_view);
         bookmarkButton = findViewById(R.id.bookmark_imageView);
         commentPhoto = findViewById(R.id.c_comment_imageView);
+        eventNoParticipant = findViewById(R.id.event_number_participant_textView);
         commentUploadImage = findViewById(R.id.c_add_image_button);
         shareButton = findViewById(R.id.event_share_imageButton);
         bookmarkPref = getSharedPreferences(BOOKMARK_PREF, MODE_PRIVATE);
@@ -254,18 +256,33 @@ public class EventActivity extends AppCompatActivity {
                 noPanticipant = event.getParticipants().size();
             String quotaLeft = String.valueOf(event.getQuota()-noPanticipant);
             eventQuota.setText(quotaLeft+" "+getString(R.string.left));
+            if(event.getQuota()-noPanticipant == 0){
+                eventButton.setEnabled(false);
+                eventButton.setText(getString(R.string.full_event));
+            }
+        }
+        if(event.getParticipants() != null) {
+            eventNoParticipant.setText(String.valueOf(event.getParticipants().size()));
+        }else{
+            eventNoParticipant.setText("0");
         }
         if(event.getHost().matches(currentUser.getUid())){
             eventButton.setText(getString(R.string.edit_event));
         }else{
             eventButton.setText(getString(R.string.join_event));
             if(event.getParticipants() != null){
-                if(event.getParticipants().contains(currentUser.getUid()) || event.getOpenness().matches("CLOSED")){
+                if(event.getParticipants().contains(currentUser.getUid())){
                     eventButton.setEnabled(false);
+                    eventButton.setText(getString(R.string.event_joined));
+                }
+                if(event.getOpenness().matches("CLOSED")){
+                    eventButton.setEnabled(false);
+                    eventButton.setText(getString(R.string.private_event));
                 }
             }
             if(event.getDatetime().before(new Date())){
                 eventButton.setEnabled(false);
+                eventButton.setText(getString(R.string.closed_event));
             }
             db.collection("requests").document(currentUser.getUid()+'-'+event.getId()).get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -276,6 +293,7 @@ public class EventActivity extends AppCompatActivity {
                                 if (document.exists()) {
                                     Log.d(TAG, "Request exists!");
                                     eventButton.setEnabled(false);
+                                    eventButton.setText(getString(R.string.request_sent));
                                 }
                             } else {
                                 Log.d(TAG, "Failed with: ", task.getException());

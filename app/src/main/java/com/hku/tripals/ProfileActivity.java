@@ -48,8 +48,11 @@ import com.mukesh.countrypicker.OnCountryPickerListener;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -159,7 +162,16 @@ public class ProfileActivity extends AppCompatActivity implements PopupMenu.OnMe
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month = month + 1;
                 String date = month + "/" + dayOfMonth + "/" + year;
-                DisplayBirthDate.setText(date);
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DATE, dayOfMonth);
+                Date d = calendar.getTime();
+                if(d.before(new Date())){
+                    DisplayBirthDate.setText(date);
+                }else{
+                    Toast.makeText(ProfileActivity.this, "Invalid Birthday, please re-enter.", Toast.LENGTH_SHORT).show();
+                }
             }
         };
 
